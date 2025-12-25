@@ -61,8 +61,15 @@ claude
 │   ├── target_architecture.md        # ターゲットアーキテクチャ
 │   ├── transformation_plan.md        # 変換計画
 │   └── operations_feedback.md        # 運用・フィードバック計画
-└── 04_stories/
-    └── [domain]_story.md             # ドメイン別ストーリー
+├── 04_stories/
+│   └── [domain]_story.md             # ドメイン別ストーリー
+└── graph/                            # ナレッジグラフ用データ
+    ├── data/                         # CSVファイル
+    ├── schema.md                     # グラフスキーマ
+    └── statistics.md                 # 統計情報
+
+<プロジェクトルート>/
+└── knowledge.ryugraph/               # RyuGraphデータベース
 ```
 
 ## 利用可能なスキル
@@ -81,7 +88,15 @@ claude
 | `/evaluate-mmi-cmd` | MMI評価。モジュール成熟度を4軸で評価 |
 | `/map-domains-cmd` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
 | `/design-microservices-cmd` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
+| `/design-scalardb-cmd` | ScalarDB設計。分散トランザクション、スキーマ設計、マイグレーション計画を策定 |
 | `/create-domain-story-cmd` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
+
+### ナレッジグラフスキル
+
+| コマンド | 説明 |
+|---------|------|
+| `/build-graph-cmd` | RyuGraphデータベースを構築。分析結果からナレッジグラフを生成 |
+| `/query-graph-cmd` | グラフを探索。自然言語またはCypherでクエリを実行 |
 
 ## 使用例
 
@@ -112,6 +127,22 @@ claude
 
 # ドメインマッピング
 /map-domains-cmd ./src
+
+# ScalarDBを使用したデータアーキテクチャ設計
+/design-scalardb-cmd ./src
+```
+
+### ナレッジグラフの使用
+
+```bash
+# ナレッジグラフを構築（分析結果から）
+/build-graph-cmd ./src
+
+# グラフを探索（自然言語）
+/query-graph-cmd 「注文」に関連するクラスを教えて
+
+# グラフを探索（Cypher）
+/query-graph-cmd MATCH (e:Entity)-[:HAS_TERM]->(t:UbiquitousTerm) RETURN e, t LIMIT 10
 ```
 
 ### 特定ドメインのみ対象
@@ -196,16 +227,172 @@ graph TD
     B --> C["/evaluate-mmi-cmd"]
     C --> D["/map-domains-cmd"]
     D --> E["/design-microservices-cmd"]
-    E --> F["/create-domain-story-cmd"]
-    F --> G["Executive Summary生成"]
-    G --> H["終了"]
+    E --> F["/design-scalardb-cmd"]
+    F --> G["/create-domain-story-cmd"]
+    G --> H["Executive Summary生成"]
+    H --> I["終了"]
+    B --> J["/build-graph-cmd"]
+    J --> K["/query-graph-cmd"]
 
     subgraph 中間ファイル生成
         B --> B1[ubiquitous_language.md]
         B --> B2[actors_roles_permissions.md]
         C --> C1[mmi_overview.md]
         D --> D1[domain_analysis.md]
+        F --> F1[scalardb_schema.md]
     end
+```
+
+## ナレッジグラフ
+
+分析結果をRyuGraphデータベースに格納し、ドメイン知識を探索可能にします。
+
+### セットアップ
+
+```bash
+# RyuGraphのインストール
+pip install ryugraph pandas
+```
+
+### グラフ構築ワークフロー
+
+```mermaid
+graph LR
+    A["/analyze-system-cmd"] --> B[分析結果MD]
+    B --> C[parse_analysis.py]
+    C --> D[CSVファイル]
+    D --> E[build_graph.py]
+    E --> F[knowledge.ryugraph]
+    F --> G["/query-graph-cmd"]
+    G --> H[関連コード・仕様]
+```
+
+### スキルによる構築
+
+```bash
+# 1. システム分析を実行（必須）
+/analyze-system-cmd ./src
+
+# 2. グラフを構築
+/build-graph-cmd ./src
+
+# 3. グラフを探索
+/query-graph-cmd 顧客に関連するエンティティを教えて
+```
+
+### 手動でのグラフ構築
+
+```bash
+# 1. 分析結果からCSVを生成
+python scripts/parse_analysis.py \
+  --input-dir ./.refactoring-output/01_analysis \
+  --output-dir ./.refactoring-output/graph/data
+
+# 2. GraphDBを構築
+python scripts/build_graph.py \
+  --data-dir ./.refactoring-output/graph/data \
+  --db-path ./knowledge.ryugraph
+
+# 3. クエリを実行
+python scripts/query_graph.py \
+  --db-path ./knowledge.ryugraph \
+  --interactive
+```
+
+### クエリ例
+
+```bash
+# 自然言語クエリ
+/query-graph-cmd 「注文」に関連するすべてのクラスを教えて
+/query-graph-cmd 在庫管理ドメインのエンティティ一覧
+
+# Cypherクエリ
+/query-graph-cmd MATCH (e:Entity)-[:BELONGS_TO]->(d:Domain) RETURN e.name, d.name
+/query-graph-cmd MATCH (a:Actor)-[:PERFORMS]->(act:Activity) RETURN a, act
+/query-graph-cmd MATCH (t:UbiquitousTerm) WHERE t.name CONTAINS '注文' RETURN t
+```
+
+### グラフスキーマ
+
+| ノードタイプ | 説明 | 主なプロパティ |
+|------------|------|--------------|
+| Entity | ドメインエンティティ | name, description |
+| UbiquitousTerm | ユビキタス言語 | name, definition, examples |
+| Actor | アクター | name, role |
+| Domain | ドメイン | name, type, category |
+| Activity | アクティビティ | name, description |
+
+| リレーションシップ | 説明 |
+|------------------|------|
+| HAS_TERM | エンティティがユビキタス用語を持つ |
+| BELONGS_TO | エンティティがドメインに属する |
+| PERFORMS | アクターがアクティビティを実行する |
+| DEPENDS_ON | エンティティが他のエンティティに依存する |
+
+## ScalarDB設計
+
+ScalarDBを使用して、マイクロサービス間の分散トランザクションを実現するデータアーキテクチャを設計します。
+
+### ScalarDBとは
+
+ScalarDBは異種データベース間で分散トランザクションを実現するHTAPエンジンです。
+
+| 機能 | 説明 |
+|-----|------|
+| **Consensus Commit** | 単一ストレージでのACIDトランザクション |
+| **Two-Phase Commit** | 複数ストレージ間の分散トランザクション |
+| **Multi-Storage** | 異種DB間のアトミック操作（PostgreSQL + DynamoDB等） |
+| **ScalarDB Cluster** | gRPCベースの集中型トランザクションコーディネーター |
+
+### サポートストレージ
+
+| カテゴリ | データベース |
+|---------|------------|
+| **JDBC** | MySQL, PostgreSQL, Oracle, SQL Server, Db2 |
+| **NoSQL** | Cassandra, DynamoDB, Cosmos DB, YugabyteDB |
+| **Object Storage** | S3, Azure Blob, GCS |
+
+### 使用方法
+
+```bash
+# マイクロサービス設計後にScalarDB設計を実行
+/design-scalardb-cmd ./src
+```
+
+### 出力ファイル
+
+| ファイル | 内容 |
+|---------|------|
+| `scalardb_architecture.md` | デプロイモード、ストレージ構成、セキュリティ設計 |
+| `scalardb_schema.md` | Namespace、テーブル定義、パーティション戦略 |
+| `scalardb_transaction.md` | トランザクションパターン、Saga設計、例外処理 |
+| `scalardb_migration.md` | フェーズ別計画、データ移行手順、ロールバック |
+
+### デプロイモード選定
+
+| 要件 | ScalarDB Core | ScalarDB Cluster |
+|-----|--------------|------------------|
+| シンプルな構成 | ○ | △ |
+| 高可用性 | △ | ○ |
+| マルチテナント | × | ○ |
+| GraphQL/SQL対応 | × | ○ |
+
+### トランザクションパターン
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant OrderSvc as Order Service
+    participant InvSvc as Inventory Service
+    participant ScalarDB as ScalarDB Cluster
+
+    Client->>OrderSvc: 注文作成
+    OrderSvc->>ScalarDB: Begin 2PC
+    OrderSvc->>ScalarDB: Insert Order
+    OrderSvc->>InvSvc: Reserve Inventory
+    InvSvc->>ScalarDB: Update Inventory
+    OrderSvc->>ScalarDB: Prepare & Commit
+    OrderSvc->>Client: 注文完了
 ```
 
 ## 入力ファイル形式
@@ -266,22 +453,34 @@ refactoring-agent-for-claude-code/
 │   │   ├── map-domains-cmd.md            # ドメインマッピング
 │   │   ├── design-microservices-cmd.md   # マイクロサービス設計
 │   │   ├── create-domain-story-cmd.md   # ドメインストーリー
-│   │   └── init-output-cmd.md            # 出力初期化
+│   │   ├── init-output-cmd.md            # 出力初期化
+│   │   ├── design-scalardb-cmd.md        # ScalarDB設計
+│   │   ├── build-graph-cmd.md            # グラフ構築
+│   │   └── query-graph-cmd.md            # グラフ探索
 │   └── skills/                            # スキル定義
 │       ├── refactor-system/
 │       ├── analyze-system/
 │       ├── evaluate-mmi/
 │       ├── map-domains/
 │       ├── design-microservices/
+│       ├── design-scalardb/              # ScalarDB設計スキル
 │       ├── create-domain-story/
 │       ├── init-output/
 │       ├── fix-mermaid/
-│       └── render-mermaid/
+│       ├── render-mermaid/
+│       ├── build-graph/                  # グラフ構築スキル
+│       └── query-graph/                  # グラフ探索スキル
+├── scripts/                               # ユーティリティスクリプト
+│   ├── parse_analysis.py                 # 分析結果パーサー
+│   ├── build_graph.py                    # グラフ構築スクリプト
+│   └── query_graph.py                    # グラフクエリスクリプト
 └── Sample/                                 # サンプルプロジェクト
 ```
 
 ## 参考資料
 
+- [ScalarDB Documentation](https://scalardb.scalar-labs.com/docs/)
+- [RyuGraph Documentation](https://ryugraph.io/docs/)
 - [Modularity Maturity Index テンプレート](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/modularity-maturity-index.md)
 - [Domain-Driven Transformation テンプレート](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-driven-transformation.md)
 - [Domain Storytelling テンプレート](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-storytelling.md)

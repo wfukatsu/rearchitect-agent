@@ -16,7 +16,8 @@ user_invocable: true
 2. **MMI評価** - Modularity Maturity Indexによる成熟度評価
 3. **ドメインマッピング** - ビジネスドメインとコードの紐付け
 4. **マイクロサービス設計** - ターゲットアーキテクチャの策定
-5. **ドメインストーリー** - 各ドメインのユースケース整理
+5. **ScalarDB設計** - 分散トランザクション・データアーキテクチャの策定
+6. **ドメインストーリー** - 各ドメインのユースケース整理
 
 ## 使用方法
 
@@ -50,7 +51,11 @@ user_invocable: true
 │   ├── system_mapping.md             # システムマッピング
 │   ├── target_architecture.md        # ターゲットアーキテクチャ
 │   ├── transformation_plan.md        # 変換計画
-│   └── operations_feedback.md        # 運用・フィードバック計画
+│   ├── operations_feedback.md        # 運用・フィードバック計画
+│   ├── scalardb_architecture.md      # ScalarDBアーキテクチャ設計
+│   ├── scalardb_schema.md            # ScalarDBスキーマ設計
+│   ├── scalardb_transaction.md       # ScalarDBトランザクション設計
+│   └── scalardb_migration.md         # ScalarDBマイグレーション計画
 └── 04_stories/
     └── [domain]_story.md             # ドメイン別ストーリー
 ```
@@ -68,9 +73,10 @@ graph TD
     F --> G[MMI評価エージェント]
     G --> H[ドメインマッピングエージェント]
     H --> I[マイクロサービス設計エージェント]
-    I --> J[ドメインストーリーエージェント]
-    J --> K[最終レポート生成]
-    K --> L[終了]
+    I --> J[ScalarDB設計エージェント]
+    J --> K[ドメインストーリーエージェント]
+    K --> L[最終レポート生成]
+    L --> M[終了]
 ```
 
 ## 処理詳細
@@ -112,7 +118,16 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 - データストレージ設計
 - 移行計画
 
-### Phase 6: ドメインストーリー
+### Phase 6: ScalarDB設計
+
+Taskツールで `scalardb-architect` エージェントを起動し、以下を策定：
+- **デプロイモード選定** - ScalarDB Core（ライブラリ）vs Cluster（サーバー）
+- **ストレージバックエンド設計** - 各サービスに適したDB選定（PostgreSQL, DynamoDB, Cassandra等）
+- **スキーマ設計** - Namespace、テーブル定義、パーティションキー、クラスタリングキー
+- **トランザクション設計** - Consensus Commit、Two-Phase Commit、Sagaパターン
+- **マイグレーション計画** - 既存DBからの移行戦略
+
+### Phase 7: ドメインストーリー
 
 Taskツールで `domain-storyteller` エージェントを起動し、各ドメインについて：
 - アクター特定
@@ -127,6 +142,7 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 - `/evaluate-mmi` - MMI評価
 - `/map-domains` - ドメインマッピング
 - `/design-microservices` - マイクロサービス設計
+- `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
 - `/create-domain-story` - ドメインストーリー作成
 
 ## 使用例
