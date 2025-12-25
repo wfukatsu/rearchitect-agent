@@ -21,8 +21,8 @@
 
 ```bash
 # このリポジトリをクローン
-git clone <repository-url> refactoring-agent
-cd refactoring-agent
+git clone https://github.com/wfukatsu/refactoring-agent-for-claude-code.git
+cd refactoring-agent-for-claude-code
 
 # Claude Code でプロジェクトを開く
 claude
@@ -254,21 +254,30 @@ Serenaツールが対応していない言語の場合、Grep/Glob による基�
 ## ファイル構成
 
 ```
-.refactoring-agent/
+refactoring-agent-for-claude-code/
 ├── README.md                              # このファイル
 ├── CLAUDE.md                              # プロジェクト設定
 ├── .claude/
 │   ├── settings.json                      # スキル登録
-│   ├── skills/
-│   │   ├── refactor-system.md            # メインオーケストレーター
-│   │   ├── analyze-system.md             # システム分析
-│   │   ├── evaluate-mmi.md               # MMI評価
-│   │   ├── map-domains.md                # ドメインマッピング
-│   │   ├── design-microservices.md       # マイクロサービス設計
-│   │   ├── create-domain-story.md        # ドメインストーリー
-│   │   └── init-output.md                # 出力初期化
-│   └── templates/
-│       └── output-structure.md           # 出力構造テンプレート
+│   ├── commands/                          # コマンド定義
+│   │   ├── refactor-system-cmd.md        # メインオーケストレーター
+│   │   ├── analyze-system-cmd.md         # システム分析
+│   │   ├── evaluate-mmi-cmd.md           # MMI評価
+│   │   ├── map-domains-cmd.md            # ドメインマッピング
+│   │   ├── design-microservices-cmd.md   # マイクロサービス設計
+│   │   ├── create-domain-story-cmd.md   # ドメインストーリー
+│   │   └── init-output-cmd.md            # 出力初期化
+│   └── skills/                            # スキル定義
+│       ├── refactor-system/
+│       ├── analyze-system/
+│       ├── evaluate-mmi/
+│       ├── map-domains/
+│       ├── design-microservices/
+│       ├── create-domain-story/
+│       ├── init-output/
+│       ├── fix-mermaid/
+│       └── render-mermaid/
+└── Sample/                                 # サンプルプロジェクト
 ```
 
 ## 参考資料
