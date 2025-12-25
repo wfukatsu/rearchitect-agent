@@ -35,7 +35,7 @@ claude
 対象ディレクトリに対して、すべての分析・設計工程を実行します。
 
 ```bash
-/refactor-system ./path/to/your/project
+/refactor-system-cmd ./path/to/your/project
 ```
 
 ### 2. 出力確認
@@ -71,17 +71,17 @@ claude
 
 | コマンド | 説明 |
 |---------|------|
-| `/refactor-system` | 統合リファクタリングエージェント。全工程を順次実行 |
+| `/refactor-system-cmd` | 統合リファクタリングエージェント。全工程を順次実行 |
 
 ### 個別スキル
 
 | コマンド | 説明 |
 |---------|------|
-| `/analyze-system` | システム分析。ユビキタス言語、アクター、ドメイン-コード対応表を抽出 |
-| `/evaluate-mmi` | MMI評価。モジュール成熟度を4軸で評価 |
-| `/map-domains` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
-| `/design-microservices` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
-| `/create-domain-story` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
+| `/analyze-system-cmd` | システム分析。ユビキタス言語、アクター、ドメイン-コード対応表を抽出 |
+| `/evaluate-mmi-cmd` | MMI評価。モジュール成熟度を4軸で評価 |
+| `/map-domains-cmd` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
+| `/design-microservices-cmd` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
+| `/create-domain-story-cmd` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
 
 ## 使用例
 
@@ -89,36 +89,36 @@ claude
 
 ```bash
 # プロジェクト全体を分析
-/refactor-system ./src
+/refactor-system-cmd ./src
 
 # 分析のみ実行（設計書生成なし）
-/refactor-system ./src --analyze-only
+/refactor-system-cmd ./src --analyze-only
 
 # 出力先を指定
-/refactor-system ./src --output=./my-output/
+/refactor-system-cmd ./src --output=./my-output/
 ```
 
 ### 個別スキルの使用
 
 ```bash
 # システム分析のみ
-/analyze-system ./src
+/analyze-system-cmd ./src
 
 # MMI評価のみ
-/evaluate-mmi ./src
+/evaluate-mmi-cmd ./src
 
 # 特定ドメインのストーリー作成（インタラクティブ）
-/create-domain-story --domain=Order
+/create-domain-story-cmd --domain=Order
 
 # ドメインマッピング
-/map-domains ./src
+/map-domains-cmd ./src
 ```
 
 ### 特定ドメインのみ対象
 
 ```bash
 # Order と Customer ドメインのみ分析
-/refactor-system ./src --domain=Order,Customer
+/refactor-system-cmd ./src --domain=Order,Customer
 ```
 
 ## MMI（Modularity Maturity Index）評価
@@ -192,11 +192,11 @@ MMI = (0.3×Cohesion + 0.3×Coupling + 0.2×Independence + 0.2×Reusability) / 5
 
 ```mermaid
 graph TD
-    A[開始] --> B["/analyze-system"]
-    B --> C["/evaluate-mmi"]
-    C --> D["/map-domains"]
-    D --> E["/design-microservices"]
-    E --> F["/create-domain-story"]
+    A[開始] --> B["/analyze-system-cmd"]
+    B --> C["/evaluate-mmi-cmd"]
+    C --> D["/map-domains-cmd"]
+    D --> E["/design-microservices-cmd"]
+    E --> F["/create-domain-story-cmd"]
     F --> G["Executive Summary生成"]
     G --> H["終了"]
 
@@ -224,17 +224,17 @@ graph TD
 ### 出力先の変更
 
 ```bash
-/refactor-system ./src --output=./custom-output/
+/refactor-system-cmd ./src --output=./custom-output/
 ```
 
 ### スキップオプション
 
 ```bash
 # MMI評価をスキップ
-/refactor-system ./src --skip-mmi
+/refactor-system-cmd ./src --skip-mmi
 
 # ドメインストーリーをスキップ
-/refactor-system ./src --skip-stories
+/refactor-system-cmd ./src --skip-stories
 ```
 
 ## トラブルシューティング
