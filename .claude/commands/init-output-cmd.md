@@ -1,3 +1,8 @@
+---
+description: 出力ディレクトリ初期化 - リファクタリング分析用の出力ディレクトリ構造を作成。
+argument-hint: [出力パス]
+---
+
 # Output Directory Initializer
 
 出力ディレクトリを初期化し、必要なフォルダ構造を作成するユーティリティスキルです。

@@ -1,28 +1,2 @@
 {
-  "skills": {
-    "refactor-system": {
-      "description": "統合リファクタリングエージェント - 既存システムをマイクロサービスアーキテクチャにリファクタリングするための統合エージェント",
-      "path": ".claude/skills/refactor-system.md"
-    },
-    "analyze-system": {
-      "description": "システム分析エージェント - ユビキタス言語、アクター、ロール、権限、ドメイン-コード対応表を抽出",
-      "path": ".claude/skills/analyze-system.md"
-    },
-    "evaluate-mmi": {
-      "description": "MMI評価エージェント - Modularity Maturity Indexによるモジュール成熟度評価",
-      "path": ".claude/skills/evaluate-mmi.md"
-    },
-    "map-domains": {
-      "description": "ドメインマッピングエージェント - ドメイン分類、境界づけられたコンテキスト、コンテキストマップの作成",
-      "path": ".claude/skills/map-domains.md"
-    },
-    "design-microservices": {
-      "description": "マイクロサービス設計エージェント - ターゲットアーキテクチャ、変換計画、運用計画の策定",
-      "path": ".claude/skills/design-microservices.md"
-    },
-    "create-domain-story": {
-      "description": "ドメインストーリーテリングエージェント - ドメインストーリーの作成、ビジネスプロセスの可視化",
-      "path": ".claude/skills/create-domain-story.md"
-    }
-  }
 }

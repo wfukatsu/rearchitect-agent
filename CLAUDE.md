@@ -22,6 +22,13 @@
 | Microservice Architect | `/design-microservices` | マイクロサービス設計・移行計画 |
 | Domain Storyteller | `/create-domain-story` | ドメインストーリーテリング |
 
+### ユーティリティスキル
+
+| スキル | コマンド | 説明 |
+|-------|--------|------|
+| Mermaid Renderer | `/render-mermaid` | Mermaid図をPNG/SVG/PDF画像に変換 |
+| Mermaid Fixer | `/fix-mermaid` | Mermaid図のシンタックスエラーを修正 |
+
 ## クイックスタート
 
 ### 1. フルリファクタリング分析
@@ -42,6 +49,12 @@
 
 # ドメインストーリー作成
 /create-domain-story --domain=Order
+
+# Mermaid図を画像に変換
+/render-mermaid ./.refactoring-output/
+
+# Mermaid図のエラーを修正
+/fix-mermaid ./.refactoring-output/
 ```
 
 ## 出力先
