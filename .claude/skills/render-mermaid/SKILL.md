@@ -66,10 +66,14 @@ Grep: "```mermaid" --glob="*.md"
 #### 単一の .mmd ファイルを変換
 
 ```bash
-# PNG に変換（デフォルト）
+# 推奨: PNG と SVG の両方を生成
+mmdc -i diagram.mmd -o diagram.png
+mmdc -i diagram.mmd -o diagram.svg
+
+# PNG のみ
 mmdc -i diagram.mmd -o diagram.png
 
-# SVG に変換
+# SVG のみ
 mmdc -i diagram.mmd -o diagram.svg
 
 # PDF に変換
@@ -103,18 +107,27 @@ mmdc -i document.md -o document-with-images.md -O ./images/
 複数ファイルを一括変換する場合：
 
 ```bash
-# 全 .mmd ファイルを PNG に変換
+# 全 .mmd ファイルを PNG と SVG の両方に変換
 for f in $(find . -name "*.mmd"); do
   mmdc -i "$f" -o "${f%.mmd}.png"
+  mmdc -i "$f" -o "${f%.mmd}.svg"
 done
 
-# 全 Markdown 内の Mermaid を変換
+# 全 Markdown 内の Mermaid を変換（PNG と SVG 両方生成、PNG をリンク）
 for f in $(find . -name "*.md" -exec grep -l "mermaid" {} \;); do
   output_dir="$(dirname "$f")/images"
   mkdir -p "$output_dir"
-  mmdc -i "$f" -o "$f" -O "$output_dir/"
+  # PNG を生成してMarkdownにリンク
+  mmdc -i "$f" -o "$f" -O "$output_dir/" -e png
+  # SVG も同じディレクトリに生成（リンクはPNGのまま）
+  for mmd in "$output_dir"/*.png; do
+    base="${mmd%.png}"
+    mmdc -i "${base}.mmd" -o "${base}.svg" 2>/dev/null || true
+  done
 done
 ```
+
+**注意:** デフォルトでPNGとSVGの両方を出力します。Markdown内にはPNGがリンクされます。
 
 ### Step 5: 設定ファイルの活用
 
@@ -201,16 +214,23 @@ mmdc -i diagram.mmd -o diagram.png -p puppeteer-config.json
 ### 例1: リファクタリング成果物の図を変換
 
 ```bash
-# .refactoring-output 内の全Markdown図を画像化
-cd .refactoring-output
+# reports 内の全Markdown図を PNG と SVG で画像化
+cd reports
 for f in $(find . -name "*.md"); do
   if grep -q "mermaid" "$f"; then
     dir=$(dirname "$f")
     mkdir -p "$dir/images"
-    mmdc -i "$f" -o "$f" -O "$dir/images/" -t default -b transparent
+    # PNG を生成してMarkdownにリンク
+    mmdc -i "$f" -o "$f" -O "$dir/images/" -e png -t default -b transparent
+    # SVG も生成（同じディレクトリに出力）
+    for mmd in "$dir/images"/*.png; do
+      [ -f "$mmd" ] && mmdc -i "${mmd%.png}.mmd" -o "${mmd%.png}.svg" -t default -b transparent 2>/dev/null || true
+    done
   fi
 done
 ```
+
+**ポイント:** PNG と SVG の両方を生成し、Markdown には PNG がリンクされます。SVG は同じディレクトリに保存されるため、必要に応じて利用できます。
 
 ### 例2: ドメインストーリーを高品質PDFに
 
@@ -229,9 +249,14 @@ mmdc -i architecture.mmd -o architecture-dark.svg -t dark -b "#1a1a2e"
 変換完了後、以下を報告：
 
 - 変換したファイル数
-- 出力形式と保存先
+- 出力形式と保存先（PNG と SVG の両方）
+- Markdown内のリンク形式（PNG がリンクされる）
 - エラーがあった場合はその内容
 - 次のステップの提案（必要に応じて `/fix-mermaid` を推奨）
+
+**出力形式のデフォルト動作:**
+- `.mmd` ファイル → PNG と SVG の両方を生成
+- Markdown 内の図 → PNG をリンク、SVG も同ディレクトリに生成
 
 ## 関連スキル
 

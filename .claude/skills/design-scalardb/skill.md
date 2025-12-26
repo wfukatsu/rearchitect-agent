@@ -1,21 +1,25 @@
 ---
 name: design-scalardb
-description: ScalarDB設計エージェント - ScalarDBを使用したマイクロサービスのデータアーキテクチャ設計。分散トランザクション、スキーマ設計、ポリグロット永続化を策定。/design-scalardb [対象パス] で呼び出し。
+description: ScalarDB設計エージェント - ScalarDB Clusterを使用したマイクロサービスのデータアーキテクチャ設計。分散トランザクション、スキーマ設計、ポリグロット永続化を策定。/design-scalardb [対象パス] で呼び出し。
 user_invocable: true
 ---
 
 # ScalarDB Design Agent
 
-ScalarDBを使用したマイクロサービスのデータアーキテクチャを設計するエージェントです。
+**ScalarDB Cluster**を使用したマイクロサービスのデータアーキテクチャを設計するエージェントです。
 
 ## 概要
 
-このエージェントは、既存システムの分析結果をもとに、ScalarDBを活用した以下の設計を策定します：
+このエージェントは、既存システムの分析結果をもとに、**ScalarDB Cluster**を活用した以下の設計を策定します：
 
-1. **ScalarDBアーキテクチャ設計** - デプロイモード、ストレージバックエンド選定
+1. **ScalarDB Clusterアーキテクチャ設計** - クラスター構成、ストレージバックエンド選定
 2. **スキーマ設計** - テーブル設計、パーティションキー、クラスタリングキー
 3. **トランザクション設計** - 分散トランザクション戦略、Sagaパターン
 4. **マイグレーション計画** - 既存DBからの移行戦略
+
+> **注意**: 本設計はScalarDB Cluster（サーバーモード）を前提としています。ScalarDB Core（ライブラリモード）は対象外です。
+
+> **分析要件がある場合**: レポート、ダッシュボード、クロスDBクエリなどの分析要件がある場合は、`/design-scalardb-analytics` も併用してください。ScalarDB Analyticsを使用することで、HTAP（Hybrid Transactional/Analytical Processing）アーキテクチャを実現できます。
 
 ## 前提条件
 
@@ -23,9 +27,39 @@ ScalarDBを使用したマイクロサービスのデータアーキテクチャ
 - `01_analysis/` 配下の分析結果
 - `03_design/target_architecture.md`
 
-## ScalarDB概要
+## ScalarDB Cluster概要
 
-ScalarDBは異種データベース間で分散トランザクションを実現するHTAPエンジンです。
+ScalarDB Clusterは、異種データベース間で分散トランザクションを実現するエンタープライズ向けHTAPプラットフォームです。gRPCベースの集中型トランザクションコーディネーターとして動作し、マイクロサービスアーキテクチャに最適化されています。
+
+### ScalarDB Cluster アーキテクチャ
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Application Layer                         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│  │ Service A│ │ Service B│ │ Service C│ │ Service D│       │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘       │
+└───────┼────────────┼────────────┼────────────┼──────────────┘
+        │  gRPC/SQL  │  GraphQL   │  gRPC      │
+        ▼            ▼            ▼            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  ScalarDB Cluster                            │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │            Transaction Coordinator                   │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐            │    │
+│  │  │ Node 1   │ │ Node 2   │ │ Node 3   │ (HA構成)   │    │
+│  │  └──────────┘ └──────────┘ └──────────┘            │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+        │            │            │            │
+        ▼            ▼            ▼            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Storage Layer                             │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│  │PostgreSQL│ │ DynamoDB │ │ Cassandra│ │  MySQL   │       │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘       │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ### 主要機能
 
@@ -34,7 +68,11 @@ ScalarDBは異種データベース間で分散トランザクションを実現
 | **Consensus Commit** | 単一ストレージでのACIDトランザクション |
 | **Two-Phase Commit** | 複数ストレージ間の分散トランザクション |
 | **Multi-Storage Transaction** | 異種DB間のアトミック操作 |
-| **ScalarDB Cluster** | gRPCベースの集中型トランザクションコーディネーター |
+| **gRPC API** | 高性能なサービス間通信 |
+| **SQL Interface** | JDBC互換のSQLアクセス |
+| **GraphQL Interface** | 柔軟なクエリAPI |
+| **Vector Search** | AIアプリケーション向けベクトル検索 |
+| **High Availability** | クラスター構成による高可用性 |
 
 ### サポートストレージ
 
@@ -44,9 +82,19 @@ ScalarDBは異種データベース間で分散トランザクションを実現
 | **NoSQL** | Cassandra, DynamoDB, Cosmos DB, YugabyteDB |
 | **Object Storage** | S3, Azure Blob, GCS |
 
+### ScalarDB Cluster のメリット
+
+| 観点 | メリット |
+|-----|---------|
+| **運用** | 集中管理、統一的な監視・ログ |
+| **スケーラビリティ** | ノード追加による水平スケール |
+| **セキュリティ** | 認証・認可の一元化 |
+| **マルチテナント** | 名前空間による論理分離 |
+| **開発効率** | SQL/GraphQLによる簡易アクセス |
+
 ## 実行プロンプト
 
-あなたはScalarDBを使用したマイクロサービスデータアーキテクチャの設計専門家です。以下の手順で設計を実行してください。
+あなたはScalarDB Clusterを使用したマイクロサービスデータアーキテクチャの設計専門家です。以下の手順で設計を実行してください。
 
 ### Step 1: 現状分析
 
@@ -68,41 +116,78 @@ ScalarDBは異種データベース間で分散トランザクションを実現
 - [課題2]
 ```
 
-### Step 2: デプロイモード選定
+### Step 2: ScalarDB Cluster構成設計
 
-#### ScalarDB Core（ライブラリモード）
+ScalarDB Clusterのクラスター構成を設計します。
 
-```yaml
-# 適用条件
-- サービス数が少ない（5サービス以下）
-- トランザクション頻度が低い
-- シンプルな構成を優先
+#### 構成パターン
 
-# 構成
-Application --> ScalarDB Core --> Database
-```
-
-#### ScalarDB Cluster（サーバーモード）
+**シングルリージョン構成（推奨開始構成）**
 
 ```yaml
-# 適用条件
-- マイクロサービスアーキテクチャ
-- 高いトランザクション整合性が必要
-- 複数サービスから共通のトランザクションコーディネーターが必要
-
 # 構成
-Application --> gRPC --> ScalarDB Cluster --> Multiple Databases
+- クラスターノード数: 3（奇数推奨）
+- ロードバランサー: L4/L7
+- 認証: Kubernetes ServiceAccount / OAuth2
+
+# 適用
+- 単一リージョンでの高可用性
+- 低レイテンシー要件
 ```
 
-**選定マトリクス：**
+**マルチリージョン構成（災害対策）**
 
-| 要件 | Core | Cluster |
-|-----|------|---------|
-| シンプルな構成 | ○ | △ |
-| 高可用性 | △ | ○ |
-| マルチテナント | × | ○ |
-| GraphQL/SQL対応 | × | ○ |
-| ベクトル検索 | × | ○ |
+```yaml
+# 構成
+- プライマリリージョン: 3ノード
+- セカンダリリージョン: 3ノード（レプリカ）
+- グローバルロードバランサー
+
+# 適用
+- 地理的冗長性が必要
+- RPO/RTO要件が厳しい
+```
+
+#### クラスターサイジング
+
+| 規模 | ノード数 | CPU/ノード | メモリ/ノード | 想定TPS |
+|-----|---------|-----------|-------------|---------|
+| Small | 3 | 2 vCPU | 4 GB | ~1,000 |
+| Medium | 5 | 4 vCPU | 8 GB | ~5,000 |
+| Large | 7+ | 8 vCPU | 16 GB | ~10,000+ |
+
+#### 接続方式の選択
+
+| 方式 | ユースケース | 特徴 |
+|-----|------------|-----|
+| **gRPC API** | 高性能トランザクション | 低レイテンシー、型安全 |
+| **SQL Interface** | 既存JDBC資産活用 | 移行容易、標準SQL |
+| **GraphQL** | フロントエンド直接アクセス | 柔軟なクエリ、自動生成スキーマ |
+
+```mermaid
+graph TB
+    subgraph "Application Services"
+        A[Order Service<br/>gRPC]
+        B[Inventory Service<br/>gRPC]
+        C[Analytics<br/>SQL]
+        D[BFF<br/>GraphQL]
+    end
+
+    subgraph "ScalarDB Cluster"
+        LB[Load Balancer]
+        N1[Node 1]
+        N2[Node 2]
+        N3[Node 3]
+    end
+
+    A --> LB
+    B --> LB
+    C --> LB
+    D --> LB
+    LB --> N1
+    LB --> N2
+    LB --> N3
+```
 
 ### Step 3: ストレージバックエンド設計
 
@@ -383,11 +468,13 @@ Put put = Put.newBuilder()
 
 ### scalardb_architecture.md
 
-ScalarDBアーキテクチャ設計：
-- デプロイモード
+ScalarDB Clusterアーキテクチャ設計：
+- クラスター構成（ノード数、リージョン構成）
+- 接続方式（gRPC/SQL/GraphQL）
 - ストレージ構成
 - ネットワーク設計
-- セキュリティ設計
+- セキュリティ設計（認証・認可）
+- Kubernetes/Helmデプロイ設定
 
 ### scalardb_schema.md
 
@@ -431,8 +518,19 @@ mcp__serena__find_referencing_symbols でトランザクション境界を確認
 
 ### 設定ファイルテンプレート
 
+#### ScalarDB Cluster サーバー設定
+
 ```properties
-# scalardb.properties テンプレート
+# scalardb-cluster-node.properties テンプレート
+
+# Cluster設定
+scalar.db.cluster.node.standalone_mode.enabled=false
+scalar.db.cluster.membership.type=KUBERNETES
+
+# gRPC設定
+scalar.db.cluster.grpc.deadline_duration_millis=60000
+
+# トランザクション設定
 scalar.db.storage=multi-storage
 scalar.db.transaction_manager=consensus-commit
 
@@ -442,7 +540,50 @@ scalar.db.consensus_commit.coordinator.group_commit.enabled=true
 
 # マルチストレージ設定
 scalar.db.multi_storage.storages=postgres,dynamodb,cassandra
-scalar.db.multi_storage.namespace_mapping=...
+scalar.db.multi_storage.namespace_mapping=order_service:postgres,inventory_service:dynamodb
+
+# 認証設定
+scalar.db.cluster.auth.enabled=true
+scalar.db.cluster.auth.type=JWT
+```
+
+#### クライアント設定
+
+```properties
+# scalardb-cluster-client.properties
+
+# Cluster接続
+scalar.db.contact_points=indirect:scalardb-cluster-headless.default.svc.cluster.local
+scalar.db.contact_port=60053
+
+# 認証
+scalar.db.cluster.auth.enabled=true
+scalar.db.cluster.auth.credential.type=JWT
+```
+
+#### Kubernetes Helm Values
+
+```yaml
+# values.yaml (Helm Chart)
+scalardbCluster:
+  replicaCount: 3
+
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+  scalardbClusterNodeProperties: |
+    scalar.db.cluster.membership.type=KUBERNETES
+    scalar.db.storage=multi-storage
+    # ... 追加設定
+
+  envoy:
+    enabled: true
+    replicaCount: 3
 ```
 
 ## アンチパターン
@@ -456,8 +597,17 @@ scalar.db.multi_storage.namespace_mapping=...
 | Group Commit + カスタムTX ID | 未サポート | 自動生成ID使用 |
 | 非JDBC DBでSERIALIZABLE前提 | SNAPSHOTになる可能性 | 整合性レベル確認 |
 
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/design-scalardb-analytics` | 分析基盤設計（レポート、ダッシュボード、クロスDBクエリ） |
+| `/design-microservices` | マイクロサービスアーキテクチャ設計 |
+| `/map-domains` | ドメイン境界・コンテキスト設計 |
+
 ## 参考資料
 
 - [ScalarDB Documentation](https://scalardb.scalar-labs.com/docs/)
+- [ScalarDB Analytics](https://scalardb.scalar-labs.com/docs/latest/scalardb-analytics/)
 - [ScalarDB GitHub](https://github.com/scalar-labs/scalardb)
 - [ScalarDB Samples](https://github.com/scalar-labs/scalardb-samples)

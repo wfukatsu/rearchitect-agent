@@ -37,6 +37,18 @@ user_invocable: true
 | **Integration Domain** | 外部システム連携 | アダプタ、変換処理 |
 | **Supporting/Utility Domain** | 横断的機能の提供 | 認証、ログ、通知 |
 
+## 出力先ディレクトリ
+
+分析結果は `reports/03_design/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
+```
+reports/03_design/
+├── domain-analysis.md     # Step 4完了時
+├── context-map.md         # Step 5完了時
+└── system-mapping.md      # 全Step完了時
+```
+
 ## 実行プロンプト
 
 あなたはドメイン駆動設計の専門家です。以下の手順でドメインマッピングを実行してください。
@@ -117,6 +129,8 @@ Read domain_code_mapping.md
 
 ### Step 4: 境界づけられたコンテキストの定義
 
+**このステップ完了時に出力**: `reports/03_design/domain-analysis.md`
+
 各ドメインについて以下を定義：
 
 ```markdown
@@ -156,6 +170,10 @@ Read domain_code_mapping.md
 | **Published Language** | 共有の言語 | 標準プロトコル使用 |
 | **Separate Ways** | 独立して動作 | 連携不要 |
 | **Partnership** | 対等な協力関係 | 共同開発 |
+
+**このステップ完了時に出力**:
+- `reports/03_design/context-map.md` - コンテキストマップ（Mermaid図含む）
+- `reports/03_design/system-mapping.md` - システム全体のマッピング
 
 ## 出力フォーマット
 

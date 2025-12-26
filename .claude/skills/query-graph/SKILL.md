@@ -162,8 +162,8 @@ Read ツールで該当ファイルを表示
 分析結果から該当する仕様を検索：
 
 ```
-.refactoring-output/01_analysis/domain_code_mapping.md
-.refactoring-output/01_analysis/ubiquitous_language.md
+reports/01_analysis/domain_code_mapping.md
+reports/01_analysis/ubiquitous_language.md
 ```
 
 ### Step 5: レスポンス生成

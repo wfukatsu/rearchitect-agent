@@ -14,7 +14,7 @@ argument-hint: [出力パス]
 ## 実行コマンド
 
 ```bash
-# デフォルトの出力先（.refactoring-output/）
+# デフォルトの出力先（reports/）
 /init-output
 
 # カスタム出力先
@@ -24,7 +24,7 @@ argument-hint: [出力パス]
 ## 作成されるディレクトリ構造
 
 ```
-.refactoring-output/
+reports/
 ├── 00_summary/
 ├── 01_analysis/
 ├── 02_evaluation/
@@ -40,7 +40,7 @@ argument-hint: [出力パス]
 ```bash
 #!/bin/bash
 
-OUTPUT_DIR="${1:-.refactoring-output}"
+OUTPUT_DIR="${1:-reports}"
 
 mkdir -p "${OUTPUT_DIR}/00_summary"
 mkdir -p "${OUTPUT_DIR}/01_analysis"
@@ -106,7 +106,7 @@ echo "Output directory initialized: ${OUTPUT_DIR}"
 
 ```
 # Bashツールで実行
-Bash: mkdir -p .refactoring-output/{00_summary,01_analysis,02_evaluation,03_design,04_stories,99_appendix}
+Bash: mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,99_appendix}
 ```
 
 ## 注意事項

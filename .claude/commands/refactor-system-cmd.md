@@ -28,12 +28,12 @@ argument-hint: [対象パス] [オプション]
 - `--analyze-only` - 分析のみ実行（設計書生成なし）
 - `--skip-mmi` - MMI評価をスキップ
 - `--domain=[ドメイン名]` - 特定ドメインのみ対象
-- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `.refactoring-output/`）
+- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `reports/`）
 
 ## 出力ファイル構造
 
 ```
-.refactoring-output/
+reports/
 ├── 00_summary/
 │   └── executive_summary.md          # エグゼクティブサマリー
 ├── 01_analysis/
@@ -167,6 +167,6 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 ## 注意事項
 
 - 大規模なコードベースの場合、処理に時間がかかる場合があります
-- 中間ファイルは `.refactoring-output/` に保存されます
+- 中間ファイルは `reports/` に保存されます
 - 既存の出力ファイルは上書きされます（バックアップ推奨）
 - 設計書がない場合でもコードから推論可能ですが、精度が低下する可能性があります

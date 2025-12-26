@@ -24,6 +24,18 @@ user_invocable: true
 - `03_design/domain_analysis.md`
 - `03_design/system_mapping.md`
 
+## 出力先ディレクトリ
+
+設計結果は `reports/03_design/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
+```
+reports/03_design/
+├── target-architecture.md    # Step 2-5完了時
+├── transformation-plan.md    # Step 6完了時（移行計画）
+└── operations-feedback.md    # 最終Step完了時
+```
+
 ## 実行プロンプト
 
 あなたはマイクロサービスアーキテクチャの設計専門家です。以下の手順で設計を実行してください。
@@ -117,6 +129,9 @@ user_invocable: true
 
 ### Step 5: インフラ設計
 
+**このステップ完了時に出力**: `reports/03_design/target-architecture.md`
+- サービス設計、通信パターン、データ設計、インフラ設計をまとめて出力
+
 #### コンテナ/オーケストレーション
 
 ```mermaid
@@ -143,6 +158,22 @@ graph TD
 | Load Balancing | Envoy/Istio |
 | Circuit Breaker | Istio/Resilience4j |
 | Distributed Tracing | Jaeger/Zipkin |
+
+### Step 6: 移行計画策定
+
+移行戦略とフェーズを策定：
+- Phase 1: 準備（インフラ整備、CI/CD構築）
+- Phase 2: パイロット（1-2サービスの切り出し）
+- Phase 3: 段階的移行
+- Phase 4: 完了・最適化
+
+**このステップ完了時に出力**: `reports/03_design/transformation-plan.md`
+
+### Step 7: 運用計画策定
+
+可観測性、SLO/SLI、インシデント管理を設計。
+
+**このステップ完了時に出力**: `reports/03_design/operations-feedback.md`
 
 ## 出力フォーマット
 

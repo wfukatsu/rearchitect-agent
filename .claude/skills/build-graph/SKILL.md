@@ -62,7 +62,7 @@ user_invocable: true
 TARGET_PATH=$1  # 例: ./src
 
 # 分析結果の存在確認
-ls ${TARGET_PATH}/.refactoring-output/01_analysis/
+ls ${TARGET_PATH}/reports/01_analysis/
 ```
 
 ### Step 2: 分析結果の読み込み
@@ -70,7 +70,7 @@ ls ${TARGET_PATH}/.refactoring-output/01_analysis/
 分析結果が存在する場合、以下のファイルを読み込みます：
 
 ```
-.refactoring-output/01_analysis/
+reports/01_analysis/
 ├── ubiquitous_language.md     # ユビキタス言語
 ├── domain_code_mapping.md     # ドメイン-コード対応
 ├── actors_roles_permissions.md # アクター・ロール
@@ -136,7 +136,7 @@ Pythonスクリプトを実行してグラフを構築：
 
 ```bash
 python scripts/build_graph.py \
-  --data-dir ${TARGET_PATH}/.refactoring-output/graph/data \
+  --data-dir ${TARGET_PATH}/reports/graph/data \
   --db-path ${TARGET_PATH}/knowledge.ryugraph
 ```
 
@@ -163,7 +163,7 @@ RETURN e.name, t.name_ja LIMIT 10;
 ```
 <対象プロジェクト>/
 ├── knowledge.ryugraph/          # RyuGraphデータベース
-└── .refactoring-output/
+└── reports/
     └── graph/
         ├── data/                # 中間CSVファイル
         │   ├── terms.csv

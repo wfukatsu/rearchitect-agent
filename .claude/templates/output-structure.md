@@ -5,7 +5,7 @@
 ## ディレクトリ構造
 
 ```
-.refactoring-output/
+reports/
 ├── 00_summary/
 │   ├── executive_summary.md          # エグゼクティブサマリー
 │   └── project_metadata.json         # プロジェクトメタデータ
@@ -23,9 +23,14 @@
 │   ├── system_mapping.md             # システムマッピング
 │   ├── target_architecture.md        # ターゲットアーキテクチャ
 │   ├── transformation_plan.md        # 変換計画
+│   ├── scalardb_*.md                 # ScalarDB設計（オプション）
 │   └── operations_feedback.md        # 運用・フィードバック計画
 ├── 04_stories/
 │   └── [domain]_story.md             # ドメイン別ストーリー
+├── graph/
+│   ├── data/                         # GraphDB用CSVファイル
+│   ├── schema.md                     # グラフスキーマ
+│   └── statistics.md                 # 統計情報
 └── 99_appendix/
     ├── glossary.md                   # 用語集
     ├── references.md                 # 参考資料
