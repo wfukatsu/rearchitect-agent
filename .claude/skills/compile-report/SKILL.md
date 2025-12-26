@@ -13,16 +13,18 @@ user_invocable: true
 このエージェントは以下の機能を提供します：
 
 1. **Markdownの統合** - 複数のMarkdownファイルを1つのHTMLに統合
-2. **Mermaid図のレンダリング** - Mermaid図をSVGとしてインライン埋め込み
-3. **目次生成** - 自動的に目次を生成
-4. **スタイリング** - プロフェッショナルなスタイルを適用
-5. **PDF出力** - 印刷用のPDF出力（オプション）
+2. **Mermaid図のレンダリング** - Mermaid図をインライン埋め込み
+3. **GraphDB可視化** - D3.jsインタラクティブグラフを埋め込み
+4. **目次生成** - 自動的にサイドバー目次を生成
+5. **スタイリング** - プロフェッショナルなスタイルを適用（ライト/ダークテーマ）
+6. **レスポンシブ** - モバイル/印刷対応
 
 ## 前提条件
 
 - Python 3.9+
 - markdown パッケージ
-- （オプション）mermaid-cli（Mermaid図のレンダリング用）
+- pymdown-extensions パッケージ
+- （オプション）mermaid-cli（Mermaid図の検証用）
 
 ## 実行プロンプト
 
@@ -36,16 +38,43 @@ source .venv/bin/activate
 pip install markdown pymdown-extensions
 ```
 
-### Step 2: レポートコンパイルスクリプトの実行
+### Step 2: Mermaid図の検証（推奨）
+
+レポート生成前にMermaid図の構文エラーをチェックします。
+
+```bash
+# mmdc がインストールされている場合
+/fix-mermaid ./reports
+```
+
+**注意: Mermaidの予約語問題**
+
+以下の単語はMermaidのsequenceDiagramで予約語として解釈されるため、participant名として使用しないでください：
+
+| 予約語 | 代替案 |
+|-------|-------|
+| `BOX` | `BoxAPI`, `BoxPlatform`, `BoxWebhook` |
+| `box` | 同上 |
+
+**例:**
+```mermaid
+# NG
+participant BOX as BOX Platform
+
+# OK
+participant BoxPlatform as BOX Platform
+```
+
+### Step 3: レポートコンパイルスクリプトの実行
 
 ```bash
 source .venv/bin/activate && python scripts/compile_report.py \
   --input-dir ./reports \
   --output ./reports/00_summary/full-report.html \
-  --title "Scalar Auditor for BOX - リファクタリング分析レポート"
+  --title "リファクタリング分析レポート"
 ```
 
-### Step 3: 出力形式
+### Step 4: 出力形式
 
 #### 統合HTMLレポート
 
@@ -54,40 +83,75 @@ source .venv/bin/activate && python scripts/compile_report.py \
 <html>
 <head>
     <title>リファクタリング分析レポート</title>
+    <script src="mermaid.min.js"></script>
+    <script src="d3.v7.min.js"></script>
     <style>/* プロフェッショナルスタイル */</style>
 </head>
 <body>
-    <nav><!-- 目次 --></nav>
-    <main>
+    <nav class="sidebar"><!-- サイドバー目次 --></nav>
+    <main class="main-content">
         <section id="summary"><!-- エグゼクティブサマリー --></section>
         <section id="analysis"><!-- 分析結果 --></section>
         <section id="evaluation"><!-- MMI評価 --></section>
         <section id="design"><!-- 設計書 --></section>
         <section id="stories"><!-- ドメインストーリー --></section>
+        <section id="graph">
+            <!-- ナレッジグラフ -->
+            <!-- D3.jsインタラクティブビューア -->
+        </section>
     </main>
 </body>
 </html>
 ```
 
-### Step 4: コマンドオプション
+### Step 5: コマンドオプション
 
 | オプション | 説明 | デフォルト |
 |-----------|------|----------|
 | `--input-dir` | 入力ディレクトリ | ./reports |
-| `--output` | 出力HTMLファイル | ./reports/full-report.html |
-| `--title` | レポートタイトル | Analysis Report |
+| `--output` | 出力HTMLファイル | ./reports/00_summary/full-report.html |
+| `--title` | レポートタイトル | リファクタリング分析レポート |
 | `--theme` | テーマ (light/dark) | light |
-| `--toc` | 目次を生成 | true |
-| `--mermaid` | Mermaid図をレンダリング | true |
-| `--pdf` | PDF出力も生成 | false |
+
+## 機能詳細
+
+### GraphDB可視化の統合
+
+`reports/graph/visualizations/graph.html`が存在する場合、自動的にインタラクティブグラフをレポートに埋め込みます。
+
+**機能:**
+- ノードのドラッグ移動
+- マウスホイールでズーム
+- ノードホバーで詳細表示（名前、タイプ、グループ）
+- ノード検索
+- 凡例表示（Domain/Entity/Term）
+
+**前提:**
+- `/build-graph` でGraphDBが構築済み
+- `/visualize-graph` で可視化ファイルが生成済み
+
+### Mermaid図のレンダリング
+
+Markdownファイル内の```mermaid```ブロックを自動的に`<div class="mermaid">`に変換し、Mermaid.jsでレンダリングします。
+
+**対応図:**
+- flowchart / graph
+- sequenceDiagram
+- classDiagram
+- stateDiagram
+- erDiagram
+- gantt
+- xychart-beta
+
+**非対応:**
+- radarChart（xychart-betaで代替）
 
 ## 出力ファイル
 
 ```
 reports/
 └── 00_summary/
-    ├── full-report.html   # 統合HTMLレポート
-    └── full-report.pdf    # PDF版（オプション）
+    └── full-report.html   # 統合HTMLレポート (約450KB)
 ```
 
 ## 使用例
@@ -104,13 +168,33 @@ reports/
 /compile-report --title "My Project Report" --theme dark
 ```
 
-### 例3: PDF出力も生成
+### 例3: ブラウザで開く
 
 ```bash
-/compile-report --pdf
+open reports/00_summary/full-report.html
 ```
+
+## トラブルシューティング
+
+### Mermaid図が表示されない
+
+1. ブラウザのコンソールでエラーを確認
+2. `/fix-mermaid`で構文エラーをチェック
+3. 予約語（BOX等）を使用していないか確認
+
+### GraphDBビューアが表示されない
+
+1. `reports/graph/visualizations/graph.html`の存在を確認
+2. `/visualize-graph`を実行してファイルを生成
+
+### 日本語が文字化けする
+
+1. HTMLファイルがUTF-8で保存されているか確認
+2. ブラウザのエンコーディング設定を確認
 
 ## 関連スキル
 
 - `/render-mermaid` - Mermaid図を画像に変換
+- `/fix-mermaid` - Mermaid図のシンタックスエラーを修正
 - `/visualize-graph` - GraphDBを可視化
+- `/build-graph` - GraphDBを構築

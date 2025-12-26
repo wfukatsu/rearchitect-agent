@@ -27,6 +27,152 @@ except ImportError:
     sys.exit(1)
 
 
+def extract_graph_data(graph_html_path: Path) -> dict:
+    """graph.htmlからD3.jsデータを抽出"""
+    if not graph_html_path.exists():
+        return None
+
+    with open(graph_html_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # JavaScriptのdataオブジェクトを抽出
+    import re
+    match = re.search(r'const data = ({.*?});', content, re.DOTALL)
+    if match:
+        return match.group(1)
+    return None
+
+
+def generate_graph_section(graph_data: str) -> str:
+    """インタラクティブグラフセクションを生成"""
+    if not graph_data:
+        return ""
+
+    return f'''
+<article id="graph-interactive">
+<h2>インタラクティブグラフビューア</h2>
+<p>ノードをドラッグして移動、マウスホイールでズーム、ノードにホバーで詳細表示できます。</p>
+<div id="graph-container" style="width: 100%; height: 600px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #1a1a2e;">
+    <div id="graph-controls" style="position: absolute; padding: 10px; background: rgba(255,255,255,0.9); border-radius: 5px; margin: 10px; z-index: 100;">
+        <input type="text" id="graph-search" placeholder="ノードを検索..." style="width: 180px; padding: 5px;">
+        <div id="graph-stats" style="font-size: 12px; color: #666; margin-top: 5px;"></div>
+    </div>
+    <svg id="graph-svg"></svg>
+</div>
+<div id="graph-legend" style="margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap;">
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #e74c3c; border-radius: 50%; margin-right: 5px;"></span>Domain</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #3498db; border-radius: 50%; margin-right: 5px;"></span>Entity</span>
+    <span><span style="display: inline-block; width: 12px; height: 12px; background: #2ecc71; border-radius: 50%; margin-right: 5px;"></span>Term</span>
+</div>
+</article>
+<script>
+(function() {{
+    const data = {graph_data};
+
+    const container = document.getElementById('graph-container');
+    const width = container.clientWidth;
+    const height = 600;
+
+    const svg = d3.select("#graph-svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    const g = svg.append("g");
+
+    // Zoom
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => g.attr("transform", event.transform));
+    svg.call(zoom);
+
+    // Colors
+    const color = d3.scaleOrdinal()
+        .domain(["Domain", "Entity", "Term"])
+        .range(["#e74c3c", "#3498db", "#2ecc71"]);
+
+    // Simulation
+    const simulation = d3.forceSimulation(data.nodes)
+        .force("link", d3.forceLink(data.links).id(d => d.id).distance(80))
+        .force("charge", d3.forceManyBody().strength(-200))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(25));
+
+    // Links
+    const link = g.append("g")
+        .selectAll("line")
+        .data(data.links)
+        .join("line")
+        .attr("stroke", "#666")
+        .attr("stroke-opacity", 0.6)
+        .attr("stroke-width", 1);
+
+    // Nodes
+    const node = g.append("g")
+        .selectAll("g")
+        .data(data.nodes)
+        .join("g")
+        .attr("cursor", "pointer")
+        .call(d3.drag()
+            .on("start", (event, d) => {{
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x; d.fy = d.y;
+            }})
+            .on("drag", (event, d) => {{ d.fx = event.x; d.fy = event.y; }})
+            .on("end", (event, d) => {{
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null; d.fy = null;
+            }}));
+
+    node.append("circle")
+        .attr("r", d => d.type === "Domain" ? 15 : 8)
+        .attr("fill", d => color(d.type));
+
+    node.append("text")
+        .text(d => d.name.length > 15 ? d.name.substring(0, 15) + "..." : d.name)
+        .attr("x", 12)
+        .attr("y", 4)
+        .attr("font-size", "10px")
+        .attr("fill", "white");
+
+    // Tooltip
+    const tooltip = d3.select("body").append("div")
+        .style("position", "absolute")
+        .style("background", "rgba(0,0,0,0.8)")
+        .style("color", "white")
+        .style("padding", "10px")
+        .style("border-radius", "5px")
+        .style("font-size", "12px")
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+
+    node.on("mouseover", (event, d) => {{
+        tooltip.style("opacity", 1)
+            .html(`<strong>${{d.name}}</strong><br/>Type: ${{d.type}}<br/>Group: ${{d.group || 'N/A'}}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
+    }}).on("mouseout", () => {{ tooltip.style("opacity", 0); }});
+
+    simulation.on("tick", () => {{
+        link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+        node.attr("transform", d => `translate(${{d.x}},${{d.y}})`);
+    }});
+
+    // Stats
+    document.getElementById("graph-stats").innerHTML =
+        `Nodes: ${{data.nodes.length}} | Links: ${{data.links.length}}`;
+
+    // Search
+    document.getElementById("graph-search").addEventListener("input", (e) => {{
+        const query = e.target.value.toLowerCase();
+        node.style("opacity", d =>
+            query === "" || d.name.toLowerCase().includes(query) ? 1 : 0.2);
+    }});
+}})();
+</script>
+'''
+
+
 # セクション定義
 SECTIONS = [
     {
@@ -106,6 +252,7 @@ def get_html_template(title: str, theme: str = "light") -> tuple:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         {dark_styles}
 
@@ -454,6 +601,16 @@ def compile_report(input_dir: str, output: str, title: str, theme: str = "light"
             content_html.append(f'<article id="{section_id}-{file_id}">')
             content_html.append(html_content)
             content_html.append('</article>')
+
+        # グラフセクションの場合、インタラクティブビューアを追加
+        if section_id == "graph":
+            graph_html_path = section_dir / "visualizations" / "graph.html"
+            graph_data = extract_graph_data(graph_html_path)
+            if graph_data:
+                print(f"  Adding: Interactive graph viewer")
+                # 目次にインタラクティブグラフを追加
+                toc_html.append('<li><a href="#graph-interactive">Interactive Viewer</a></li>')
+                content_html.append(generate_graph_section(graph_data))
 
         content_html.append('</section>')
 
