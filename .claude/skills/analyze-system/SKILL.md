@@ -17,18 +17,49 @@ user_invocable: true
 3. **ドメイン-コード対応表** - 設計書の概念とコードの紐付け
 4. **現行システム概要** - 技術スタック、アーキテクチャの概要
 
+## 出力先ディレクトリ
+
+解析結果は `reports/01_analysis/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください（最後にまとめて出力しない）。
+
+```
+reports/
+├── 00_summary/
+│   └── project_metadata.json    # Step 1完了時
+└── 01_analysis/
+    ├── system-overview.md       # Step 3完了時
+    ├── ubiquitous-language.md   # Step 4完了時
+    ├── actors-roles-permissions.md  # Step 5完了時
+    └── domain-code-mapping.md   # Step 6完了時
+```
+
 ## 実行プロンプト
 
 あなたは既存システムを分析する専門家エージェントです。以下の手順で分析を実行してください。
 
-### Step 1: 入力情報の収集
+### Step 1: 入力情報の収集と初期化
 
-まず、対象ディレクトリの構造を把握します。
+まず、出力ディレクトリを作成し、対象ディレクトリの構造を把握します。
+
+```bash
+# 出力ディレクトリの作成
+mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,graph/data,99_appendix}
+```
 
 ```
 # Serenaツールを使用
 mcp__serena__list_dir で対象ディレクトリをスキャン
 mcp__serena__find_file で設計書ファイルを特定（*.md, *.docx, *.xlsx）
+```
+
+**このステップ完了時に出力**: `reports/00_summary/project_metadata.json`
+
+```json
+{
+    "project": { "name": "", "version": "", "created_at": "", "updated_at": "" },
+    "source": { "path": "", "type": "", "languages": [], "frameworks": [] },
+    "analysis": { "status": "in_progress", "modules_count": 0 }
+}
 ```
 
 ### Step 2: 設計書の解析
@@ -53,6 +84,9 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 - **クラス/インターフェース** - ドメインモデルの候補
 - **外部依存** - 使用ライブラリ、フレームワーク
 
+**このステップ完了時に出力**: `reports/01_analysis/system-overview.md`
+- 技術スタック、アーキテクチャ概要、モジュール構成を記載
+
 ### Step 4: ユビキタス言語の抽出
 
 以下のソースからビジネス用語を収集：
@@ -68,6 +102,8 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
    - 定数、Enum値
    - コメント内のドメイン用語
 
+**このステップ完了時に出力**: `reports/01_analysis/ubiquitous-language.md`
+
 ### Step 5: アクター・ロール・権限の整理
 
 | カテゴリ | 抽出元 |
@@ -75,6 +111,8 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 | アクター | ユースケース図、認証コード、ロール定義 |
 | ロール | 権限設定、ミドルウェア、デコレータ |
 | 権限 | 認可ロジック、ポリシー定義 |
+
+**このステップ完了時に出力**: `reports/01_analysis/actors-roles-permissions.md`
 
 ### Step 6: ドメイン-コード対応表の作成
 
@@ -86,6 +124,14 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 | 注文 | Order class | src/domain/order.ts | 集約ルート |
 | 顧客 | Customer class | src/domain/customer.ts | エンティティ |
 ```
+
+**このステップ完了時に出力**: `reports/01_analysis/domain-code-mapping.md`
+
+### Step 7: メタデータの最終更新
+
+すべての解析完了後、`reports/00_summary/project_metadata.json` を更新：
+- `analysis.status` を `"completed"` に変更
+- 各カウントを実際の値で更新
 
 ## 出力フォーマット
 

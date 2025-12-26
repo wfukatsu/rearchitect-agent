@@ -15,7 +15,8 @@ argument-hint: [対象パス] [オプション]
 2. **MMI評価** - Modularity Maturity Indexによる成熟度評価
 3. **ドメインマッピング** - ビジネスドメインとコードの紐付け
 4. **マイクロサービス設計** - ターゲットアーキテクチャの策定
-5. **ドメインストーリー** - 各ドメインのユースケース整理
+5. **ScalarDB設計** - 分散トランザクション・データアーキテクチャの策定
+6. **ドメインストーリー** - 各ドメインのユースケース整理
 
 ## 使用方法
 
@@ -27,12 +28,12 @@ argument-hint: [対象パス] [オプション]
 - `--analyze-only` - 分析のみ実行（設計書生成なし）
 - `--skip-mmi` - MMI評価をスキップ
 - `--domain=[ドメイン名]` - 特定ドメインのみ対象
-- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `.refactoring-output/`）
+- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `reports/`）
 
 ## 出力ファイル構造
 
 ```
-.refactoring-output/
+reports/
 ├── 00_summary/
 │   └── executive_summary.md          # エグゼクティブサマリー
 ├── 01_analysis/
@@ -49,7 +50,11 @@ argument-hint: [対象パス] [オプション]
 │   ├── system_mapping.md             # システムマッピング
 │   ├── target_architecture.md        # ターゲットアーキテクチャ
 │   ├── transformation_plan.md        # 変換計画
-│   └── operations_feedback.md        # 運用・フィードバック計画
+│   ├── operations_feedback.md        # 運用・フィードバック計画
+│   ├── scalardb_architecture.md      # ScalarDBアーキテクチャ設計
+│   ├── scalardb_schema.md            # ScalarDBスキーマ設計
+│   ├── scalardb_transaction.md       # ScalarDBトランザクション設計
+│   └── scalardb_migration.md         # ScalarDBマイグレーション計画
 └── 04_stories/
     └── [domain]_story.md             # ドメイン別ストーリー
 ```
@@ -67,9 +72,10 @@ graph TD
     F --> G[MMI評価エージェント]
     G --> H[ドメインマッピングエージェント]
     H --> I[マイクロサービス設計エージェント]
-    I --> J[ドメインストーリーエージェント]
-    J --> K[最終レポート生成]
-    K --> L[終了]
+    I --> J[ScalarDB設計エージェント]
+    J --> K[ドメインストーリーエージェント]
+    K --> L[最終レポート生成]
+    L --> M[終了]
 ```
 
 ## 処理詳細
@@ -111,7 +117,16 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 - データストレージ設計
 - 移行計画
 
-### Phase 6: ドメインストーリー
+### Phase 6: ScalarDB設計
+
+Taskツールで `scalardb-architect` エージェントを起動し、以下を策定：
+- **デプロイモード選定** - ScalarDB Core（ライブラリ）vs Cluster（サーバー）
+- **ストレージバックエンド設計** - 各サービスに適したDB選定（PostgreSQL, DynamoDB, Cassandra等）
+- **スキーマ設計** - Namespace、テーブル定義、パーティションキー、クラスタリングキー
+- **トランザクション設計** - Consensus Commit、Two-Phase Commit、Sagaパターン
+- **マイグレーション計画** - 既存DBからの移行戦略
+
+### Phase 7: ドメインストーリー
 
 Taskツールで `domain-storyteller` エージェントを起動し、各ドメインについて：
 - アクター特定
@@ -126,6 +141,7 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 - `/evaluate-mmi` - MMI評価
 - `/map-domains` - ドメインマッピング
 - `/design-microservices` - マイクロサービス設計
+- `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
 - `/create-domain-story` - ドメインストーリー作成
 
 ## 使用例
@@ -151,6 +167,6 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 ## 注意事項
 
 - 大規模なコードベースの場合、処理に時間がかかる場合があります
-- 中間ファイルは `.refactoring-output/` に保存されます
+- 中間ファイルは `reports/` に保存されます
 - 既存の出力ファイルは上書きされます（バックアップ推奨）
 - 設計書がない場合でもコードから推論可能ですが、精度が低下する可能性があります

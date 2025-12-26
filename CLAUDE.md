@@ -20,12 +20,23 @@
 | MMI Evaluator | `/evaluate-mmi` | Modularity Maturity Index評価 |
 | Domain Mapper | `/map-domains` | ドメインマッピング・コンテキスト設計 |
 | Microservice Architect | `/design-microservices` | マイクロサービス設計・移行計画 |
+| ScalarDB Architect | `/design-scalardb` | ScalarDB Clusterを使用したデータアーキテクチャ設計 |
+| ScalarDB Analytics Architect | `/design-scalardb-analytics` | ScalarDB Analyticsを使用した分析基盤設計 |
 | Domain Storyteller | `/create-domain-story` | ドメインストーリーテリング |
+
+### ナレッジグラフスキル
+
+| スキル | コマンド | 説明 |
+|-------|--------|------|
+| Graph Builder | `/build-graph` | RyuGraphデータベースを構築 |
+| Graph Explorer | `/query-graph` | ユビキタス言語ベースでグラフを探索 |
+| Graph Visualizer | `/visualize-graph` | グラフをMermaid/DOT/HTML形式で可視化 |
 
 ### ユーティリティスキル
 
 | スキル | コマンド | 説明 |
 |-------|--------|------|
+| Report Compiler | `/compile-report` | Markdownレポートを統合HTMLに変換 |
 | Mermaid Renderer | `/render-mermaid` | Mermaid図をPNG/SVG/PDF画像に変換 |
 | Mermaid Fixer | `/fix-mermaid` | Mermaid図のシンタックスエラーを修正 |
 
@@ -55,20 +66,57 @@
 
 # Mermaid図のエラーを修正
 /fix-mermaid ./.refactoring-output/
+
+# ナレッジグラフを構築
+/build-graph ./path/to/source
+
+# グラフを探索（自然言語）
+/query-graph 「注文」に関連するクラスを教えて
+
+# グラフを探索（Cypher）
+/query-graph MATCH (e:Entity)-[:HAS_TERM]->(t:UbiquitousTerm) RETURN e, t LIMIT 10
+
+# グラフを可視化
+/visualize-graph ./reports/graph/visualizations
+
+# 特定ドメインのみ可視化
+/visualize-graph --domain Audit
+
+# ScalarDB Clusterを使用したデータアーキテクチャ設計
+/design-scalardb ./path/to/source
+
+# ScalarDB Analyticsを使用した分析基盤設計
+/design-scalardb-analytics ./path/to/source
+
+# レポートをHTMLにコンパイル
+/compile-report
+
+# ダークテーマでPDF出力も生成
+/compile-report --theme dark --pdf
 ```
 
 ## 出力先
 
-すべての出力は `.refactoring-output/` ディレクトリに保存されます。
+すべての出力は `reports/` ディレクトリに保存されます。
 
 ```
-.refactoring-output/
-├── 00_summary/         # エグゼクティブサマリー
-├── 01_analysis/        # システム分析結果
-├── 02_evaluation/      # MMI評価結果
-├── 03_design/          # マイクロサービス設計
-├── 04_stories/         # ドメインストーリー
-└── 99_appendix/        # 付録
+reports/
+├── 00_summary/           # エグゼクティブサマリー
+│   ├── executive-summary.md
+│   └── full-report.html  # 統合HTMLレポート
+├── 01_analysis/          # システム分析結果
+├── 02_evaluation/        # MMI評価結果
+├── 03_design/            # マイクロサービス設計
+├── 04_stories/           # ドメインストーリー
+├── graph/                # GraphDB用データ
+│   ├── data/             # CSVファイル
+│   ├── visualizations/   # 可視化ファイル
+│   ├── schema.md         # グラフスキーマ
+│   └── statistics.md     # 統計情報
+└── 99_appendix/          # 付録
+
+<プロジェクトルート>/
+└── knowledge.ryugraph/   # RyuGraphデータベース
 ```
 
 ## ツール優先順位
@@ -127,8 +175,32 @@ graph TD
     B --> C[/evaluate-mmi]
     C --> D[/map-domains]
     D --> E[/design-microservices]
-    E --> F[/create-domain-story]
-    F --> G[Executive Summary生成]
+    E --> F[/design-scalardb]
+    F --> F2{分析要件あり?}
+    F2 -->|Yes| FA[/design-scalardb-analytics]
+    F2 -->|No| G[/create-domain-story]
+    FA --> G
+    G --> H[Executive Summary生成]
+    H --> K[/compile-report]
+    K --> L[統合HTMLレポート]
+    B --> I[/build-graph]
+    I --> J[/query-graph]
+    I --> M[/visualize-graph]
+```
+
+### GraphDBワークフロー
+
+```mermaid
+graph LR
+    A[/analyze-system] --> B[分析結果MD]
+    B --> C[parse_analysis.py]
+    C --> D[CSVファイル]
+    D --> E[build_graph.py]
+    E --> F[knowledge.ryugraph]
+    F --> G[/query-graph]
+    G --> H[関連コード・仕様]
+    F --> I[/visualize-graph]
+    I --> J[Mermaid/DOT/HTML]
 ```
 
 ## エラーハンドリング
@@ -157,8 +229,49 @@ graph TD
 /refactor-system ./src --analyze-only
 ```
 
+## RyuGraph セットアップ
+
+GraphDBスキルを使用するには、RyuGraphのインストールが必要です：
+
+```bash
+pip install ryugraph pandas
+```
+
+### 手動でのグラフ構築
+
+```bash
+# 1. 分析結果からCSVを生成
+python scripts/parse_analysis.py \
+  --input-dir ./reports/01_analysis \
+  --output-dir ./reports/graph/data
+
+# 2. GraphDBを構築
+python scripts/build_graph.py \
+  --data-dir ./reports/graph/data \
+  --db-path ./knowledge.ryugraph
+
+# 3. クエリを実行
+python scripts/query_graph.py \
+  --db-path ./knowledge.ryugraph \
+  --interactive
+
+# 4. グラフを可視化
+python scripts/visualize_graph.py \
+  --data-dir ./reports/graph/data \
+  --output-dir ./reports/graph/visualizations
+
+# 5. レポートをHTMLにコンパイル
+python scripts/compile_report.py \
+  --input-dir ./reports \
+  --output ./reports/00_summary/full-report.html \
+  --title "リファクタリング分析レポート"
+```
+
 ## 参考資料
 
+- [ScalarDB Documentation](https://scalardb.scalar-labs.com/docs/)
+- [ScalarDB Analytics](https://scalardb.scalar-labs.com/docs/latest/scalardb-analytics/)
+- [RyuGraph Documentation](https://ryugraph.io/docs/)
 - [Modularity Maturity Index](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/modularity-maturity-index.md)
 - [Domain-Driven Transformation](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-driven-transformation.md)
 - [Domain Storytelling](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-storytelling.md)

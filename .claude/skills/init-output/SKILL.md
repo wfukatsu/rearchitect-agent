@@ -15,7 +15,7 @@ user_invocable: true
 ## 実行コマンド
 
 ```bash
-# デフォルトの出力先（.refactoring-output/）
+# デフォルトの出力先（reports/）
 /init-output
 
 # カスタム出力先
@@ -25,12 +25,14 @@ user_invocable: true
 ## 作成されるディレクトリ構造
 
 ```
-.refactoring-output/
+reports/
 ├── 00_summary/
 ├── 01_analysis/
 ├── 02_evaluation/
 ├── 03_design/
 ├── 04_stories/
+├── graph/
+│   └── data/
 └── 99_appendix/
 ```
 
@@ -41,13 +43,14 @@ user_invocable: true
 ```bash
 #!/bin/bash
 
-OUTPUT_DIR="${1:-.refactoring-output}"
+OUTPUT_DIR="${1:-reports}"
 
 mkdir -p "${OUTPUT_DIR}/00_summary"
 mkdir -p "${OUTPUT_DIR}/01_analysis"
 mkdir -p "${OUTPUT_DIR}/02_evaluation"
 mkdir -p "${OUTPUT_DIR}/03_design"
 mkdir -p "${OUTPUT_DIR}/04_stories"
+mkdir -p "${OUTPUT_DIR}/graph/data"
 mkdir -p "${OUTPUT_DIR}/99_appendix"
 
 # メタデータファイルの初期化
@@ -107,7 +110,7 @@ echo "Output directory initialized: ${OUTPUT_DIR}"
 
 ```
 # Bashツールで実行
-Bash: mkdir -p .refactoring-output/{00_summary,01_analysis,02_evaluation,03_design,04_stories,99_appendix}
+Bash: mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,graph/data,99_appendix}
 ```
 
 ## 注意事項

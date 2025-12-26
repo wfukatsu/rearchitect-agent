@@ -36,6 +36,18 @@ MMI = (0.3 × Cohesion + 0.3 × Coupling + 0.2 × Independence + 0.2 × Reusabil
 | 40-60 | 低中成熟 | 大幅なリファクタリングが必要 |
 | 0-40 | 未成熟 | モノリス分解の計画策定から |
 
+## 出力先ディレクトリ
+
+評価結果は `reports/02_evaluation/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
+```
+reports/02_evaluation/
+├── mmi-overview.md        # Step 3完了時
+├── mmi-by-module.md       # Step 2完了時（各モジュール評価後）
+└── mmi-improvement-plan.md # Step 4完了時
+```
+
 ## 実行プロンプト
 
 あなたはソフトウェアアーキテクチャの評価専門家です。以下の手順でMMI評価を実行してください。
@@ -146,6 +158,10 @@ function calculateMMI(cohesion, coupling, independence, reusability) {
 }
 ```
 
+**このステップ完了時に出力**:
+- `reports/02_evaluation/mmi-by-module.md` - 各モジュールの詳細評価
+- `reports/02_evaluation/mmi-overview.md` - 評価概要サマリー
+
 ### Step 4: 改善計画策定
 
 MMIスコアに基づき、改善施策を優先度付けして提案：
@@ -154,6 +170,8 @@ MMIスコアに基づき、改善施策を優先度付けして提案：
 2. **短期改善（1-3ヶ月）** - 計画的なリファクタリング
 3. **中期改善（3-6ヶ月）** - アーキテクチャ変更
 4. **長期改善（6ヶ月以上）** - 大規模再構築
+
+**このステップ完了時に出力**: `reports/02_evaluation/mmi-improvement-plan.md`
 
 ## 出力フォーマット
 
