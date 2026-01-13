@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScalarDB Cluster サイジング見積もり - {{TITLE}}</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 { font-size: 24px; margin-bottom: 8px; }
+        .header .subtitle { opacity: 0.9; font-size: 14px; }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--bg);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .card-body { padding: 20px; }
+
+        /* Summary Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-item {
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-item .label {
+            font-size: 12px;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .summary-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .summary-item .value.large {
+            font-size: 28px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg);
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover { background: rgba(37, 99, 235, 0.02); }
+
+        .text-right { text-align: right; }
+        .font-mono { font-family: 'Monaco', 'Menlo', monospace; }
+
+        /* Cost colors */
+        .cost { font-weight: 600; }
+        .cost-usd { color: var(--primary); }
+        .cost-jpy { color: var(--secondary); }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-blue { background: #dbeafe; color: var(--primary); }
+        .badge-green { background: #dcfce7; color: var(--success); }
+        .badge-yellow { background: #fef3c7; color: var(--warning); }
+        .badge-red { background: #fee2e2; color: var(--danger); }
+
+        /* Architecture Diagram */
+        .diagram {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .section-title:first-child { margin-top: 0; }
+
+        /* Notes */
+        .note {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .note-info {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        /* Two columns */
+        .two-columns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: white; font-size: 12px; }
+            .container { max-width: 100%; padding: 16px; }
+            .card { box-shadow: none; border: 1px solid var(--border); break-inside: avoid; }
+            .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .diagram { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .header-meta { flex-direction: column; gap: 8px; }
+            .two-columns { grid-template-columns: 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>ScalarDB Cluster サイジング見積もり</h1>
+            <p class="subtitle">{{SUBTITLE}}</p>
+            <div class="header-meta">
+                <span>📅 作成日: {{DATE}}</span>
+                <span>🏢 環境: {{ENVIRONMENT}}</span>
+                <span>☁️ クラウド: {{CLOUD}}</span>
+                <span>💱 為替: 1 USD = {{EXCHANGE_RATE}} JPY</span>
+            </div>
+        </header>
+
+        <!-- Executive Summary -->
+        <div class="card">
+            <div class="card-header">📊 エグゼクティブサマリー</div>
+            <div class="card-body">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="label">月額費用 (USD)</div>
+                        <div class="value large">${{TOTAL_COST_USD}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">月額費用 (JPY)</div>
+                        <div class="value large">¥{{TOTAL_COST_JPY}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">ScalarDB Pod数</div>
+                        <div class="value">{{SCALARDB_PODS}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">K8s Node数</div>
+                        <div class="value">{{K8S_NODES}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">想定TPS</div>
+                        <div class="value">{{TARGET_TPS}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">可用性目標</div>
+                        <div class="value">{{AVAILABILITY}}</div>
+                    </div>
+                </div>
+                <div class="note">
+                    <strong>⚠️ 注意:</strong> ScalarDBライセンス費用は上記に含まれていません。
+                    ライセンスについてはScalar社営業担当にお問い合わせください。
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="card">
+            <div class="card-header">🏗️ アーキテクチャ構成</div>
+            <div class="card-body">
+                <div class="diagram">{{ARCHITECTURE_DIAGRAM}}</div>
+            </div>
+        </div>
+
+        <!-- Component Details -->
+        <div class="card">
+            <div class="card-header">⚙️ コンポーネント別構成</div>
+            <div class="card-body">
+                <h3 class="section-title">Kubernetes クラスター</h3>
+                {{K8S_TABLE}}
+
+                <h3 class="section-title">ScalarDB Cluster</h3>
+                {{SCALARDB_TABLE}}
+
+                <h3 class="section-title">バックエンドデータベース</h3>
+                {{DATABASE_TABLE}}
+
+                <h3 class="section-title">その他コンポーネント</h3>
+                {{OTHER_COMPONENTS_TABLE}}
+            </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="card">
+            <div class="card-header">💰 費用内訳</div>
+            <div class="card-body">
+                {{COST_TABLE}}
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card">
+            <div class="card-header">💡 推奨事項</div>
+            <div class="card-body">
+                {{RECOMMENDATIONS}}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Generated by ScalarDB Sizing Estimator</p>
+            <p>このレポートは見積もり目的であり、実際の費用は変動する可能性があります</p>
+        </footer>
+    </div>
+</body>
+</html>

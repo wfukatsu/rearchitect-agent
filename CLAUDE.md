@@ -1,283 +1,177 @@
-# Refactoring Agent - Claude Code プロジェクト設定
+# CLAUDE.md
 
-## プロジェクト概要
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-このプロジェクトは、既存システムを分析し、Modularity Maturity Index (MMI) に基づいて評価を行い、マイクロサービスアーキテクチャへのリファクタリング計画を策定するためのClaude Codeエージェント群です。
+## Project Overview
 
-## 利用可能なスキル
+A Claude Code agent system for analyzing legacy systems and planning microservices refactoring. The main orchestrator (`/refactor-system`) coordinates specialized sub-agents through a defined pipeline, producing comprehensive analysis reports and a knowledge graph database.
 
-### メインオーケストレーター
-
-| スキル | コマンド | 説明 |
-|-------|--------|------|
-| System Refactoring | `/refactor-system` | 統合リファクタリングエージェント |
-
-### サブスキル
-
-| スキル | コマンド | 説明 |
-|-------|--------|------|
-| System Analyzer | `/analyze-system` | システム分析・ユビキタス言語抽出 |
-| MMI Evaluator | `/evaluate-mmi` | Modularity Maturity Index評価 |
-| Domain Mapper | `/map-domains` | ドメインマッピング・コンテキスト設計 |
-| Microservice Architect | `/design-microservices` | マイクロサービス設計・移行計画 |
-| ScalarDB Architect | `/design-scalardb` | ScalarDB Clusterを使用したデータアーキテクチャ設計 |
-| ScalarDB Analytics Architect | `/design-scalardb-analytics` | ScalarDB Analyticsを使用した分析基盤設計 |
-| Domain Storyteller | `/create-domain-story` | ドメインストーリーテリング |
-
-### ナレッジグラフスキル
-
-| スキル | コマンド | 説明 |
-|-------|--------|------|
-| Graph Builder | `/build-graph` | RyuGraphデータベースを構築 |
-| Graph Explorer | `/query-graph` | ユビキタス言語ベースでグラフを探索 |
-| Graph Visualizer | `/visualize-graph` | グラフをMermaid/DOT/HTML形式で可視化 |
-
-### ユーティリティスキル
-
-| スキル | コマンド | 説明 |
-|-------|--------|------|
-| Report Compiler | `/compile-report` | Markdownレポートを統合HTMLに変換 |
-| Mermaid Renderer | `/render-mermaid` | Mermaid図をPNG/SVG/PDF画像に変換 |
-| Mermaid Fixer | `/fix-mermaid` | Mermaid図のシンタックスエラーを修正 |
-
-## クイックスタート
-
-### 1. フルリファクタリング分析
+## Quick Start
 
 ```bash
-# 対象ディレクトリを指定して実行
+# Full refactoring analysis (runs all 9 phases in sequence)
 /refactor-system ./path/to/source
+
+# Individual skills (can be run standalone after /analyze-system)
+/analyze-system ./path/to/source      # Phase 1: System analysis, ubiquitous language
+/evaluate-mmi ./path/to/source        # Phase 2: MMI evaluation (requires Phase 1)
+/map-domains ./path/to/source         # Phase 3: Domain mapping, bounded contexts
+/design-microservices ./path/to/source # Phase 4: Target architecture
+/design-api ./path/to/source          # Phase 4.5: API design (REST/GraphQL/gRPC/AsyncAPI)
+/design-scalardb ./path/to/source     # Phase 5: ScalarDB data architecture
+/design-scalardb-analytics ./path/to/source # Phase 5.5: HTAP design (optional)
+/create-domain-story --domain=Order   # Phase 6: Domain storytelling (interactive)
+/estimate-cost ./reports              # Phase 7: Cost estimation
+
+# ScalarDB infrastructure sizing (standalone)
+/scalardb-sizing-estimator            # Interactive sizing & cost estimation for ScalarDB Cluster
+
+# Knowledge graph (parallel with main pipeline)
+/build-graph ./path/to/source         # Build RyuGraph from analysis
+/query-graph "注文に関連するクラス"     # Query via natural language or Cypher
+/visualize-graph ./reports/graph      # Generate Mermaid/DOT/HTML visualizations
+
+# Utilities
+/compile-report                       # Compile Markdown reports to HTML
+/render-mermaid ./reports             # Convert Mermaid diagrams to PNG/SVG
+/fix-mermaid ./reports                # Fix Mermaid syntax errors
 ```
 
-### 2. 個別スキルの実行
+### Command Options
 
 ```bash
-# システム分析のみ
-/analyze-system ./path/to/source
-
-# MMI評価のみ
-/evaluate-mmi ./path/to/source
-
-# ドメインストーリー作成
-/create-domain-story --domain=Order
-
-# Mermaid図を画像に変換
-/render-mermaid ./.refactoring-output/
-
-# Mermaid図のエラーを修正
-/fix-mermaid ./.refactoring-output/
-
-# ナレッジグラフを構築
-/build-graph ./path/to/source
-
-# グラフを探索（自然言語）
-/query-graph 「注文」に関連するクラスを教えて
-
-# グラフを探索（Cypher）
-/query-graph MATCH (e:Entity)-[:HAS_TERM]->(t:UbiquitousTerm) RETURN e, t LIMIT 10
-
-# グラフを可視化
-/visualize-graph ./reports/graph/visualizations
-
-# 特定ドメインのみ可視化
-/visualize-graph --domain Audit
-
-# ScalarDB Clusterを使用したデータアーキテクチャ設計
-/design-scalardb ./path/to/source
-
-# ScalarDB Analyticsを使用した分析基盤設計
-/design-scalardb-analytics ./path/to/source
-
-# レポートをHTMLにコンパイル
-/compile-report
-
-# ダークテーマでPDF出力も生成
-/compile-report --theme dark --pdf
+/refactor-system ./src --output=./custom-output/  # Custom output directory
+/refactor-system ./src --domain=Order,Customer    # Analyze specific domains only
+/refactor-system ./src --analyze-only             # Analysis only (no design docs)
+/refactor-system ./src --skip-mmi                 # Skip MMI evaluation
+/refactor-system ./src --skip-stories             # Skip domain storytelling
 ```
 
-## 出力先
+## Python Utilities
 
-すべての出力は `reports/` ディレクトリに保存されます。
+```bash
+# Setup
+pip install ryugraph pandas markdown pymdown-extensions
+
+# Manual graph building pipeline
+python scripts/parse_analysis.py --input-dir ./reports/01_analysis --output-dir ./reports/graph/data
+python scripts/build_graph.py --data-dir ./reports/graph/data --db-path ./knowledge.ryugraph
+python scripts/query_graph.py --db-path ./knowledge.ryugraph --interactive
+python scripts/visualize_graph.py --data-dir ./reports/graph/data --output-dir ./reports/graph/visualizations
+python scripts/compile_report.py --input-dir ./reports --output ./reports/00_summary/full-report.html
+```
+
+## Architecture
+
+### Execution Pipeline
+
+```
+/refactor-system (orchestrator)
+    ├── Phase 1: /analyze-system      → reports/01_analysis/
+    ├── Phase 2: /evaluate-mmi        → reports/02_evaluation/
+    ├── Phase 3: /map-domains         → reports/03_design/
+    ├── Phase 4: /design-microservices → reports/03_design/
+    ├── Phase 4.5: /design-api        → reports/03_design/ (API specs, Gateway, Security)
+    ├── Phase 5: /design-scalardb     → reports/03_design/
+    ├── Phase 5.5: /design-scalardb-analytics (if analytics required)
+    ├── Phase 6: /create-domain-story → reports/04_stories/
+    ├── Phase 7: /estimate-cost       → reports/05_estimate/
+    └── Phase 8: Executive Summary    → reports/00_summary/
+
+Parallel: /build-graph → knowledge.ryugraph/ + reports/graph/
+
+Standalone: /scalardb-sizing-estimator (interactive Pod/node/DB sizing + cost)
+```
+
+### Skill System
+
+Skills are defined in `.claude/skills/*/SKILL.md` with:
+- YAML frontmatter: `name`, `description`, `user_invocable`
+- Prerequisites and dependency chain
+- Step-by-step execution workflow
+- Output file specifications
+
+Commands in `.claude/commands/*.md` invoke the corresponding skills.
+
+### Output Structure
 
 ```
 reports/
-├── 00_summary/           # エグゼクティブサマリー
-│   ├── executive-summary.md
-│   └── full-report.html  # 統合HTMLレポート
-├── 01_analysis/          # システム分析結果
-├── 02_evaluation/        # MMI評価結果
-├── 03_design/            # マイクロサービス設計
-├── 04_stories/           # ドメインストーリー
-├── graph/                # GraphDB用データ
-│   ├── data/             # CSVファイル
-│   ├── visualizations/   # 可視化ファイル
-│   ├── schema.md         # グラフスキーマ
-│   └── statistics.md     # 統計情報
-└── 99_appendix/          # 付録
-
-<プロジェクトルート>/
-└── knowledge.ryugraph/   # RyuGraphデータベース
+├── 00_summary/          # executive-summary.md, project_metadata.json, full-report.html
+├── 01_analysis/         # system-overview.md, ubiquitous-language.md, actors-roles-permissions.md, domain-code-mapping.md
+├── 02_evaluation/       # mmi-overview.md, mmi-by-module.md, mmi-improvement-plan.md
+├── 03_design/           # domain-analysis.md, context-map.md, target-architecture.md, scalardb-*.md
+│   ├── api-design-overview.md      # API設計概要
+│   ├── api-gateway-design.md       # API Gateway設計
+│   ├── api-security-design.md      # 認証・認可設計
+│   └── api-specifications/         # OpenAPI, GraphQL, gRPC, AsyncAPI仕様書
+├── 04_stories/          # [domain]-story.md
+├── 05_estimate/         # cost-summary.md, infrastructure-detail.md, license-requirements.md
+├── graph/data/          # CSV files for graph construction
+└── 99_appendix/         # Supporting materials
 ```
 
-## ツール優先順位
+## Tool Priority for Code Analysis
 
-このプロジェクトでは、以下の優先順位でツールを使用してください：
+1. **Serena MCP Tools** (primary - language-aware AST analysis)
+   - `mcp__serena__get_symbols_overview` - File structure and symbols
+   - `mcp__serena__find_symbol` - Symbol search across codebase
+   - `mcp__serena__find_referencing_symbols` - Reference tracking
+   - `mcp__serena__list_dir` - Directory traversal
 
-### コード解析
+2. **Glob/Grep** - Pattern matching when Serena unavailable or for specific patterns
+3. **Read** - Direct file content access
 
-1. **Serenaツール** （最優先）
-   - `mcp__serena__get_symbols_overview` - ファイル構造把握
-   - `mcp__serena__find_symbol` - シンボル検索
-   - `mcp__serena__find_referencing_symbols` - 参照追跡
-   - `mcp__serena__list_dir` - ディレクトリ走査
+## Key Concepts
 
-2. **Glob/Grep** - パターンマッチング
-3. **Read** - ファイル内容確認
+### MMI (Modularity Maturity Index)
 
-### 対話的な情報収集
+4-axis evaluation with weighted scoring:
 
-- `AskUserQuestion` - ユーザーへの質問
+| Axis | Weight | Evaluates |
+|------|--------|-----------|
+| Cohesion | 30% | Single responsibility |
+| Coupling | 30% | Loose coupling, no circular deps |
+| Independence | 20% | Deploy independence |
+| Reusability | 20% | Cross-context applicability |
 
-### タスク管理
+Formula: `MMI = (0.3×Cohesion + 0.3×Coupling + 0.2×Independence + 0.2×Reusability) / 5 × 100`
 
-- `TodoWrite` - 進捗管理
-- `Task` - サブエージェント起動
+Maturity levels: 80-100 (high), 60-80 (medium), 40-60 (low-medium), 0-40 (immature)
 
-## 設計原則
+### Domain Classification
 
-### MMI評価の4軸
+**Business Structure Axis:**
+- Pipeline Domain - Sequential data/process flow (order processing)
+- Blackboard Domain - Shared data coordination (inventory management)
+- Dialogue Domain - Bidirectional interaction (chat, notifications)
 
-| 軸 | 重み | 説明 |
-|---|-----|------|
-| Cohesion | 30% | 単一責務性 |
-| Coupling | 30% | 疎結合性 |
-| Independence | 20% | デプロイ独立性 |
-| Reusability | 20% | 再利用性 |
+**Microservice Boundary Axis:**
+- Process Domain - Business process execution (stateful, saga management)
+- Master Domain - Master data management (CRUD, data consistency)
+- Integration Domain - External system adapters
+- Supporting Domain - Cross-cutting concerns (auth, logging)
 
-### ドメイン分類
+### Knowledge Graph Schema
 
-**ビジネス構造軸：**
-- Pipeline Domain（順序的フロー）
-- Blackboard Domain（共有データ協調）
-- Dialogue Domain（双方向インタラクション）
+**Node types:** `Entity`, `UbiquitousTerm`, `Actor`, `Domain`, `Activity`, `Role`, `Method`, `File`
 
-**マイクロサービス境界軸：**
-- Process Domain（ビジネスプロセス）
-- Master Domain（マスタデータ）
-- Integration Domain（外部連携）
-- Supporting Domain（横断機能）
+**Key relationships:** `BELONGS_TO`, `DEFINED_IN`, `REFERENCES`, `CALLS`, `IMPLEMENTS`, `HAS_TERM`, `PERFORMS`
 
-## ワークフロー
+## Adding New Skills
 
-```mermaid
-graph TD
-    A[/refactor-system] --> B[/analyze-system]
-    B --> C[/evaluate-mmi]
-    C --> D[/map-domains]
-    D --> E[/design-microservices]
-    E --> F[/design-scalardb]
-    F --> F2{分析要件あり?}
-    F2 -->|Yes| FA[/design-scalardb-analytics]
-    F2 -->|No| G[/create-domain-story]
-    FA --> G
-    G --> H[Executive Summary生成]
-    H --> K[/compile-report]
-    K --> L[統合HTMLレポート]
-    B --> I[/build-graph]
-    I --> J[/query-graph]
-    I --> M[/visualize-graph]
-```
+1. Create `.claude/skills/{skill-name}/SKILL.md` with YAML frontmatter
+2. Create `.claude/commands/{skill-name}-cmd.md` for user-facing command
+3. Skills marked `user_invocable: true` can be called directly
 
-### GraphDBワークフロー
+## Documentation
 
-```mermaid
-graph LR
-    A[/analyze-system] --> B[分析結果MD]
-    B --> C[parse_analysis.py]
-    C --> D[CSVファイル]
-    D --> E[build_graph.py]
-    E --> F[knowledge.ryugraph]
-    F --> G[/query-graph]
-    G --> H[関連コード・仕様]
-    F --> I[/visualize-graph]
-    I --> J[Mermaid/DOT/HTML]
-```
+- `docs/USER_GUIDE.md` - Comprehensive user guide with examples
+- `docs/OUTPUT_FILES_REFERENCE.md` - Detailed explanation of all output files
+- `README.md` - Project overview and setup instructions
 
-## エラーハンドリング
-
-- 設計書がない場合 → コードからの推論（精度低下を警告）
-- 大規模コードベース → サンプリング分析を提案
-- 言語非対応 → 手動解析を提案
-
-## カスタマイズ
-
-### 出力先の変更
-
-```bash
-/refactor-system ./src --output=./custom-output/
-```
-
-### 特定ドメインのみ分析
-
-```bash
-/refactor-system ./src --domain=Order,Customer
-```
-
-### 分析のみ（設計書生成なし）
-
-```bash
-/refactor-system ./src --analyze-only
-```
-
-## RyuGraph セットアップ
-
-GraphDBスキルを使用するには、RyuGraphのインストールが必要です：
-
-```bash
-pip install ryugraph pandas
-```
-
-### 手動でのグラフ構築
-
-```bash
-# 1. 分析結果からCSVを生成
-python scripts/parse_analysis.py \
-  --input-dir ./reports/01_analysis \
-  --output-dir ./reports/graph/data
-
-# 2. GraphDBを構築
-python scripts/build_graph.py \
-  --data-dir ./reports/graph/data \
-  --db-path ./knowledge.ryugraph
-
-# 3. クエリを実行
-python scripts/query_graph.py \
-  --db-path ./knowledge.ryugraph \
-  --interactive
-
-# 4. グラフを可視化
-python scripts/visualize_graph.py \
-  --data-dir ./reports/graph/data \
-  --output-dir ./reports/graph/visualizations
-
-# 5. レポートをHTMLにコンパイル
-python scripts/compile_report.py \
-  --input-dir ./reports \
-  --output ./reports/00_summary/full-report.html \
-  --title "リファクタリング分析レポート"
-```
-
-## 参考資料
+## External References
 
 - [ScalarDB Documentation](https://scalardb.scalar-labs.com/docs/)
 - [ScalarDB Analytics](https://scalardb.scalar-labs.com/docs/latest/scalardb-analytics/)
 - [RyuGraph Documentation](https://ryugraph.io/docs/)
-- [Modularity Maturity Index](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/modularity-maturity-index.md)
-- [Domain-Driven Transformation](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-driven-transformation.md)
-- [Domain Storytelling](https://github.com/wfukatsu/Prompt-Templates/blob/main/system-design/domain-storytelling.md)
-
-## バージョン
-
-- バージョン: 1.0.0
-- 作成日: 2024
-- 作成者: Claude Code
