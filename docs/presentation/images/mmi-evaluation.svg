@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500">
+  <defs>
+    <linearGradient id="cohesionGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="couplingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#34d399"/>
+    </linearGradient>
+    <linearGradient id="independenceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="reusabilityGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ec4899"/>
+      <stop offset="100%" style="stop-color:#f472b6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="500" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" fill="#1e293b" font-family="Arial, sans-serif" font-size="22" font-weight="bold">MMI (Modularity Maturity Index) 評価</text>
+
+  <!-- Formula Box -->
+  <rect x="180" y="55" width="540" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="85" text-anchor="middle" fill="#1e293b" font-family="monospace" font-size="14">
+    MMI = (0.3×Cohesion + 0.3×Coupling + 0.2×Independence + 0.2×Reusability) / 5 × 100
+  </text>
+
+  <!-- 4 Axes -->
+  <!-- Cohesion -->
+  <g transform="translate(50, 130)">
+    <rect width="400" height="75" rx="10" fill="white" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="400" height="35" rx="10" fill="url(#cohesionGrad)"/>
+    <text x="200" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Cohesion (凝集度) - 30%</text>
+    <text x="15" y="55" fill="#1e40af" font-family="Arial, sans-serif" font-size="11">単一責任原則の遵守度</text>
+    <text x="15" y="70" fill="#64748b" font-family="Arial, sans-serif" font-size="10">1つのモジュールが1つの責務のみを持つか</text>
+  </g>
+
+  <!-- Coupling -->
+  <g transform="translate(50, 220)">
+    <rect width="400" height="75" rx="10" fill="white" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="400" height="35" rx="10" fill="url(#couplingGrad)"/>
+    <text x="200" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Coupling (結合度) - 30%</text>
+    <text x="15" y="55" fill="#065f46" font-family="Arial, sans-serif" font-size="11">モジュール間の疎結合度</text>
+    <text x="15" y="70" fill="#64748b" font-family="Arial, sans-serif" font-size="10">循環依存がないか、インターフェース経由か</text>
+  </g>
+
+  <!-- Independence -->
+  <g transform="translate(50, 310)">
+    <rect width="400" height="75" rx="10" fill="white" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="400" height="35" rx="10" fill="url(#independenceGrad)"/>
+    <text x="200" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Independence (独立性) - 20%</text>
+    <text x="15" y="55" fill="#92400e" font-family="Arial, sans-serif" font-size="11">デプロイ独立性</text>
+    <text x="15" y="70" fill="#64748b" font-family="Arial, sans-serif" font-size="10">他モジュールに影響なく個別デプロイ可能か</text>
+  </g>
+
+  <!-- Reusability -->
+  <g transform="translate(50, 400)">
+    <rect width="400" height="75" rx="10" fill="white" stroke="#ec4899" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="400" height="35" rx="10" fill="url(#reusabilityGrad)"/>
+    <text x="200" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Reusability (再利用性) - 20%</text>
+    <text x="15" y="55" fill="#9d174d" font-family="Arial, sans-serif" font-size="11">他コンテキストでの再利用可能性</text>
+    <text x="15" y="70" fill="#64748b" font-family="Arial, sans-serif" font-size="10">汎用的なインターフェースを持つか</text>
+  </g>
+
+  <!-- Maturity Levels -->
+  <g transform="translate(480, 130)">
+    <rect width="380" height="190" rx="10" fill="white" stroke="#6366f1" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="380" height="35" rx="10" fill="#6366f1"/>
+    <text x="190" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">成熟度レベル</text>
+
+    <!-- High -->
+    <rect x="20" y="50" width="340" height="28" rx="5" fill="#dcfce7"/>
+    <rect x="20" y="50" width="340" height="28" rx="5" fill="#22c55e" fill-opacity="0.8"/>
+    <text x="40" y="69" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">80-100: 高成熟度</text>
+    <text x="300" y="69" text-anchor="end" fill="white" font-family="Arial, sans-serif" font-size="11">Ready for MS</text>
+
+    <!-- Medium -->
+    <rect x="20" y="85" width="280" height="28" rx="5" fill="#fef9c3"/>
+    <rect x="20" y="85" width="280" height="28" rx="5" fill="#eab308" fill-opacity="0.8"/>
+    <text x="40" y="104" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">60-80: 中成熟度</text>
+    <text x="240" y="104" text-anchor="end" fill="white" font-family="Arial, sans-serif" font-size="11">要改善</text>
+
+    <!-- Low-Medium -->
+    <rect x="20" y="120" width="220" height="28" rx="5" fill="#fed7aa"/>
+    <rect x="20" y="120" width="220" height="28" rx="5" fill="#f97316" fill-opacity="0.8"/>
+    <text x="40" y="139" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">40-60: 低中成熟度</text>
+    <text x="200" y="139" text-anchor="end" fill="white" font-family="Arial, sans-serif" font-size="11">要リファクタ</text>
+
+    <!-- Immature -->
+    <rect x="20" y="155" width="160" height="28" rx="5" fill="#fecaca"/>
+    <rect x="20" y="155" width="160" height="28" rx="5" fill="#ef4444" fill-opacity="0.8"/>
+    <text x="40" y="174" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">0-40: 未成熟</text>
+  </g>
+
+  <!-- Example Score -->
+  <g transform="translate(480, 340)">
+    <rect width="380" height="135" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+    <text x="190" y="25" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="14" font-weight="bold">評価例: Scalar Auditor for BOX</text>
+
+    <!-- Score bars -->
+    <text x="20" y="50" fill="#78350f" font-family="Arial, sans-serif" font-size="11">Cohesion:</text>
+    <rect x="100" y="38" width="180" height="16" rx="3" fill="#e2e8f0"/>
+    <rect x="100" y="38" width="81" height="16" rx="3" fill="#3b82f6"/>
+    <text x="290" y="50" fill="#78350f" font-family="Arial, sans-serif" font-size="11">45/100</text>
+
+    <text x="20" y="72" fill="#78350f" font-family="Arial, sans-serif" font-size="11">Coupling:</text>
+    <rect x="100" y="60" width="180" height="16" rx="3" fill="#e2e8f0"/>
+    <rect x="100" y="60" width="90" height="16" rx="3" fill="#10b981"/>
+    <text x="290" y="72" fill="#78350f" font-family="Arial, sans-serif" font-size="11">50/100</text>
+
+    <text x="20" y="94" fill="#78350f" font-family="Arial, sans-serif" font-size="11">Independence:</text>
+    <rect x="100" y="82" width="180" height="16" rx="3" fill="#e2e8f0"/>
+    <rect x="100" y="82" width="99" height="16" rx="3" fill="#f59e0b"/>
+    <text x="290" y="94" fill="#78350f" font-family="Arial, sans-serif" font-size="11">55/100</text>
+
+    <text x="20" y="116" fill="#78350f" font-family="Arial, sans-serif" font-size="11">Reusability:</text>
+    <rect x="100" y="104" width="180" height="16" rx="3" fill="#e2e8f0"/>
+    <rect x="100" y="104" width="115" height="16" rx="3" fill="#ec4899"/>
+    <text x="290" y="116" fill="#78350f" font-family="Arial, sans-serif" font-size="11">64/100</text>
+
+    <text x="190" y="132" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="13" font-weight="bold">総合スコア: 52.3/100 (低中成熟度)</text>
+  </g>
+</svg>

@@ -56,8 +56,13 @@ reports/
 │   ├── scalardb_schema.md            # ScalarDBスキーマ設計
 │   ├── scalardb_transaction.md       # ScalarDBトランザクション設計
 │   └── scalardb_migration.md         # ScalarDBマイグレーション計画
-└── 04_stories/
-    └── [domain]_story.md             # ドメイン別ストーリー
+├── 04_stories/
+│   └── [domain]_story.md             # ドメイン別ストーリー
+└── 05_estimate/
+    ├── cost-summary.md               # コストサマリー
+    ├── infrastructure-detail.md      # インフラ詳細見積もり
+    ├── license-requirements.md       # ライセンス要件・問い合わせ情報
+    └── cost-assumptions.md           # 見積もり前提条件
 ```
 
 ## 実行フロー
@@ -75,7 +80,8 @@ graph TD
     H --> I[マイクロサービス設計エージェント]
     I --> J[ScalarDB設計エージェント]
     J --> K[ドメインストーリーエージェント]
-    K --> L[最終レポート生成]
+    K --> CE[コスト見積もりエージェント]
+    CE --> L[最終レポート生成]
     L --> M[終了]
 ```
 
@@ -170,11 +176,25 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 
 **Phase 7完了時に出力**: `reports/04_stories/[domain]-story.md`
 
-### Phase 8: エグゼクティブサマリー
+### Phase 8: コスト見積もり
+
+Taskツールで `cost-estimator` エージェントを起動し、以下を策定：
+- **クラウドインフラ費用** - Kubernetes、データベース、ネットワーク、ストレージ
+- **ライセンス費用** - ScalarDB、その他商用ソフトウェア
+- **運用費用** - 監視、バックアップ、サポート
+- **初期構築費用** - 移行、開発、トレーニング
+
+**Phase 8完了時に出力**:
+- `reports/05_estimate/cost-summary.md`
+- `reports/05_estimate/infrastructure-detail.md`
+- `reports/05_estimate/license-requirements.md`
+- `reports/05_estimate/cost-assumptions.md`
+
+### Phase 9: エグゼクティブサマリー
 
 全Phaseの結果を統合し、エグゼクティブサマリーを作成。
 
-**Phase 8完了時に出力**: `reports/00_summary/executive-summary.md`
+**Phase 9完了時に出力**: `reports/00_summary/executive-summary.md`
 
 ## 依存スキル
 
@@ -185,6 +205,7 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 - `/design-microservices` - マイクロサービス設計
 - `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
 - `/create-domain-story` - ドメインストーリー作成
+- `/estimate-cost` - コスト見積もり（クラウドインフラ・ライセンス）
 
 ## 使用例
 
