@@ -173,49 +173,127 @@ def generate_graph_section(graph_data: str) -> str:
 '''
 
 
-# セクション定義
+# セクション定義（ディレクトリと優先ファイル順序）
 SECTIONS = [
     {
         "id": "summary",
         "title": "エグゼクティブサマリー",
         "dir": "00_summary",
-        "files": ["executive-summary.md"]
+        "priority_files": ["executive-summary.md"],
+        "auto_discover": True
     },
     {
         "id": "analysis",
         "title": "システム分析",
         "dir": "01_analysis",
-        "files": ["system-overview.md", "ubiquitous-language.md", "actors-roles-permissions.md", "domain-code-mapping.md"]
+        "priority_files": [
+            "system-overview.md",
+            "architecture-diagram.md",
+            "ubiquitous-language.md",
+            "domain-entities.md",
+            "actors-roles-permissions.md",
+            "domain-code-mapping.md",
+            "api-endpoints.md"
+        ],
+        "auto_discover": True
     },
     {
         "id": "evaluation",
         "title": "MMI評価",
         "dir": "02_evaluation",
-        "files": ["mmi-overview.md", "mmi-by-module.md", "mmi-improvement-plan.md"]
+        "priority_files": ["mmi-overview.md", "mmi-by-module.md", "mmi-improvement-plan.md"],
+        "auto_discover": True
     },
     {
         "id": "design",
         "title": "設計",
         "dir": "03_design",
-        "files": [
-            "domain-analysis.md", "context-map.md", "system-mapping.md",
-            "target_architecture.md", "transformation_plan.md", "operations_plan.md",
-            "scalardb_architecture.md", "scalardb_schema.md", "scalardb_transaction.md", "scalardb_migration.md"
-        ]
+        "priority_files": [
+            # ドメイン分析
+            "domain-analysis.md",
+            "context-map.md",
+            "system-mapping.md",
+            # ターゲットアーキテクチャ
+            "target-architecture.md",
+            "target_architecture.md",
+            "transformation_plan.md",
+            "operations_plan.md",
+            # API設計
+            "api-design-overview.md",
+            "api-gateway-design.md",
+            "api-security-design.md",
+            # ScalarDB設計
+            "scalardb-architecture.md",
+            "scalardb_architecture.md",
+            "scalardb-schema-design.md",
+            "scalardb_schema.md",
+            "scalardb-transaction-design.md",
+            "scalardb_transaction.md",
+            "scalardb_migration.md"
+        ],
+        "auto_discover": True
     },
     {
         "id": "stories",
         "title": "ドメインストーリー",
         "dir": "04_stories",
-        "files": ["domain-stories.md"]
+        "priority_files": ["domain-stories.md"],
+        "auto_discover": True  # 個別のストーリーファイルも自動検出
+    },
+    {
+        "id": "estimate",
+        "title": "コスト試算",
+        "dir": "05_estimate",
+        "priority_files": ["cost-summary.md", "infrastructure-detail.md", "license-requirements.md", "cost-assumptions.md"],
+        "auto_discover": True
     },
     {
         "id": "graph",
         "title": "ナレッジグラフ",
         "dir": "graph",
-        "files": ["schema.md", "statistics.md"]
+        "priority_files": ["schema.md", "statistics.md"],
+        "auto_discover": True,
+        "include_subdirs": ["visualizations"]
     }
 ]
+
+
+def discover_markdown_files(section_dir: Path, priority_files: list, include_subdirs: list = None) -> list:
+    """ディレクトリ内のMarkdownファイルを検出し、優先順位順に返す"""
+    found_files = []
+    seen_basenames = set()
+
+    # 優先ファイルを最初に追加
+    for file_name in priority_files:
+        file_path = section_dir / file_name
+        if file_path.exists():
+            basename = file_name.replace('_', '-').replace('.md', '')
+            if basename not in seen_basenames:
+                found_files.append(file_name)
+                seen_basenames.add(basename)
+
+    # ディレクトリ内の他のMarkdownファイルを検出
+    if section_dir.exists():
+        for md_file in sorted(section_dir.glob("*.md")):
+            file_name = md_file.name
+            basename = file_name.replace('_', '-').replace('.md', '')
+            if basename not in seen_basenames:
+                found_files.append(file_name)
+                seen_basenames.add(basename)
+
+    # サブディレクトリも検索
+    if include_subdirs:
+        for subdir in include_subdirs:
+            subdir_path = section_dir / subdir
+            if subdir_path.exists():
+                for md_file in sorted(subdir_path.glob("*.md")):
+                    rel_path = f"{subdir}/{md_file.name}"
+                    basename = md_file.name.replace('_', '-').replace('.md', '')
+                    if basename not in seen_basenames:
+                        found_files.append(rel_path)
+                        seen_basenames.add(basename)
+
+    return found_files
 
 
 def get_html_template(title: str, theme: str = "light") -> tuple:
@@ -576,19 +654,34 @@ def compile_report(input_dir: str, output: str, title: str, theme: str = "light"
 
         print(f"  Processing: {section['dir']}")
 
+        # ファイルを動的に検出
+        include_subdirs = section.get("include_subdirs", None)
+        discovered_files = discover_markdown_files(
+            section_dir,
+            section.get("priority_files", []),
+            include_subdirs
+        )
+
+        if not discovered_files:
+            print(f"    No markdown files found")
+            continue
+
+        print(f"    Found {len(discovered_files)} file(s)")
+
         # 目次エントリ
-        toc_html.append(generate_toc_entry(section_id, section_title, section["files"]))
+        toc_html.append(generate_toc_entry(section_id, section_title, discovered_files))
 
         # セクションコンテンツ
         content_html.append(f'<section id="{section_id}">')
         content_html.append(f'<h1>{section_title}</h1>')
 
-        for file_name in section["files"]:
+        for file_name in discovered_files:
             file_path = section_dir / file_name
             if not file_path.exists():
                 continue
 
-            file_id = file_name.replace('.md', '').replace('_', '-')
+            # ファイルIDを生成（サブディレクトリのパスも考慮）
+            file_id = file_name.replace('/', '-').replace('.md', '').replace('_', '-')
             content = read_markdown_file(file_path)
 
             # Mermaidブロックを変換
@@ -607,7 +700,7 @@ def compile_report(input_dir: str, output: str, title: str, theme: str = "light"
             graph_html_path = section_dir / "visualizations" / "graph.html"
             graph_data = extract_graph_data(graph_html_path)
             if graph_data:
-                print(f"  Adding: Interactive graph viewer")
+                print(f"    Adding: Interactive graph viewer")
                 # 目次にインタラクティブグラフを追加
                 toc_html.append('<li><a href="#graph-interactive">Interactive Viewer</a></li>')
                 content_html.append(generate_graph_section(graph_data))

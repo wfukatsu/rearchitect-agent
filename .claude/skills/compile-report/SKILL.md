@@ -12,12 +12,13 @@ user_invocable: true
 
 このエージェントは以下の機能を提供します：
 
-1. **Markdownの統合** - 複数のMarkdownファイルを1つのHTMLに統合
+1. **Markdownの自動検出・統合** - 各ディレクトリ内のすべてのMarkdownファイルを動的に検出し統合
 2. **Mermaid図のレンダリング** - Mermaid図をインライン埋め込み
 3. **GraphDB可視化** - D3.jsインタラクティブグラフを埋め込み
 4. **目次生成** - 自動的にサイドバー目次を生成
 5. **スタイリング** - プロフェッショナルなスタイルを適用（ライト/ダークテーマ）
 6. **レスポンシブ** - モバイル/印刷対応
+7. **重複除去** - ファイル名の命名規則が異なる重複ファイルを自動的に除去
 
 ## 前提条件
 
@@ -114,6 +115,28 @@ source .venv/bin/activate && python scripts/compile_report.py \
 | `--theme` | テーマ (light/dark) | light |
 
 ## 機能詳細
+
+### Markdownファイルの自動検出
+
+スクリプトは各レポートディレクトリ（`00_summary`, `01_analysis`, `02_evaluation`, など）から自動的にすべてのMarkdownファイルを検出します。
+
+**動作:**
+1. 優先ファイルリストに従って順序を決定
+2. ディレクトリ内の他のMarkdownファイルを自動検出
+3. ファイル名の命名規則の違い（`target-architecture.md` vs `target_architecture.md`）による重複を自動除去
+4. サブディレクトリ（`visualizations/`など）も検索対象
+
+**対応するファイル構造:**
+```
+reports/
+├── 00_summary/          # エグゼクティブサマリー
+├── 01_analysis/         # システム分析（全ファイル自動検出）
+├── 02_evaluation/       # MMI評価
+├── 03_design/           # 設計（API、ScalarDB含む全ファイル）
+├── 04_stories/          # ドメインストーリー（個別ストーリー含む）
+├── 05_estimate/         # コスト試算
+└── graph/               # ナレッジグラフ（サブディレクトリ含む）
+```
 
 ### GraphDB可視化の統合
 
