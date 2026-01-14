@@ -98,6 +98,42 @@ sequenceDiagram
     participant G as API Gateway
 ```
 
+### 7. sequenceDiagramの予約語
+
+**問題**: Mermaidの予約語がparticipant名に使用されている
+
+```mermaid
+# NG - BOXは予約語
+sequenceDiagram
+    participant BOX as BOX Platform
+
+# OK - 予約語を避ける
+sequenceDiagram
+    participant BoxAPI as BOX Platform
+```
+
+**予約語リスト:**
+| 予約語 | 説明 | 代替案 |
+|-------|------|-------|
+| `BOX`, `box` | グループ化構文 | `BoxAPI`, `BoxPlatform` |
+| `loop`, `alt`, `opt`, `par` | 制御構文 | プレフィックスを付ける |
+| `Note`, `note` | 注釈構文 | `NoteService` など |
+| `activate`, `deactivate` | アクティベーション | プレフィックスを付ける |
+
+### 8. クラス図のクラス名
+
+**問題**: クラス名に特殊文字やスペース
+
+```mermaid
+# NG
+classDiagram
+    class User-Account
+
+# OK - アンダースコア使用
+classDiagram
+    class User_Account
+```
+
 ## 実行プロンプト
 
 あなたはMermaid図のシンタックスエラーを修正する専門家です。以下の手順で修正を実行してください。
@@ -124,6 +160,13 @@ Grep: "```mermaid" --glob="*.md"
 
 4. **ノードラベルの問題**
    - `\[.*[日本語].*\]` で複雑な内容 → 引用符で囲む
+
+5. **予約語の問題（sequenceDiagram）**
+   - `participant BOX` → `participant BoxAPI as BOX`
+   - `participant loop` → `participant LoopService as loop`
+
+6. **クラス名の問題（classDiagram）**
+   - `class Foo-Bar` → `class Foo_Bar`
 
 ### Step 3: 修正の適用
 
@@ -154,6 +197,8 @@ new: A["Text<br/>More"]
 - [ ] エッジラベルの特殊文字が引用符で囲まれている
 - [ ] 参加者名にスペースがある場合はエイリアス使用
 - [ ] ノードIDが英字で始まっている
+- [ ] sequenceDiagramで予約語（BOX, loop, alt, opt, par, Note, activate, deactivate）が参加者名に使われていない
+- [ ] classDiagramでクラス名にハイフンが使われていない
 
 ## 出力
 

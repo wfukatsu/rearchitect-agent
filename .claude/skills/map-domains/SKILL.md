@@ -175,6 +175,21 @@ Read domain_code_mapping.md
 - `reports/03_design/context-map.md` - コンテキストマップ（Mermaid図含む）
 - `reports/03_design/system-mapping.md` - システム全体のマッピング
 
+### Step 6: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+# 出力ファイルのMermaid検証
+/fix-mermaid ./reports/03_design
+```
+
+**検証項目:**
+- [ ] サブグラフ名が引用符で囲まれている
+- [ ] 日本語ラベルが引用符で囲まれている
+- [ ] エッジラベルの特殊文字（ハイフン等）が引用符で囲まれている
+- [ ] ノードIDが英字で始まっている
+
 ## 出力フォーマット
 
 ### domain_analysis.md

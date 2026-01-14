@@ -175,6 +175,21 @@ graph TD
 
 **このステップ完了時に出力**: `reports/03_design/operations-feedback.md`
 
+### Step 8: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+# 出力ファイルのMermaid検証
+/fix-mermaid ./reports/03_design
+```
+
+**検証項目:**
+- [ ] サブグラフ名が引用符で囲まれている（例: `subgraph "Kubernetes Cluster"`）
+- [ ] 日本語ラベルが引用符で囲まれている
+- [ ] 複雑なノード名が引用符で囲まれている
+- [ ] sequenceDiagramの予約語（BOX等）が回避されている
+
 ## 出力フォーマット
 
 ### target_architecture.md

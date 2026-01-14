@@ -81,7 +81,8 @@ graph TD
     I --> J[ScalarDB設計エージェント]
     J --> K[ドメインストーリーエージェント]
     K --> CE[コスト見積もりエージェント]
-    CE --> L[最終レポート生成]
+    CE --> MV[Mermaid図検証・修正]
+    MV --> L[最終レポート生成]
     L --> M[終了]
 ```
 
@@ -190,11 +191,34 @@ Taskツールで `cost-estimator` エージェントを起動し、以下を策�
 - `reports/05_estimate/license-requirements.md`
 - `reports/05_estimate/cost-assumptions.md`
 
-### Phase 9: エグゼクティブサマリー
+### Phase 9: Mermaid図の検証・修正
+
+全レポートのMermaid図を検証し、シンタックスエラーがあれば修正：
+
+1. Mermaid図を含むMarkdownファイルを検索
+2. 各図の構文を検証
+3. エラーを発見した場合は自動修正
+4. 修正結果をログ出力
+
+```bash
+# /fix-mermaid スキルを使用
+/fix-mermaid ./reports
+```
+
+**検証項目:**
+- サブグラフ名の引用符
+- 日本語ラベルの引用符
+- `<br/>`を含むノードの引用符
+- エッジラベルの特殊文字
+- sequenceDiagramの予約語（BOX等）
+
+**Phase 9完了時に出力**: 修正ログ（コンソール出力）
+
+### Phase 10: エグゼクティブサマリー
 
 全Phaseの結果を統合し、エグゼクティブサマリーを作成。
 
-**Phase 9完了時に出力**: `reports/00_summary/executive-summary.md`
+**Phase 10完了時に出力**: `reports/00_summary/executive-summary.md`
 
 ## 依存スキル
 
@@ -206,6 +230,7 @@ Taskツールで `cost-estimator` エージェントを起動し、以下を策�
 - `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
 - `/create-domain-story` - ドメインストーリー作成
 - `/estimate-cost` - コスト見積もり（クラウドインフラ・ライセンス）
+- `/fix-mermaid` - Mermaid図の検証・修正
 
 ## 使用例
 

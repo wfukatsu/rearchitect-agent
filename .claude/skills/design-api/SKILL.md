@@ -1003,6 +1003,21 @@ Link: </api/v2/orders>; rel="successor-version"
 
 **最終出力**: `reports/03_design/api-design-overview.md`
 
+### Step 11: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+# 出力ファイルのMermaid検証
+/fix-mermaid ./reports/03_design
+```
+
+**検証項目:**
+- [ ] サブグラフ名が引用符で囲まれている（例: `subgraph "API Gateway Layer"`）
+- [ ] sequenceDiagramの参加者名が有効（スペースを含む場合はエイリアス使用）
+- [ ] 日本語ラベルが引用符で囲まれている
+- [ ] sequenceDiagramの予約語（BOX等）が回避されている
+
 ```markdown
 ## API設計概要
 
