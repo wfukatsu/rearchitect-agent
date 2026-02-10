@@ -99,8 +99,8 @@ def generate_mermaid(data: dict, output_path: str, domain_filter: str = None,
         lines.append("")
         lines.append("    %% References")
         for _, row in references.head(50).iterrows():  # 最大50リレーション
-            from_entity = row['from_entity'].replace(" ", "_")
-            to_entity = row['to_entity'].replace(" ", "_")
+            from_entity = row.get('from_entity', '').replace(" ", "_")
+            to_entity = row.get('to_entity', '').replace(" ", "_")
             rel_type = row.get('relation_type', 'references')
             lines.append(f"    {from_entity} -->|{rel_type}| {to_entity}")
 
@@ -186,6 +186,11 @@ def generate_html(data: dict, output_path: str, domain_filter: str = None):
     belongs_to = data.get('belongs_to', pd.DataFrame())
     references = data.get('references', pd.DataFrame())
     terms = data.get('terms', pd.DataFrame())
+
+    # ドメインフィルタ
+    if domain_filter:
+        domains = domains[domains['name'] == domain_filter]
+        belongs_to = belongs_to[belongs_to['domain'] == domain_filter]
 
     # ノードとリンクのデータを構築
     nodes = []

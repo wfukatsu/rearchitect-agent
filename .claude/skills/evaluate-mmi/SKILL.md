@@ -48,9 +48,37 @@ reports/02_evaluation/
 └── mmi-improvement-plan.md # Step 4完了時
 ```
 
+## 前提条件
+
+以下のファイルが存在すること：
+
+**推奨（/analyze-system の出力）:**
+- `reports/01_analysis/system-overview.md` - システム概要
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
+
+**必須:**
+- 対象コードベースへのアクセス
+
 ## 実行プロンプト
 
 あなたはソフトウェアアーキテクチャの評価専門家です。以下の手順でMMI評価を実行してください。
+
+### Step 0: 前提条件の検証
+
+**重要**: 実行前に必ず前提条件を確認してください。
+
+```
+推奨ファイルの確認:
+├── reports/01_analysis/system-overview.md      [推奨] ← /analyze-system
+└── reports/01_analysis/ubiquitous-language.md  [推奨] ← /analyze-system
+
+必須:
+└── 対象コードベースへのアクセス              [必須]
+```
+
+**エラーハンドリング:**
+- 推奨ファイルが存在しない場合 → 警告を表示してコードベースから直接分析
+- 対象コードベースにアクセスできない場合 → エラー終了
 
 ### Step 1: モジュール抽出
 
@@ -175,15 +203,15 @@ MMIスコアに基づき、改善施策を優先度付けして提案：
 
 ## 出力フォーマット
 
-### 1. mmi_overview.md
+### 1. mmi-overview.md
 
 MMI評価概要（エグゼクティブサマリー、スコア分布、軸別平均スコア、主要課題、推奨アクション）
 
-### 2. mmi_by_module.md
+### 2. mmi-by-module.md
 
 モジュール別MMIスコア（スコア一覧、各モジュール詳細評価、改善提案）
 
-### 3. mmi_improvement_plan.md
+### 3. mmi-improvement-plan.md
 
 MMI改善計画（改善目標、ロードマップ、施策詳細、依存関係図、モニタリング計画）
 

@@ -12,10 +12,31 @@ user_invocable: true
 
 リファクタリング分析を開始する前に、このスキルを実行して出力ディレクトリを準備します。
 
+## ユーザー入力確認（必須）
+
+**重要**: このスキルを実行する前に、必ず出力先ディレクトリをユーザーに確認してください。
+
+デフォルト出力先: `./reports/`（カレントディレクトリ配下）
+
+AskUserQuestionツールで確認：
+```json
+{
+  "questions": [{
+    "question": "出力ディレクトリを確認してください。デフォルト: ./reports/（カレントディレクトリ配下）",
+    "header": "出力先",
+    "options": [
+      {"label": "./reports/ (推奨)", "description": "カレントディレクトリ配下のreportsフォルダ"},
+      {"label": "カスタムパス", "description": "別のパスを指定"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
 ## 実行コマンド
 
 ```bash
-# デフォルトの出力先（reports/）
+# デフォルトの出力先（./reports/、カレントディレクトリ配下）
 /init-output
 
 # カスタム出力先
@@ -31,9 +52,13 @@ reports/
 ├── 02_evaluation/
 ├── 03_design/
 ├── 04_stories/
+├── 05_estimate/
+├── 06_implementation/
+├── 07_test-specs/
 ├── graph/
-│   └── data/
-└── 99_appendix/
+│   ├── data/
+│   └── visualizations/
+└── sizing-estimates/
 ```
 
 ## 初期化スクリプト
@@ -50,8 +75,12 @@ mkdir -p "${OUTPUT_DIR}/01_analysis"
 mkdir -p "${OUTPUT_DIR}/02_evaluation"
 mkdir -p "${OUTPUT_DIR}/03_design"
 mkdir -p "${OUTPUT_DIR}/04_stories"
+mkdir -p "${OUTPUT_DIR}/05_estimate"
+mkdir -p "${OUTPUT_DIR}/06_implementation"
+mkdir -p "${OUTPUT_DIR}/07_test-specs"
 mkdir -p "${OUTPUT_DIR}/graph/data"
-mkdir -p "${OUTPUT_DIR}/99_appendix"
+mkdir -p "${OUTPUT_DIR}/graph/visualizations"
+mkdir -p "${OUTPUT_DIR}/sizing-estimates"
 
 # メタデータファイルの初期化
 cat > "${OUTPUT_DIR}/00_summary/project_metadata.json" << 'EOF'
@@ -110,7 +139,7 @@ echo "Output directory initialized: ${OUTPUT_DIR}"
 
 ```
 # Bashツールで実行
-Bash: mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,graph/data,99_appendix}
+Bash: mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}
 ```
 
 ## 注意事項

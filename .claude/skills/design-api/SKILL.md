@@ -19,10 +19,18 @@ user_invocable: true
 
 ## 前提条件
 
-以下の中間ファイルが存在すること：
-- `01_analysis/` 配下の分析結果
-- `03_design/target-architecture.md`
-- `03_design/scalardb-schema.md`（存在する場合）
+以下のファイルが存在すること：
+
+**必須（/design-microservices の出力）:**
+- `reports/03_design/target-architecture.md` - ターゲットアーキテクチャ
+
+**推奨（/design-scalardb の出力）:**
+- `reports/03_design/scalardb-schema.md` - ScalarDBスキーマ
+- `reports/03_design/scalardb-design.md` - ScalarDB設計
+
+**推奨（/analyze-system の出力）:**
+- `reports/01_analysis/system-overview.md` - システム概要
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
 
 ## 出力先ディレクトリ
 
@@ -48,6 +56,25 @@ reports/03_design/
 ## 実行プロンプト
 
 あなたはAPI設計の専門家です。以下の手順で設計を実行してください。
+
+### Step 0: 前提条件の検証
+
+**重要**: 実行前に必ず前提条件を確認してください。
+
+```
+必須ファイルの確認:
+└── reports/03_design/target-architecture.md  [必須] ← /design-microservices
+
+推奨ファイルの確認:
+├── reports/03_design/scalardb-schema.md      [推奨] ← /design-scalardb
+├── reports/03_design/scalardb-design.md      [推奨] ← /design-scalardb
+├── reports/01_analysis/system-overview.md    [推奨] ← /analyze-system
+└── reports/01_analysis/ubiquitous-language.md [推奨] ← /analyze-system
+```
+
+**エラーハンドリング:**
+- 必須ファイルが存在しない場合 → `/design-microservices` を先に実行するよう案内
+- 推奨ファイルが存在しない場合 → 警告を表示して続行
 
 ### Step 1: API設計原則の確認
 
@@ -780,11 +807,11 @@ graph TB
 
     subgraph Gateway["API Gateway Layer"]
         Kong[Kong Gateway]
-        subgraph Plugins
-            Auth[認証プラグイン]
-            RateLimit[レート制限]
-            Transform[変換]
-            Logging[ログ]
+        subgraph "Plugins"
+            Auth["認証プラグイン"]
+            RateLimit["レート制限"]
+            Transform["変換"]
+            Logging["ログ"]
         end
     end
 

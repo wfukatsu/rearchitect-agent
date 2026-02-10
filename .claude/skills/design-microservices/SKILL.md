@@ -18,11 +18,25 @@ user_invocable: true
 
 ## 前提条件
 
-以下の中間ファイルが存在すること：
-- `01_analysis/` 配下の分析結果
-- `02_evaluation/` 配下のMMI評価結果
-- `03_design/domain_analysis.md`
-- `03_design/system_mapping.md`
+以下のファイルが存在すること：
+
+**必須（/ddd-redesign の出力）:**
+- `reports/03_design/bounded-contexts-redesign.md` - 境界コンテキストの再設計
+- `reports/03_design/context-map.md` - コンテキストマップの再設計
+- `reports/03_design/aggregate-redesign.md` - 集約の再設計
+- `reports/03_design/domain-analysis.md` - ドメイン分類
+- `reports/03_design/system-mapping.md` - システムマッピング
+
+**推奨（/ddd-evaluation の出力）:**
+- `reports/02_evaluation/ddd-strategic-evaluation.md` - 戦略的設計評価
+- `reports/02_evaluation/ddd-tactical-evaluation.md` - 戦術的設計評価
+
+**推奨（/evaluate-mmi の出力）:**
+- `reports/02_evaluation/mmi-overview.md` - MMI評価概要
+- `reports/02_evaluation/mmi-by-module.md` - モジュール別MMI
+
+**推奨（/analyze-system の出力）:**
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
 
 ## 出力先ディレクトリ
 
@@ -36,9 +50,38 @@ reports/03_design/
 └── operations-feedback.md    # 最終Step完了時
 ```
 
+## サブエージェント活用
+
+前フェーズの出力ファイルが多い場合、Task toolのExploreエージェントで要約読み込みを行いメインコンテキストを保護できます。
+詳細は `.claude/skills/common/sub-agent-patterns.md` の「Pattern 2: 前フェーズ出力読み込みエージェント」を参照。
+
 ## 実行プロンプト
 
 あなたはマイクロサービスアーキテクチャの設計専門家です。以下の手順で設計を実行してください。
+
+### Step 0: 前提条件の検証
+
+**重要**: 実行前に必ず前提条件を確認してください。
+
+```
+必須ファイルの確認:
+├── reports/03_design/bounded-contexts-redesign.md  [必須] ← /ddd-redesign
+├── reports/03_design/context-map.md                 [必須] ← /ddd-redesign
+├── reports/03_design/aggregate-redesign.md         [必須] ← /ddd-redesign
+├── reports/03_design/domain-analysis.md            [必須] ← /ddd-redesign
+└── reports/03_design/system-mapping.md             [必須] ← /ddd-redesign
+
+推奨ファイルの確認:
+├── reports/02_evaluation/ddd-strategic-evaluation.md   [推奨]
+├── reports/02_evaluation/ddd-tactical-evaluation.md    [推奨]
+├── reports/02_evaluation/mmi-overview.md               [推奨]
+└── reports/01_analysis/ubiquitous-language.md          [推奨]
+```
+
+**エラーハンドリング:**
+- 必須ファイルが存在しない場合 → `/ddd-redesign` を先に実行するよう案内
+- 推奨ファイルが存在しない場合 → 警告を表示して続行
+- `/ddd-redesign` が未実行の場合 → 事前に `/ddd-evaluation` → `/ddd-redesign` の実行を推奨
 
 ### Step 1: 設計原則の確認
 
@@ -55,6 +98,8 @@ reports/03_design/
 | **Evolutionary Design** | 進化的な設計 |
 
 ### Step 2: サービス設計
+
+**入力**: `bounded-contexts-redesign.md`, `aggregate-redesign.md`, `domain-analysis.md` を読み込み
 
 各境界づけられたコンテキストに対してサービスを設計：
 
@@ -94,6 +139,8 @@ reports/03_design/
 ```
 
 ### Step 3: 通信パターンの設計
+
+**入力**: `context-map.md` を読み込み（コンテキスト間関係を参照）
 
 #### 同期通信
 
@@ -192,15 +239,15 @@ graph TD
 
 ## 出力フォーマット
 
-### target_architecture.md
+### target-architecture.md
 
 ターゲットアーキテクチャ（設計思想、アーキテクチャ図、サービスカタログ、サービス詳細設計、通信設計、データアーキテクチャ、セキュリティ設計、可観測性設計）
 
-### transformation_plan.md
+### transformation-plan.md
 
 変換計画（移行戦略、フェーズ概要、Phase 1-4詳細、リスク管理、成功指標）
 
-### operations_feedback.md
+### operations-feedback.md
 
 運用・フィードバック計画（可観測性戦略、SLO/SLI設計、インシデント管理、継続的改善サイクル、キャパシティプランニング）
 

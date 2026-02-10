@@ -16,6 +16,7 @@ description: |
 
   出力: Markdown形式の見積もり結果 + HTML形式のレポート
   費用: USD/JPY両建て（為替レート明記）
+user_invocable: true
 ---
 
 # ScalarDB Cluster サイジング見積もりスキル
@@ -287,6 +288,41 @@ C) SQL Warehouse - SQLクエリ専用（JDBC接続）
 ※ DatabricksはAccess Mode「No isolation shared」が必須
 ```
 
+#### ScalarDB Analytics 課金モデル（Analyticsを選択した場合）
+```
+Q: ScalarDB Analytics の課金モデルを選択してください
+A) 直接契約（SDBU課金）- 33.5円/SDBU/時間、長期利用・本番環境向け
+B) AWS Marketplace Pay-as-you-go - $0.0000232/unit、PoC・短期利用向け
+
+※ 直接契約: 最小6 SDBU、詳細なサイジング計画が可能
+※ AWS Marketplace: AWS請求に一本化、いつでもキャンセル可能
+※ 詳細は references/scalardb-analytics-sizing.md セクション10を参照
+```
+
+#### ScalarDB Analytics SDBU構成（直接契約を選択した場合）
+```
+Q: ScalarDB Analytics のSDBU（課金単位）構成を選択してください
+A) 最小構成（6 SDBU）- 最小コスト、開発/PoC向け
+B) 小規模（12 SDBU）- XL×2台相当、小規模本番
+C) 中規模（24 SDBU）- XL×4台相当、標準本番
+D) 大規模（48 SDBU）- XL×8台相当、大規模分析
+E) カスタム - 具体的なSDBU数を指定
+
+※ SDBU単価: 33.5円/SDBU/時間
+※ 最小構成: 6 SDBU（約14.7万円/月・常時稼働時）
+```
+
+#### ScalarDB Analytics 稼働パターン（Analyticsを選択した場合）
+```
+Q: ScalarDB Analytics の稼働パターンを選択してください
+A) 24/7常時稼働 - 730時間/月（本番環境、リアルタイム分析）
+B) 業務時間のみ - 約200時間/月（10時間/日×20日）
+C) バッチ処理のみ - 約80時間/月（4時間/日×20日）
+D) 断続利用 - 具体的な稼働時間を指定
+
+※ 稼働時間を最適化することでSDBO費用を大幅削減可能
+```
+
 ## 2. 環境別デフォルト構成
 
 ### 開発環境
@@ -447,11 +483,87 @@ USD/JPY = 150円（見積もり時点の想定レート）
 ※ AWS Marketplace Pay-as-you-go: $1.40/Pod/時間 × 730時間 = $1,022/Pod/月 ≈ ¥153,300/Pod/月
 ※ 参照: https://aws.amazon.com/marketplace/pp/prodview-jx6qxatkxuwm4
 
-### 4.3 費用削減オプション
+### 4.3 ScalarDB Analytics ライセンス費用（Analyticsを使用する場合）
+
+ScalarDB Analytics には2つの課金モデルがあります。
+
+#### 課金モデル比較
+
+| 課金モデル | 課金単位 | 単価 | 推奨用途 |
+|-----------|---------|------|---------|
+| **直接契約（SDBU）** | SDBU | 33.5円/SDBU/時間 | 本番環境、長期利用 |
+| **AWS Marketplace** | メータリング単位 | $0.0000232/unit | PoC、短期利用 |
+
+---
+
+#### 直接契約（SDBU課金）
+
+**SDBU基本情報**
+| 項目 | 値 |
+|------|-----|
+| **課金単位** | SDBU (ScalarDB Unit) |
+| **単価** | 33.5円/SDBU/時間 |
+| **最小構成** | 6 SDBU |
+| **最小月額費用** | 約14.7万円/月（6 SDBU × 730時間 × 33.5円） |
+
+**SDBU ⇔ VMサイズ対応表**
+| VMサイズ | vCPU | メモリ | SDBU数 |
+|---------|------|--------|--------|
+| XS | 2 | 8GB | 0.4 |
+| S | 4 | 16GB | 0.75 |
+| M | 8 | 32GB | 1.5 |
+| L | 16 | 64GB | 3.0 |
+| XL | 32 | 128GB | 6.0 |
+| 2XL | 64 | 256GB | 12.0 |
+
+**運用パターン別SDBU費用目安**
+| パターン | SDBU構成 | 稼働時間 | 月額SDBU費用 |
+|---------|---------|---------|-------------|
+| 最小/開発 | 6 SDBU | 200時間 | 約4.0万円 |
+| 小規模/本番 | 12 SDBU | 730時間 | 約29.4万円 |
+| 中規模/本番 | 24 SDBU | 730時間 | 約58.7万円 |
+| 大規模/本番 | 48 SDBU | 730時間 | 約117.4万円 |
+| バッチ専用 | 12 SDBU | 80時間 | 約3.2万円 |
+
+**SDBU費用計算式**
+```
+月額SDBU費用 = SDBU数 × 月間稼働時間 × 33.5円
+
+例: 24 SDBU × 730時間 × 33.5円 = 約58.7万円/月
+```
+
+---
+
+#### AWS Marketplace Pay-as-you-go
+
+**製品情報**
+| 項目 | 値 |
+|------|-----|
+| **製品名** | ScalarDB Analytics Server |
+| **単価** | $0.0000232/unit |
+| **課金方式** | 従量課金（メータリング） |
+| **参照** | [AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-53ik57autkmci) |
+
+**メリット・デメリット**
+| メリット | デメリット |
+|---------|----------|
+| AWS請求に一本化 | 長期利用では直接契約より割高の可能性 |
+| 契約手続き不要 | 返金なし |
+| いつでもキャンセル可能 | メータリング単位の詳細は要確認 |
+| 短期利用・PoC向け | - |
+
+**問い合わせ先**: marketplace-support@scalar-labs.com
+
+---
+
+※ 詳細は `references/scalardb-analytics-sizing.md` セクション10を参照
+
+### 4.4 費用削減オプション
 
 - Reserved Instances: 〜40% 削減
 - Savings Plans: 〜30% 削減
 - Spot Instances (開発/テスト): 〜70% 削減
+- **ScalarDB Analytics稼働時間最適化**: 〜70% 削減（業務時間のみ稼働）
 
 ## 5. 出力フォーマット
 

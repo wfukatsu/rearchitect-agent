@@ -116,6 +116,47 @@ WHERE a.name = 'X' AND b.name = 'Y'
 RETURN path
 ```
 
+#### ビジネスプロセス検索パターン
+
+```
+「注文処理のフロー」
+↓
+MATCH (p:BusinessProcess)-[:HAS_ACTIVITY]->(a:Activity)
+WHERE p.name_ja CONTAINS '注文'
+OPTIONAL MATCH (a)-[n:NEXT_ACTIVITY]->(next:Activity)
+RETURN p.name_ja AS process, a.name_ja AS activity, a.sequence_order, next.name_ja AS next_activity, n.condition
+ORDER BY a.sequence_order
+```
+
+#### システムプロセス検索パターン
+
+```
+「Sagaの補償フローを見せて」
+↓
+MATCH (sp:SystemProcess {type: 'saga'})-[:COMPENSATES]->(comp:SystemProcess)
+RETURN sp.name AS saga_step, comp.name AS compensating_step
+```
+
+#### アクティビティ実行者検索パターン
+
+```
+「誰が承認を行うか」
+↓
+MATCH (actor:Actor)-[:PERFORMS]->(a:Activity)
+WHERE a.name_ja CONTAINS '承認'
+RETURN actor.name AS performer, a.name_ja AS activity
+```
+
+#### プロセス参加エンティティ検索パターン
+
+```
+「注文処理に関わるエンティティ」
+↓
+MATCH (e:Entity)-[:PARTICIPATES_IN]->(p:BusinessProcess)
+WHERE p.name_ja CONTAINS '注文'
+RETURN e.name, e.type, e.file_path
+```
+
 ### Step 3: クエリ実行
 
 Pythonスクリプトでクエリを実行：
@@ -162,8 +203,8 @@ Read ツールで該当ファイルを表示
 分析結果から該当する仕様を検索：
 
 ```
-reports/01_analysis/domain_code_mapping.md
-reports/01_analysis/ubiquitous_language.md
+reports/01_analysis/domain-code-mapping.md
+reports/01_analysis/ubiquitous-language.md
 ```
 
 ### Step 5: レスポンス生成
@@ -263,6 +304,76 @@ RETURN f1.path, f2.path, count(*) AS dependencies
 ORDER BY dependencies DESC
 ```
 
+### 8. ビジネスプロセスの全フロー
+
+```cypher
+MATCH (p:BusinessProcess {name: 'OrderProcessing'})-[:HAS_ACTIVITY]->(a:Activity)
+OPTIONAL MATCH (a)-[n:NEXT_ACTIVITY]->(next:Activity)
+OPTIONAL MATCH (actor:Actor)-[:PERFORMS]->(a)
+RETURN a.name_ja AS activity,
+       a.sequence_order AS order,
+       next.name_ja AS next_activity,
+       n.condition AS condition,
+       actor.name AS performer
+ORDER BY a.sequence_order
+```
+
+### 9. Sagaの補償フロー
+
+```cypher
+MATCH (sp:SystemProcess {type: 'saga'})-[:HAS_ACTIVITY]->(a:Activity)
+OPTIONAL MATCH (a)-[:INVOKES]->(m:Method)
+OPTIONAL MATCH (sp)-[:COMPENSATES]->(comp:SystemProcess)
+RETURN sp.name AS saga,
+       a.name AS step,
+       m.name AS method,
+       comp.name AS compensating_action
+```
+
+### 10. アクターのアクティビティマップ
+
+```cypher
+MATCH (actor:Actor)-[:PERFORMS]->(a:Activity)<-[:HAS_ACTIVITY]-(p:BusinessProcess)
+RETURN actor.name AS actor,
+       p.name_ja AS process,
+       collect(a.name_ja) AS activities
+```
+
+### 11. プロセスとエンティティの関係
+
+```cypher
+MATCH (e:Entity)-[:PARTICIPATES_IN]->(p:BusinessProcess)
+OPTIONAL MATCH (e)-[:HAS_TERM]->(t:UbiquitousTerm)
+RETURN p.name_ja AS process,
+       e.name AS entity,
+       t.name_ja AS term
+ORDER BY p.name_ja
+```
+
+### 12. システムプロセスのトリガー関係
+
+```cypher
+MATCH (a:Activity)-[t:TRIGGERS]->(sp:SystemProcess)
+OPTIONAL MATCH (sp)-[:INVOKES]->(m:Method)
+RETURN a.name_ja AS triggering_activity,
+       t.event_name AS event,
+       sp.name AS system_process,
+       sp.type AS process_type,
+       collect(m.name) AS methods
+```
+
+### 13. 非同期処理の一覧
+
+```cypher
+MATCH (sp:SystemProcess)
+WHERE sp.is_async = true
+OPTIONAL MATCH (sp)-[:INVOKES]->(m:Method)
+RETURN sp.name AS process,
+       sp.type AS type,
+       sp.timeout_ms AS timeout,
+       collect(m.name) AS methods
+```
+
 ## 対話的探索
 
 ユーザーとの対話を通じて、段階的に探索を深めることができます：
@@ -276,6 +387,33 @@ Agent: [OrderServiceのソースコードと依存関係を表示]
 
 User: このサービスを呼び出しているのは？
 Agent: [OrderServiceを呼び出しているメソッドを表示]
+```
+
+### プロセス探索の対話例
+
+```
+User: 注文処理のフローを教えて
+Agent: [BusinessProcess "OrderProcessing" のアクティビティ一覧を表示]
+       1. ValidateOrder (注文検証)
+       2. CheckInventory (在庫確認)
+       3. IsHighValue (高額判定) ← 分岐点
+       4. ProcessPayment (決済処理)
+       5. SendConfirmation (確認送信)
+
+User: 高額判定で分岐した後はどうなる？
+Agent: [IsHighValue の NEXT_ACTIVITY を表示]
+       - amount < 100000 → ProcessPayment
+       - amount >= 100000 → ApprovalRequired (承認必要)
+
+User: 承認は誰が行うの？
+Agent: [PERFORMS リレーションを検索]
+       承認者: SalesManager (営業マネージャー)
+
+User: 決済処理でエラーが起きたらどうなる？
+Agent: [OrderSaga の COMPENSATES を表示]
+       補償アクション:
+       - ProcessPayment → RefundPayment (返金処理)
+       - ReserveInventory → ReleaseInventory (在庫解放)
 ```
 
 ## エラーハンドリング

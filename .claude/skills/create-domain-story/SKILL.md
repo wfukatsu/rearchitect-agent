@@ -178,12 +178,12 @@ async function facilitateDomainStory(domainName) {
 既存の分析結果から推論：
 
 1. **アクター抽出**
-   - `actors_roles_permissions.md` から人間アクター
-   - `current_system_overview.md` からシステムアクター
+   - `actors-roles-permissions.md` から人間アクター
+   - `system-overview.md` からシステムアクター
 
 2. **ワークアイテム抽出**
-   - `ubiquitous_language.md` からエンティティ
-   - `domain_code_mapping.md` からデータオブジェクト
+   - `ubiquitous-language.md` からエンティティ
+   - `domain-code-mapping.md` からデータオブジェクト
 
 3. **アクティビティ推論**
    - API定義からCRUD操作を特定

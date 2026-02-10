@@ -29,61 +29,139 @@ user_invocable: true
 - `--analyze-only` - 分析のみ実行（設計書生成なし）
 - `--skip-mmi` - MMI評価をスキップ
 - `--domain=[ドメイン名]` - 特定ドメインのみ対象
-- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `reports/`）
+- `--output=[出力パス]` - 出力先ディレクトリ指定（デフォルト: `./reports/`、カレントディレクトリ配下）
+
+## ユーザー入力確認（必須）
+
+**重要**: このスキルを実行する前に、必ず以下の項目をユーザーに確認してください。
+
+### 1. 調査対象フォルダの確認
+
+引数で対象パスが指定されていない場合は、AskUserQuestionツールで質問してください：
+
+```json
+{
+  "questions": [{
+    "question": "調査対象のフォルダパスを指定してください",
+    "header": "対象フォルダ",
+    "options": [
+      {"label": "カレントディレクトリ", "description": "現在のディレクトリ全体を調査"},
+      {"label": "src/", "description": "srcディレクトリを調査"},
+      {"label": "パス指定", "description": "カスタムパスを入力"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
+### 2. 出力先ディレクトリの確認
+
+デフォルト出力先: `./reports/`（カレントディレクトリ配下）
+
+```json
+{
+  "questions": [{
+    "question": "レポートの出力先ディレクトリを確認してください",
+    "header": "出力先",
+    "options": [
+      {"label": "./reports/ (推奨)", "description": "カレントディレクトリ配下のreportsフォルダ"},
+      {"label": "カスタムパス", "description": "別のパスを指定"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
 
 ## 出力ファイル構造
 
 ```
 reports/
 ├── 00_summary/
-│   └── executive_summary.md          # エグゼクティブサマリー
+│   └── executive-summary.md          # エグゼクティブサマリー
 ├── 01_analysis/
-│   ├── ubiquitous_language.md        # ユビキタス言語集
-│   ├── actors_roles_permissions.md   # アクター・ロール・権限
-│   ├── domain_code_mapping.md        # ドメイン-コード対応表
-│   └── current_system_overview.md    # 現行システム概要
+│   ├── ubiquitous-language.md        # ユビキタス言語集
+│   ├── actors-roles-permissions.md   # アクター・ロール・権限
+│   ├── domain-code-mapping.md        # ドメイン-コード対応表
+│   └── system-overview.md            # 現行システム概要
 ├── 02_evaluation/
-│   ├── mmi_overview.md               # MMI全体サマリー
-│   ├── mmi_by_module.md              # モジュール別MMI
-│   └── mmi_improvement_plan.md       # MMI改善計画
+│   ├── mmi-overview.md               # MMI全体サマリー
+│   ├── mmi-by-module.md              # モジュール別MMI
+│   └── mmi-improvement-plan.md       # MMI改善計画
 ├── 03_design/
-│   ├── domain_analysis.md            # ドメイン分析
-│   ├── system_mapping.md             # システムマッピング
-│   ├── target_architecture.md        # ターゲットアーキテクチャ
-│   ├── transformation_plan.md        # 変換計画
-│   ├── operations_feedback.md        # 運用・フィードバック計画
-│   ├── scalardb_architecture.md      # ScalarDBアーキテクチャ設計
-│   ├── scalardb_schema.md            # ScalarDBスキーマ設計
-│   ├── scalardb_transaction.md       # ScalarDBトランザクション設計
-│   └── scalardb_migration.md         # ScalarDBマイグレーション計画
+│   ├── domain-analysis.md            # ドメイン分析
+│   ├── system-mapping.md             # システムマッピング
+│   ├── target-architecture.md        # ターゲットアーキテクチャ
+│   ├── transformation-plan.md        # 変換計画
+│   ├── operations-feedback.md        # 運用・フィードバック計画
+│   ├── scalardb-architecture.md      # ScalarDBアーキテクチャ設計
+│   ├── scalardb-schema.md            # ScalarDBスキーマ設計
+│   ├── scalardb-transaction.md       # ScalarDBトランザクション設計
+│   └── scalardb-migration.md         # ScalarDBマイグレーション計画
 ├── 04_stories/
-│   └── [domain]_story.md             # ドメイン別ストーリー
-└── 05_estimate/
-    ├── cost-summary.md               # コストサマリー
-    ├── infrastructure-detail.md      # インフラ詳細見積もり
-    ├── license-requirements.md       # ライセンス要件・問い合わせ情報
-    └── cost-assumptions.md           # 見積もり前提条件
+│   └── [domain]-story.md             # ドメイン別ストーリー
+├── 05_estimate/
+│   ├── cost-summary.md               # コストサマリー
+│   ├── infrastructure-detail.md      # インフラ詳細見積もり
+│   ├── license-requirements.md       # ライセンス要件・問い合わせ情報
+│   └── cost-assumptions.md           # 見積もり前提条件
+├── 06_implementation/                # AIコーディング用実装仕様
+│   ├── domain-services-spec.md       # ドメインサービスのメソッド仕様
+│   ├── repository-interfaces-spec.md # リポジトリインターフェース仕様
+│   ├── value-objects-spec.md         # 値オブジェクト詳細仕様
+│   ├── exception-mapping.md          # 例外マッピング表
+│   ├── saga-orchestration-spec.md    # Saga仕様
+│   ├── implementation-checklist.md   # 実装チェックリスト
+│   └── api-gateway-implementation-spec.md # API Gateway実装仕様
+└── 07_test-specs/                    # テスト仕様
+    ├── bdd-scenarios/                # Gherkin形式のBDDシナリオ
+    ├── unit-test-specs.md            # ユニットテスト仕様
+    ├── integration-test-specs.md     # 統合テスト仕様
+    ├── edge-case-specs.md            # 境界値・エラーケース
+    ├── performance-test-specs.md     # パフォーマンステスト仕様
+    └── test-data-requirements.md     # テストデータ定義
 ```
+
+## 進捗追跡レジストリ
+
+パイプラインの進捗は `work/{project}/pipeline-progress.json` に記録されます。
+詳細は `.claude/skills/common/progress-registry.md` を参照してください。
+
+### レジストリの活用
+
+1. **中断からの再開**: レジストリを参照して完了済みフェーズをスキップ
+2. **前提条件チェック**: 各フェーズの依存関係を検証
+3. **進捗レポート**: 全体の完了状況を可視化
 
 ## 実行フロー
 
 ```mermaid
 graph TD
-    A[開始] --> B[入力確認]
-    B --> C{設計書あり?}
-    C -->|Yes| D[設計書解析]
-    C -->|No| E[コード解析のみ]
-    D --> F[システム分析エージェント]
+    A["開始"] --> B["入力確認"]
+    B --> PR["進捗レジストリ初期化"]
+    PR --> C{"設計書あり?"}
+    C -->|Yes| D["設計書解析"]
+    C -->|No| E["コード解析のみ"]
+    D --> F["Phase 1: /analyze-system"]
     E --> F
-    F --> G[MMI評価エージェント]
-    G --> H[ドメインマッピングエージェント]
-    H --> I[マイクロサービス設計エージェント]
-    I --> J[ScalarDB設計エージェント]
-    J --> K[ドメインストーリーエージェント]
-    K --> CE[コスト見積もりエージェント]
-    CE --> MV[Mermaid図検証・修正]
-    MV --> L[最終レポート生成]
-    L --> M[終了]
+    F --> G["Phase 2a: /evaluate-mmi"]
+    F --> G2["Phase 2b: /ddd-evaluation"]
+    G --> H["Phase 2.5: /integrate-evaluations"]
+    G2 --> H
+    H --> I["Phase 3: /ddd-redesign"]
+    I --> J["Phase 4: /design-microservices"]
+    J --> K["Phase 4.5: /design-api"]
+    J --> L["Phase 5: /design-scalardb"]
+    K --> IMPL["Phase 6: /design-implementation"]
+    L --> IMPL
+    IMPL --> TEST["Phase 7: /generate-test-specs"]
+    TEST --> M["Phase 9: /estimate-cost"]
+    M --> N["Phase 10: /create-domain-story"]
+    N --> MV["Phase 12: /fix-mermaid"]
+    MV --> O["Phase 13: エグゼクティブサマリー"]
+    O --> P["終了"]
+
+    F --> BG["/build-graph"]
+    BG --> Q["グラフ完了"]
 ```
 
 ## 処理詳細
@@ -91,55 +169,74 @@ graph TD
 **重要**: 各Phaseは完了時に即座に対応するファイルを `reports/` ディレクトリに出力します。
 最後にまとめて出力するのではなく、解析中にリアルタイムでファイルを生成してください。
 
-### Phase 1: 入力収集と初期分析
+### 初期化: 入力収集と初期分析
 
-1. 出力ディレクトリの作成: `mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,graph/data,99_appendix}`
+1. 出力ディレクトリの作成: `mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}`
 2. 対象ディレクトリのスキャン
 3. 設計書ファイルの特定（`.md`, `.docx`, `.xlsx`, `.pdf` など）
 4. ソースコードの構造解析
 5. 使用技術スタックの特定
 
-**Phase 1完了時に出力**: `reports/00_summary/project_metadata.json`
+**初期化完了時に出力**: `reports/00_summary/project_metadata.json`
 
-### Phase 2: システム分析
+### Phase 1: システム分析
 
-Taskツールで `system-analyzer` エージェントを起動し、以下を実行：
+Taskツールで `/analyze-system` スキルを実行し、以下を抽出：
 - ユビキタス言語の抽出
 - アクター・ロール・権限の整理
 - ドメイン境界の初期推定
 
-**Phase 2完了時に出力**:
+**Phase 1完了時に出力**:
 - `reports/01_analysis/system-overview.md`
 - `reports/01_analysis/ubiquitous-language.md`
 - `reports/01_analysis/actors-roles-permissions.md`
 - `reports/01_analysis/domain-code-mapping.md`
 
-### Phase 3: MMI評価
+### Phase 2a/2b: MMI評価・DDD評価（並行実行）
 
-Taskツールで `mmi-evaluator` エージェントを起動し、以下を評価：
+Taskツールで `mmi-evaluator` と `ddd-evaluator` エージェントを並行起動。
+
+**MMI評価 (Phase 2a)**:
 - **Cohesion（凝集度）** - 30%
 - **Coupling（結合度）** - 30%
 - **Independence（独立性）** - 20%
 - **Reusability（再利用性）** - 20%
 
-**Phase 3完了時に出力**:
+**Phase 2a完了時に出力**:
 - `reports/02_evaluation/mmi-overview.md`
 - `reports/02_evaluation/mmi-by-module.md`
 - `reports/02_evaluation/mmi-improvement-plan.md`
 
-### Phase 4: ドメインマッピング
+**DDD評価 (Phase 2b)完了時に出力**:
+- `reports/02_evaluation/ddd-strategic-evaluation.md`
+- `reports/02_evaluation/ddd-tactical-evaluation.md`
+- `reports/02_evaluation/ddd-improvement-plan.md`
+
+### Phase 2.5: 評価統合
+
+**スキル**: `/integrate-evaluations`
+
+Phase 2a と Phase 2b の結果を統合し、優先度付き改善計画を策定。
+
+**Phase 2.5完了時に出力**:
+- `reports/02_evaluation/integrated-evaluation.md`
+- `reports/02_evaluation/unified-improvement-plan.md`
+
+### Phase 3: DDD再設計・ドメインマッピング
 
 Taskツールで `domain-mapper` エージェントを起動し、以下を実行：
 - 設計書の概念とコードの対応付け
 - ドメインタイプの分類（Pipeline/Blackboard/Dialogue）
 - マイクロサービス境界の分類（Process/Master/Integration/Supporting）
+- 境界コンテキスト、集約の再設計
 
-**Phase 4完了時に出力**:
+**Phase 3完了時に出力**:
 - `reports/03_design/domain-analysis.md`
 - `reports/03_design/context-map.md`
-- `reports/03_design/system-mapping.md`
+- `reports/03_design/bounded-contexts-redesign.md`
+- `reports/03_design/aggregate-redesign.md`
 
-### Phase 5: マイクロサービス設計
+### Phase 4: マイクロサービス設計
 
 Taskツールで `microservice-architect` エージェントを起動し、以下を策定：
 - コンテキストマップ
@@ -147,12 +244,22 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 - データストレージ設計
 - 移行計画
 
-**Phase 5完了時に出力**:
+**Phase 4完了時に出力**:
 - `reports/03_design/target-architecture.md`
 - `reports/03_design/transformation-plan.md`
 - `reports/03_design/operations-feedback.md`
 
-### Phase 6: ScalarDB設計
+### Phase 4.5: API設計
+
+**スキル**: `/design-api`
+
+**Phase 4.5完了時に出力**:
+- `reports/03_design/api-design-overview.md`
+- `reports/03_design/api-gateway-design.md`
+- `reports/03_design/api-security-design.md`
+- `reports/03_design/api-specifications/*.yaml`
+
+### Phase 5: ScalarDB設計
 
 Taskツールで `scalardb-architect` エージェントを起動し、以下を策定：
 - **デプロイモード選定** - ScalarDB Core（ライブラリ）vs Cluster（サーバー）
@@ -161,23 +268,54 @@ Taskツールで `scalardb-architect` エージェントを起動し、以下を
 - **トランザクション設計** - Consensus Commit、Two-Phase Commit、Sagaパターン
 - **マイグレーション計画** - 既存DBからの移行戦略
 
-**Phase 6完了時に出力**:
+**Phase 5完了時に出力**:
 - `reports/03_design/scalardb-architecture.md`
 - `reports/03_design/scalardb-schema.md`
 - `reports/03_design/scalardb-transaction.md`
 - `reports/03_design/scalardb-migration.md`
 
-### Phase 7: ドメインストーリー
+### Phase 6: 実装仕様生成
 
-Taskツールで `domain-storyteller` エージェントを起動し、各ドメインについて：
-- アクター特定
-- ワークアイテム整理
-- アクティビティフロー記述
-- 例外シナリオ検討
+Taskツールで `implementation-designer` エージェントを起動し、AIコーディング用の詳細仕様を策定：
+- **ドメインサービス仕様** - メソッドシグネチャ、バリデーション、イベント発行
+- **リポジトリインターフェース仕様** - メソッド、クエリ、キャッシュ設定
+- **値オブジェクト詳細仕様** - 型定義、バリデーション、操作メソッド
+- **例外マッピング表** - ドメイン例外 → HTTPステータス変換
+- **Sagaオーケストレーション仕様** - ステップ定義、補償トランザクション
+- **API Gateway実装仕様** - Kong設定、認証プラグイン、レート制限、サーキットブレーカー
 
-**Phase 7完了時に出力**: `reports/04_stories/[domain]-story.md`
+**Phase 6完了時に出力**:
+- `reports/06_implementation/domain-services-spec.md`
+- `reports/06_implementation/repository-interfaces-spec.md`
+- `reports/06_implementation/value-objects-spec.md`
+- `reports/06_implementation/exception-mapping.md`
+- `reports/06_implementation/saga-orchestration-spec.md`
+- `reports/06_implementation/implementation-checklist.md`
+- `reports/06_implementation/api-gateway-implementation-spec.md`
 
-### Phase 8: コスト見積もり
+### Phase 7: テスト仕様生成
+
+Taskツールで `test-spec-generator` エージェントを起動し、テストコード実装用の仕様を策定：
+- **BDDシナリオ** - Gherkin形式のビジネスシナリオ
+- **ユニットテスト仕様** - クラス・メソッド単位のテストケース
+- **統合テスト仕様** - サービス間連携のテスト
+- **エッジケース仕様** - 境界値・異常系テスト
+- **パフォーマンステスト仕様** - 負荷・応答時間テスト
+
+**Phase 7完了時に出力**:
+- `reports/07_test-specs/bdd-scenarios/*.feature`
+- `reports/07_test-specs/unit-test-specs.md`
+- `reports/07_test-specs/integration-test-specs.md`
+- `reports/07_test-specs/edge-case-specs.md`
+- `reports/07_test-specs/performance-test-specs.md`
+- `reports/07_test-specs/test-data-requirements.md`
+
+### Phase 8: コード生成（スキップ）
+
+**注意**: `/refactor-system` はコード生成なしの分析・設計オーケストレーターです。
+コード生成（Phase 8: `/generate-scalardb-code`）が必要な場合は `/full-pipeline` を使用してください。
+
+### Phase 9: コスト見積もり
 
 Taskツールで `cost-estimator` エージェントを起動し、以下を策定：
 - **クラウドインフラ費用** - Kubernetes、データベース、ネットワーク、ストレージ
@@ -185,13 +323,23 @@ Taskツールで `cost-estimator` エージェントを起動し、以下を策�
 - **運用費用** - 監視、バックアップ、サポート
 - **初期構築費用** - 移行、開発、トレーニング
 
-**Phase 8完了時に出力**:
+**Phase 9完了時に出力**:
 - `reports/05_estimate/cost-summary.md`
 - `reports/05_estimate/infrastructure-detail.md`
 - `reports/05_estimate/license-requirements.md`
 - `reports/05_estimate/cost-assumptions.md`
 
-### Phase 9: Mermaid図の検証・修正
+### Phase 10: ドメインストーリー
+
+Taskツールで `domain-storyteller` エージェントを起動し、各ドメインについて：
+- アクター特定
+- ワークアイテム整理
+- アクティビティフロー記述
+- 例外シナリオ検討
+
+**Phase 10完了時に出力**: `reports/04_stories/[domain]-story.md`
+
+### Phase 12: Mermaid図の検証・修正
 
 全レポートのMermaid図を検証し、シンタックスエラーがあれば修正：
 
@@ -212,24 +360,46 @@ Taskツールで `cost-estimator` エージェントを起動し、以下を策�
 - エッジラベルの特殊文字
 - sequenceDiagramの予約語（BOX等）
 
-**Phase 9完了時に出力**: 修正ログ（コンソール出力）
+**Phase 12完了時に出力**: 修正ログ（コンソール出力）
 
-### Phase 10: エグゼクティブサマリー
+### Phase 13: エグゼクティブサマリー
 
 全Phaseの結果を統合し、エグゼクティブサマリーを作成。
 
-**Phase 10完了時に出力**: `reports/00_summary/executive-summary.md`
+**Phase 13完了時に出力**: `reports/00_summary/executive-summary.md`
 
 ## 依存スキル
 
 このスキルは以下のサブスキルを使用します：
+
+### コア分析スキル
+- `/system-investigation` - 現行システム調査（オプション）
+- `/security-analysis` - セキュリティ分析（OWASP Top 10、ゼロトラスト準備度）
+- `/access-control-analysis` - アクセス制御分析（ゼロトラストモデル）
 - `/analyze-system` - システム分析
+- `/data-model-analysis` - データモデル分析（エンティティ、リレーションシップ、ドメインルール）
+- `/db-design-analysis` - DB設計分析（テーブル定義、インデックス、正規化）
+- `/er-diagram-analysis` - ER図分析（現行ER図の生成）
+
+### 評価スキル
 - `/evaluate-mmi` - MMI評価
-- `/map-domains` - ドメインマッピング
+- `/ddd-evaluation` - DDD評価
+- `/integrate-evaluations` - 評価統合
+
+### 設計スキル
+- `/ddd-redesign` - DDD再設計（境界コンテキスト、集約、コンテキストマップ）
 - `/design-microservices` - マイクロサービス設計
+- `/design-api` - API設計（REST/GraphQL/gRPC/AsyncAPI）
 - `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
+
+### 実装仕様スキル
+- `/design-implementation` - 実装仕様（ドメインサービス、リポジトリ、値オブジェクト、例外マッピング）
+- `/generate-test-specs` - テスト仕様（BDDシナリオ、ユニットテスト、統合テスト）
+
+### 補助スキル
 - `/create-domain-story` - ドメインストーリー作成
 - `/estimate-cost` - コスト見積もり（クラウドインフラ・ライセンス）
+- `/build-graph` - ナレッジグラフ構築
 - `/fix-mermaid` - Mermaid図の検証・修正
 
 ## 使用例

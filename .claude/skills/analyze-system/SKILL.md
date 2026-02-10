@@ -17,9 +17,50 @@ user_invocable: true
 3. **ドメイン-コード対応表** - 設計書の概念とコードの紐付け
 4. **現行システム概要** - 技術スタック、アーキテクチャの概要
 
+## ユーザー入力確認（必須）
+
+**重要**: このスキルを実行する前に、必ず以下の項目をユーザーに確認してください。
+
+### 1. 調査対象フォルダの確認
+
+引数で対象パスが指定されていない場合は、AskUserQuestionツールで質問してください：
+
+```json
+{
+  "questions": [{
+    "question": "調査対象のフォルダパスを指定してください",
+    "header": "対象フォルダ",
+    "options": [
+      {"label": "カレントディレクトリ", "description": "現在のディレクトリ全体を調査"},
+      {"label": "src/", "description": "srcディレクトリを調査"},
+      {"label": "パス指定", "description": "カスタムパスを入力"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
+### 2. 出力先ディレクトリの確認
+
+デフォルト出力先: `./reports/`（カレントディレクトリ配下）
+
+```json
+{
+  "questions": [{
+    "question": "レポートの出力先ディレクトリを確認してください",
+    "header": "出力先",
+    "options": [
+      {"label": "./reports/ (推奨)", "description": "カレントディレクトリ配下のreportsフォルダ"},
+      {"label": "カスタムパス", "description": "別のパスを指定"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
 ## 出力先ディレクトリ
 
-解析結果は `reports/01_analysis/` に出力します。
+解析結果は `./reports/01_analysis/` に出力します（カレントディレクトリ配下）。
 **重要**: 各ステップ完了時に即座にファイルを出力してください（最後にまとめて出力しない）。
 
 ```
@@ -33,6 +74,11 @@ reports/
     └── domain-code-mapping.md   # Step 6完了時
 ```
 
+## サブエージェント活用
+
+大規模コードベースの場合、Task toolのExploreエージェントを並列起動して効率的に情報収集できます。
+詳細は `.claude/skills/common/sub-agent-patterns.md` の「Pattern 1: コードベース探索エージェント」を参照。
+
 ## 実行プロンプト
 
 あなたは既存システムを分析する専門家エージェントです。以下の手順で分析を実行してください。
@@ -43,7 +89,7 @@ reports/
 
 ```bash
 # 出力ディレクトリの作成
-mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,graph/data,99_appendix}
+mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}
 ```
 
 ```
@@ -135,7 +181,7 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 
 ## 出力フォーマット
 
-### 1. ubiquitous_language.md
+### 1. ubiquitous-language.md
 
 ```markdown
 # ユビキタス言語集
@@ -166,7 +212,7 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 |------|------|---------|------|
 ```
 
-### 2. actors_roles_permissions.md
+### 2. actors-roles-permissions.md
 
 ```markdown
 # アクター・ロール・権限
@@ -199,7 +245,7 @@ sequenceDiagram
 ```
 ```
 
-### 3. domain_code_mapping.md
+### 3. domain-code-mapping.md
 
 ```markdown
 # ドメイン-コード対応表
@@ -232,7 +278,7 @@ sequenceDiagram
 |------------|-------------|------------------|
 ```
 
-### 4. current_system_overview.md
+### 4. system-overview.md
 
 ```markdown
 # 現行システム概要

@@ -19,9 +19,18 @@ user_invocable: true
 
 ## 前提条件
 
+**環境:**
 - Python 3.9+
 - ryugraph パッケージ (`pip install ryugraph`)
-- `/analyze-system` が実行済み（推奨、なくてもコードから構築可能）
+
+**推奨（/analyze-system の出力）:**
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
+- `reports/01_analysis/domain-code-mapping.md` - ドメイン-コード対応
+- `reports/01_analysis/actors-roles-permissions.md` - アクター・ロール
+- `reports/01_analysis/system-overview.md` - システム概要
+
+**必須:**
+- 対象コードベースへのアクセス
 
 ## グラフスキーマ
 
@@ -36,6 +45,44 @@ user_invocable: true
 | `File` | ソースファイル | path (PK), language, module |
 | `Actor` | アクター（人/システム） | name (PK), type, description |
 | `Role` | ロール/権限 | name (PK), permissions |
+| `BusinessProcess` | ビジネスプロセス | name (PK), name_ja, description, domain, trigger_event |
+| `Activity` | プロセス内のアクティビティ | name (PK), name_ja, description, sequence_order, is_decision |
+| `SystemProcess` | システムプロセス | name (PK), type, description, is_async, timeout_ms |
+
+### プロセスノードの詳細
+
+#### BusinessProcess（ビジネスプロセス）
+業務フローを表現。例：注文処理、承認フロー、返品処理など。
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| name | string (PK) | 一意識別子（例: OrderProcessing） |
+| name_ja | string | 日本語名（例: 注文処理） |
+| description | string | プロセスの説明 |
+| domain | string | 所属ドメイン |
+| trigger_event | string | トリガーイベント（例: ORDER_SUBMITTED） |
+
+#### Activity（アクティビティ）
+プロセス内の個々のステップ。分岐点（ゲートウェイ）も含む。
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| name | string (PK) | 一意識別子（例: ValidateOrder） |
+| name_ja | string | 日本語名（例: 注文検証） |
+| description | string | アクティビティの説明 |
+| sequence_order | int | プロセス内の実行順序 |
+| is_decision | boolean | 分岐点かどうか |
+
+#### SystemProcess（システムプロセス）
+バッチ処理、Saga、データ同期などの技術的プロセス。
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| name | string (PK) | 一意識別子（例: OrderSaga） |
+| type | string | タイプ（batch/saga/sync/event_handler） |
+| description | string | プロセスの説明 |
+| is_async | boolean | 非同期処理かどうか |
+| timeout_ms | int | タイムアウト（ミリ秒） |
 
 ### リレーションテーブル
 
@@ -48,10 +95,46 @@ user_invocable: true
 | `IMPLEMENTS` | Entity → Entity | 実装/継承関係 |
 | `HAS_TERM` | Entity/Method → UbiquitousTerm | 用語との関連 |
 | `HAS_ROLE` | Actor → Role | ロールの保持 |
+| `HAS_ACTIVITY` | BusinessProcess/SystemProcess → Activity | プロセスがアクティビティを持つ |
+| `NEXT_ACTIVITY` | Activity → Activity | 次のアクティビティへの遷移 |
+| `PERFORMS` | Actor → Activity | アクターがアクティビティを実行 |
+| `TRIGGERS` | Activity → SystemProcess | アクティビティがシステムプロセスをトリガー |
+| `INVOKES` | Activity/SystemProcess → Method | メソッドの呼び出し |
+| `PARTICIPATES_IN` | Entity → BusinessProcess | エンティティがプロセスに参加 |
+| `COMPENSATES` | SystemProcess → SystemProcess | Saga補償トランザクション |
+
+### プロセスリレーションの詳細
+
+| リレーション | プロパティ | 説明 |
+|-------------|-----------|------|
+| `NEXT_ACTIVITY` | condition | 遷移条件（分岐時に使用） |
+| `PERFORMS` | - | アクターがどのアクティビティを実行するか |
+| `TRIGGERS` | event_name | トリガーするイベント名 |
+| `INVOKES` | - | どのメソッドを呼び出すか |
+| `COMPENSATES` | - | どのSagaステップを補償するか |
 
 ## 実行プロンプト
 
 あなたはGraphDBを構築する専門家エージェントです。以下の手順でRyuGraphデータベースを構築してください。
+
+### Step 0: 前提条件の検証
+
+**重要**: 実行前に必ず前提条件を確認してください。
+
+```
+推奨ファイルの確認:
+├── reports/01_analysis/ubiquitous-language.md      [推奨] ← /analyze-system
+├── reports/01_analysis/domain-code-mapping.md      [推奨] ← /analyze-system
+├── reports/01_analysis/actors-roles-permissions.md [推奨] ← /analyze-system
+└── reports/01_analysis/system-overview.md          [推奨] ← /analyze-system
+
+必須:
+└── 対象コードベースへのアクセス                    [必須]
+```
+
+**エラーハンドリング:**
+- 推奨ファイルが存在しない場合 → 警告を表示してコードベースから直接構築
+- 対象コードベースにアクセスできない場合 → エラー終了
 
 ### Step 1: 入力情報の確認
 
@@ -71,10 +154,10 @@ ls ${TARGET_PATH}/reports/01_analysis/
 
 ```
 reports/01_analysis/
-├── ubiquitous_language.md     # ユビキタス言語
-├── domain_code_mapping.md     # ドメイン-コード対応
-├── actors_roles_permissions.md # アクター・ロール
-└── current_system_overview.md  # システム概要
+├── ubiquitous-language.md      # ユビキタス言語
+├── domain-code-mapping.md      # ドメイン-コード対応
+├── actors-roles-permissions.md # アクター・ロール
+└── system-overview.md          # システム概要
 ```
 
 **重要:** Markdownのテーブルをパースして構造化データに変換します。
@@ -114,6 +197,27 @@ Customer,src/domain/customer.ts,class,5
 # methods.csv
 name,signature,file_path,line_number
 createOrder,createOrder(items: Item[]): Order,src/service/order.ts,25
+
+# business_processes.csv
+name,name_ja,description,domain,trigger_event
+OrderProcessing,注文処理,顧客からの注文を処理する業務フロー,OrderManagement,ORDER_SUBMITTED
+ApprovalWorkflow,承認ワークフロー,高額注文の承認フロー,OrderManagement,HIGH_VALUE_ORDER_CREATED
+ReturnProcessing,返品処理,商品返品を処理する業務フロー,OrderManagement,RETURN_REQUESTED
+
+# activities.csv
+name,name_ja,description,sequence_order,is_decision
+ValidateOrder,注文検証,注文内容の妥当性を確認,1,false
+CheckInventory,在庫確認,在庫の有無を確認,2,false
+IsHighValue,高額判定,注文金額が閾値を超えるか判定,3,true
+ProcessPayment,決済処理,支払い処理を実行,4,false
+SendConfirmation,確認送信,注文確認メールを送信,5,false
+
+# system_processes.csv
+name,type,description,is_async,timeout_ms
+OrderSaga,saga,注文処理のSagaオーケストレーション,true,30000
+InventorySync,sync,在庫データの同期処理,true,60000
+PaymentEventHandler,event_handler,決済イベントの処理,true,10000
+DailyReportBatch,batch,日次レポート生成バッチ,true,3600000
 ```
 
 **リレーションデータ（CSVファイル）:**
@@ -128,6 +232,57 @@ Customer,CustomerManagement
 entity,term
 Order,Order
 CustomerService,Customer
+
+# has_activity.csv
+process,activity
+OrderProcessing,ValidateOrder
+OrderProcessing,CheckInventory
+OrderProcessing,IsHighValue
+OrderProcessing,ProcessPayment
+OrderProcessing,SendConfirmation
+OrderSaga,ValidateOrder
+OrderSaga,CheckInventory
+OrderSaga,ProcessPayment
+
+# next_activity.csv
+from_activity,to_activity,condition
+ValidateOrder,CheckInventory,
+CheckInventory,IsHighValue,
+IsHighValue,ProcessPayment,amount < 100000
+IsHighValue,ApprovalRequired,amount >= 100000
+ProcessPayment,SendConfirmation,
+
+# performs.csv
+actor,activity
+Customer,SubmitOrder
+SalesRep,ApproveOrder
+System,ProcessPayment
+System,SendConfirmation
+
+# triggers.csv
+activity,system_process,event_name
+ProcessPayment,PaymentEventHandler,PAYMENT_COMPLETED
+ValidateOrder,InventorySync,INVENTORY_CHECK_REQUESTED
+
+# invokes.csv
+source,method
+ValidateOrder,OrderValidator.validate
+CheckInventory,InventoryService.checkStock
+ProcessPayment,PaymentService.processPayment
+OrderSaga,OrderSagaOrchestrator.execute
+
+# participates_in.csv
+entity,process
+Order,OrderProcessing
+OrderItem,OrderProcessing
+Payment,OrderProcessing
+Inventory,OrderProcessing
+
+# compensates.csv
+saga_step,compensating_step
+ProcessPayment,RefundPayment
+ReserveInventory,ReleaseInventory
+CreateOrder,CancelOrder
 ```
 
 ### Step 5: RyuGraphデータベースの構築
@@ -173,13 +328,23 @@ RETURN e.name, t.name_ja LIMIT 10;
         │   ├── files.csv
         │   ├── actors.csv
         │   ├── roles.csv
+        │   ├── business_processes.csv   # ビジネスプロセス
+        │   ├── activities.csv           # アクティビティ
+        │   ├── system_processes.csv     # システムプロセス
         │   ├── belongs_to.csv
         │   ├── defined_in.csv
         │   ├── references.csv
         │   ├── calls.csv
         │   ├── implements.csv
         │   ├── has_term.csv
-        │   └── has_role.csv
+        │   ├── has_role.csv
+        │   ├── has_activity.csv         # プロセス→アクティビティ
+        │   ├── next_activity.csv        # アクティビティ遷移
+        │   ├── performs.csv             # アクター→アクティビティ
+        │   ├── triggers.csv             # アクティビティ→システムプロセス
+        │   ├── invokes.csv              # プロセス/アクティビティ→メソッド
+        │   ├── participates_in.csv      # エンティティ→プロセス
+        │   └── compensates.csv          # Saga補償関係
         ├── schema.md            # グラフスキーマ説明
         └── statistics.md        # グラフ統計情報
 ```
@@ -203,6 +368,9 @@ RETURN e.name, t.name_ja LIMIT 10;
 | File | 80 |
 | Actor | 5 |
 | Role | 8 |
+| BusinessProcess | 12 |
+| Activity | 48 |
+| SystemProcess | 8 |
 
 ## リレーション統計
 
@@ -215,12 +383,30 @@ RETURN e.name, t.name_ja LIMIT 10;
 | IMPLEMENTS | 45 |
 | HAS_TERM | 280 |
 | HAS_ROLE | 12 |
+| HAS_ACTIVITY | 48 |
+| NEXT_ACTIVITY | 42 |
+| PERFORMS | 35 |
+| TRIGGERS | 15 |
+| INVOKES | 60 |
+| PARTICIPATES_IN | 85 |
+| COMPENSATES | 8 |
+
+## プロセス統計
+
+| プロセスタイプ | 件数 | アクティビティ数 |
+|--------------|------|----------------|
+| BusinessProcess | 12 | 48 |
+| SystemProcess (saga) | 3 | 12 |
+| SystemProcess (batch) | 2 | 4 |
+| SystemProcess (sync) | 2 | 6 |
+| SystemProcess (event_handler) | 1 | 2 |
 
 ## データソース
 
 - 分析結果: あり
 - コード解析: あり
 - 対象ファイル数: 80
+- プロセス定義ファイル: あり
 ```
 
 ## ツール使用ガイドライン

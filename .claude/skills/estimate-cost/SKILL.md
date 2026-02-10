@@ -19,9 +19,17 @@ user_invocable: true
 
 ## 前提条件
 
-以下の設計ドキュメントが存在すること：
-- `03_design/target-architecture.md` - サービス構成、インフラ設計
-- `03_design/scalardb_architecture.md` - ScalarDB構成（オプション）
+以下のファイルが存在すること：
+
+**必須（/design-microservices の出力）:**
+- `reports/03_design/target-architecture.md` - ターゲットアーキテクチャ
+
+**推奨（/design-scalardb の出力）:**
+- `reports/03_design/scalardb-architecture.md` - ScalarDB構成
+- `reports/03_design/scalardb-sizing.md` - ScalarDBサイジング
+
+**推奨（/design-api の出力）:**
+- `reports/03_design/api-gateway-design.md` - API Gateway設計
 
 ## 出力先ディレクトリ
 
@@ -36,6 +44,24 @@ reports/05_estimate/
 ## 実行プロンプト
 
 あなたはクラウドインフラとライセンスのコスト見積もり専門家です。以下の手順で見積もりを実行してください。
+
+### Step 0: 前提条件の検証
+
+**重要**: 実行前に必ず前提条件を確認してください。
+
+```
+必須ファイルの確認:
+└── reports/03_design/target-architecture.md  [必須] ← /design-microservices
+
+推奨ファイルの確認:
+├── reports/03_design/scalardb-architecture.md [推奨] ← /design-scalardb
+├── reports/03_design/scalardb-sizing.md       [推奨] ← /design-scalardb
+└── reports/03_design/api-gateway-design.md    [推奨] ← /design-api
+```
+
+**エラーハンドリング:**
+- 必須ファイルが存在しない場合 → `/design-microservices` を先に実行するよう案内
+- 推奨ファイルが存在しない場合 → 警告を表示して続行（見積もり精度が下がる可能性）
 
 ### Step 1: 設計情報の収集
 
@@ -442,7 +468,7 @@ ScalarDB Clusterのライセンス費用は、Scalar社への直接問い合わ�
 ```bash
 # 設計ドキュメントの読み込み
 Read: reports/03_design/target-architecture.md
-Read: reports/03_design/scalardb_architecture.md
+Read: reports/03_design/scalardb-architecture.md
 ```
 
 ### クラウド料金の確認

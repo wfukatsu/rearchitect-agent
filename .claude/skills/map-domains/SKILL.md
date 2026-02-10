@@ -56,10 +56,10 @@ reports/03_design/
 ### 前提条件
 
 以下の中間ファイルが存在することを確認：
-- `01_analysis/ubiquitous_language.md`
-- `01_analysis/actors_roles_permissions.md`
-- `01_analysis/domain_code_mapping.md`
-- `01_analysis/current_system_overview.md`
+- `01_analysis/ubiquitous-language.md`
+- `01_analysis/actors-roles-permissions.md`
+- `01_analysis/domain-code-mapping.md`
+- `01_analysis/system-overview.md`
 
 ### Step 1: ドメイン境界の特定
 
@@ -67,8 +67,8 @@ reports/03_design/
 
 ```
 # 中間ファイルを読み込み
-Read ubiquitous_language.md
-Read domain_code_mapping.md
+Read ubiquitous-language.md
+Read domain-code-mapping.md
 ```
 
 **識別のヒント：**
@@ -192,11 +192,11 @@ Read domain_code_mapping.md
 
 ## 出力フォーマット
 
-### domain_analysis.md
+### domain-analysis.md
 
 ドメイン分析（ドメイン一覧、ドメインタイプ分類、サービスカテゴリ分類、境界づけられたコンテキスト、コンテキストマップ、課題と推奨事項）
 
-### system_mapping.md
+### system-mapping.md
 
 システムマッピング（現行システム→ドメインマッピング、トランザクション境界分析、データ移行計画、依存関係分析、移行準備度評価）
 

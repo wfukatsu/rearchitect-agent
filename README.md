@@ -41,7 +41,7 @@ claude
 対象ディレクトリに対して、すべての分析・設計工程を実行します。
 
 ```bash
-/refactor-system-cmd ./path/to/your/project
+/refactor-system ./path/to/your/project
 ```
 
 ### 2. 出力確認
@@ -50,6 +50,9 @@ claude
 
 ```
 reports/
+├── before/{project}/
+│   ├── system-overview.md            # システム調査結果
+│   └── security-analysis.md          # セキュリティ分析結果
 ├── 00_summary/
 │   ├── executive-summary.md          # エグゼクティブサマリー
 │   ├── project_metadata.json         # プロジェクトメタデータ
@@ -85,8 +88,11 @@ reports/
 │   └── [domain]-story.md             # ドメイン別ストーリー
 ├── 05_estimate/
 │   ├── cost-summary.md               # コストサマリー
-│   ├── scalardb-sizing.md            # ScalarDBサイジング見積もり
 │   └── infrastructure-detail.md      # インフラ詳細
+├── sizing-estimates/                 # ScalarDBサイジング見積もり
+│   ├── scalardb-*-sizing-estimate.md  # 詳細見積もり（Markdown）
+│   ├── scalardb-*-sizing-estimate.html # HTMLレポート
+│   └── README.md                     # 見積もり概要
 └── graph/                            # ナレッジグラフ用データ
     ├── data/                         # CSVファイル
     ├── visualizations/               # 可視化ファイル（Mermaid/DOT/HTML）
@@ -94,66 +100,119 @@ reports/
     └── statistics.md                 # 統計情報
 
 <プロジェクトルート>/
-└── knowledge.ryugraph/               # RyuGraphデータベース
+├── knowledge.ryugraph                # RyuGraphデータベース
+├── generated/{service}/              # 生成されたSpring Bootコード
+├── work/{project}/                   # 中間状態（git-ignored）
+└── workspace/                        # 代替作業ディレクトリ（git-ignored）
 ```
 
 ## 利用可能なスキル
 
-### メインオーケストレーター
+### メインオーケストレーター (3)
 
 | コマンド | 説明 |
 |---------|------|
-| `/refactor-system-cmd` | 統合リファクタリングエージェント。全工程を順次実行 |
+| `/workflow` | 🎯 **NEW** インタラクティブワークフロー選択。実行タイプを対話的に選択して段階的実行 |
+| `/full-pipeline` | 完全パイプライン実行。調査→設計→コード生成まで全フェーズを一括実行 |
+| `/refactor-system` | レガシーオーケストレーター。コード生成なしで調査・設計までを実行 |
 
-### 個別スキル
+### 調査・分析スキル (7)
 
 | コマンド | 説明 |
 |---------|------|
+| `/system-investigation` | システム調査。コードベースの構造・技術スタック・問題点を調査 |
 | `/analyze-system` | システム分析。ユビキタス言語、アクター、ドメイン-コード対応表を抽出 |
-| `/evaluate-mmi` | MMI評価。モジュール成熟度を4軸で評価 |
+| `/security-analysis` | セキュリティ分析。OWASP Top 10対応状況とゼロトラスト準備度を評価 |
+| `/access-control-analysis` | アクセス制御分析。ゼロトラストモデルに基づく現状分析 |
+| `/data-model-analysis` | データモデル分析。エンティティ・リレーションシップ・ドメインルールを抽出 |
+| `/db-design-analysis` | DB設計分析。テーブル定義、インデックス、制約、問題点を抽出 |
+| `/er-diagram-analysis` | ER図分析。現行ER図の生成・可視化 |
+
+### 評価スキル (4)
+
+| コマンド | 説明 |
+|---------|------|
+| `/evaluate-mmi` | MMI評価。モジュール成熟度を4軸で定性評価 |
+| `/mmi-analyzer` | MMI自動分析。Lilienthal 3軸で定量評価（Pythonプロジェクト向け） |
+| `/ddd-evaluation` | DDD評価。戦略的・戦術的設計の適合度を評価 |
+| `/integrate-evaluations` | 評価統合。MMI+DDD評価結果を統合し改善計画を策定 |
+
+### 設計スキル (8)
+
+| コマンド | 説明 |
+|---------|------|
+| `/ddd-redesign` | DDD再設計。境界コンテキスト、集約、値オブジェクトを再設計 |
 | `/map-domains` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
 | `/design-microservices` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
 | `/design-api` | API設計。REST/GraphQL/gRPC/AsyncAPI仕様、Gateway、セキュリティを策定 |
 | `/design-scalardb` | ScalarDB Cluster設計。分散トランザクション、スキーマ設計を策定 |
 | `/design-scalardb-analytics` | ScalarDB Analytics設計。分析基盤、データカタログを策定 |
+| `/design-implementation` | 実装仕様生成。AIエージェント向け詳細実装仕様を生成 |
 | `/create-domain-story` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
-| `/estimate-cost` | コスト見積もり。インフラ、ライセンス、運用コストを算出 |
 
-### サイジング・見積もりスキル
+### コード生成・テストスキル (2)
 
 | コマンド | 説明 |
 |---------|------|
+| `/generate-test-specs` | テスト仕様生成。BDDシナリオ・ユニット・統合テスト仕様を生成 |
+| `/generate-scalardb-code` | コード生成。ScalarDB/Spring Bootのコードを自動生成 |
+
+### 見積もりスキル (2)
+
+| コマンド | 説明 |
+|---------|------|
+| `/estimate-cost` | コスト見積もり。インフラ、ライセンス、運用コストを算出 |
 | `/scalardb-sizing-estimator` | ScalarDBサイジング。Pod数、K8s構成、DB、コストを対話的に見積もり |
 
-### ナレッジグラフスキル
+### ナレッジグラフスキル (3)
 
 | コマンド | 説明 |
 |---------|------|
-| `/build-graph` | RyuGraphデータベースを構築。分析結果からナレッジグラフを生成 |
-| `/query-graph` | グラフを探索。自然言語またはCypherでクエリを実行 |
-| `/visualize-graph` | グラフを可視化。Mermaid/DOT/HTML形式で出力 |
+| `/build-graph` | グラフ構築。分析結果からRyuGraphデータベースを生成 |
+| `/query-graph` | グラフ探索。自然言語またはCypherでクエリを実行 |
+| `/visualize-graph` | グラフ可視化。Mermaid/DOT/HTML形式で出力 |
 
-### ユーティリティスキル
+### ユーティリティスキル (4)
 
 | コマンド | 説明 |
 |---------|------|
+| `/init-output` | 出力初期化。リファクタリング分析用ディレクトリ構造を作成 |
 | `/compile-report` | レポートコンパイル。Markdownを統合HTMLレポートに変換 |
-| `/render-mermaid` | Mermaid図をPNGとSVGの両方に変換 |
-| `/fix-mermaid` | Mermaid図のシンタックスエラーを修正 |
+| `/render-mermaid` | Mermaidレンダリング。Mermaid図をPNG/SVGに変換 |
+| `/fix-mermaid` | Mermaid修正。Mermaid図のシンタックスエラーを修正 |
 
 ## 使用例
+
+### インタラクティブワークフロー（推奨）
+
+```bash
+# 対話的にワークフロータイプを選択して実行
+/workflow ./src
+
+# 実行タイプ選択:
+# - 完全パイプライン実行
+# - 分析のみ実行
+# - 設計のみ実行
+# - 実装仕様生成
+# - コード生成のみ
+# - サイジング見積もり
+# - 個別フェーズ選択
+```
 
 ### 基本的な使用
 
 ```bash
-# プロジェクト全体を分析
-/refactor-system-cmd ./src
+# 完全パイプライン実行（調査→設計→コード生成）
+/full-pipeline ./src
+
+# レガシーオーケストレーター（コード生成なし）
+/refactor-system ./src
 
 # 分析のみ実行（設計書生成なし）
-/refactor-system-cmd ./src --analyze-only
+/refactor-system ./src --analyze-only
 
 # 出力先を指定
-/refactor-system-cmd ./src --output=./my-output/
+/refactor-system ./src --output=./my-output/
 ```
 
 ### 個別スキルの使用
@@ -191,8 +250,24 @@ reports/
 /scalardb-sizing-estimator
 
 # 質問に回答してサイジング見積もりを生成
-# → 環境構成、TPS、可用性目標、Analytics有無を入力
-# → Pod数、K8s構成、DB構成、コストを算出
+# → 環境構成（開発・テスト・ステージング・本番）
+# → クラウドプロバイダー（AWS/Azure/GCP）
+# → ライセンス形態（直接契約/マーケットプレイス）
+# → 性能要件（TPS、可用性目標）
+# → v3.17最適化有無
+# → DB構成（単一/異種複数）
+# → アーキテクチャ（モノリス/マイクロサービス/Event Driven）
+# → API Gateway使用有無
+# → ScalarDB Analytics使用有無、稼働時間、SDBU数
+# → Pod数、K8s構成、DB構成、コスト、削減オプションを算出
+
+# 出力:
+# - reports/sizing-estimates/scalardb-*-sizing-estimate.md（詳細見積もり）
+# - reports/sizing-estimates/scalardb-*-sizing-estimate.html（HTMLレポート）
+# - reports/sizing-estimates/README.md（概要）
+
+# HTMLレポートをブラウザで確認
+open reports/sizing-estimates/scalardb-*-sizing-estimate.html
 ```
 
 ### ナレッジグラフの使用
@@ -214,11 +289,17 @@ reports/
 ### レポート生成・Mermaid変換
 
 ```bash
-# Markdownレポートを統合HTMLに変換
+# Markdownレポートを統合HTMLに変換（単一ファイル）
 /compile-report
+
+# または Nextra形式で静的サイト生成（44ページ分割）
+python scripts/compile_report.py --input-dir ./reports --format nextra
 
 # HTMLレポートをブラウザで開く
 open reports/00_summary/full-report.html
+
+# Nextra形式のレポートをプレビュー
+cd reports/nextra-site && npx serve out/
 
 # reports/ 内の全Mermaid図を PNG と SVG に変換
 /render-mermaid ./reports/
@@ -227,11 +308,15 @@ open reports/00_summary/full-report.html
 /fix-mermaid ./reports/
 ```
 
+**レポート形式の選択**:
+- **HTML形式**: 単一ファイル配布向け（1.3MB、Lunr.js検索付き）
+- **Nextra形式**: Webホスティング向け（44ページ分割、23MB、検索・Mermaid・GraphDB可視化付き）
+
 ### 特定ドメインのみ対象
 
 ```bash
 # Order と Customer ドメインのみ分析
-/refactor-system-cmd ./src --domain=Order,Customer
+/refactor-system ./src --domain=Order,Customer
 ```
 
 ## MMI（Modularity Maturity Index）評価
@@ -305,34 +390,32 @@ MMI = (0.3×Cohesion + 0.3×Coupling + 0.2×Independence + 0.2×Reusability) / 5
 
 ```mermaid
 graph TD
-    A[開始] --> B["/analyze-system"]
-    B --> C["/evaluate-mmi"]
-    C --> D["/map-domains"]
-    D --> E["/design-microservices"]
-    E --> E2["/design-api"]
-    E2 --> F["/design-scalardb"]
-    F --> F2{分析要件あり?}
-    F2 -->|Yes| FA["/design-scalardb-analytics"]
-    F2 -->|No| G["/create-domain-story"]
-    FA --> G
-    G --> G2["/estimate-cost"]
-    G2 --> H["Executive Summary生成"]
-    H --> H2["/compile-report"]
-    H2 --> I["終了"]
+    A["開始"] --> P0["/system-investigation"]
+    P0 --> P1["/analyze-system"]
+    P1 --> P2a["/evaluate-mmi"]
+    P1 --> P2b["/ddd-evaluation"]
+    P2a --> P2c["/integrate-evaluations"]
+    P2b --> P2c
+    P2c --> P3["/ddd-redesign"]
+    P3 --> P4["/map-domains"]
+    P4 --> P5["/design-microservices"]
+    P5 --> P5a["/design-api"]
+    P5a --> P5b["/design-scalardb"]
+    P5b --> P5c{"分析要件あり?"}
+    P5c -->|Yes| P5d["/design-scalardb-analytics"]
+    P5c -->|No| P6
+    P5d --> P6["/design-implementation"]
+    P6 --> P7["/generate-test-specs"]
+    P7 --> P8["/generate-scalardb-code"]
+    P8 --> P9["/create-domain-story"]
+    P9 --> P10["/estimate-cost"]
+    P10 --> P11["Executive Summary"]
+    P11 --> P12["/compile-report"]
+    P12 --> P13["終了"]
 
-    B --> J["/build-graph"]
-    J --> K["/query-graph"]
-    K --> L["/visualize-graph"]
-
-    subgraph 中間ファイル生成
-        B --> B1[ubiquitous-language.md]
-        B --> B2[actors-roles-permissions.md]
-        C --> C1[mmi-overview.md]
-        D --> D1[domain-analysis.md]
-        E2 --> E3[api-design-overview.md]
-        F --> F1[scalardb-schema-design.md]
-        G2 --> G3[cost-summary.md]
-    end
+    P1 --> G1["/build-graph"]
+    G1 --> G2["/query-graph"]
+    G2 --> G3["/visualize-graph"]
 ```
 
 ## ナレッジグラフ
@@ -350,26 +433,26 @@ pip install ryugraph pandas
 
 ```mermaid
 graph LR
-    A["/analyze-system-cmd"] --> B[分析結果MD]
+    A["/analyze-system"] --> B["分析結果MD"]
     B --> C[parse_analysis.py]
-    C --> D[CSVファイル]
+    C --> D["CSVファイル"]
     D --> E[build_graph.py]
     E --> F[knowledge.ryugraph]
-    F --> G["/query-graph-cmd"]
-    G --> H[関連コード・仕様]
+    F --> G["/query-graph"]
+    G --> H["関連コード・仕様"]
 ```
 
 ### スキルによる構築
 
 ```bash
 # 1. システム分析を実行（必須）
-/analyze-system-cmd ./src
+/analyze-system ./src
 
 # 2. グラフを構築
-/build-graph-cmd ./src
+/build-graph ./src
 
 # 3. グラフを探索
-/query-graph-cmd 顧客に関連するエンティティを教えて
+/query-graph 顧客に関連するエンティティを教えて
 ```
 
 ### 手動でのグラフ構築
@@ -395,13 +478,13 @@ python scripts/query_graph.py \
 
 ```bash
 # 自然言語クエリ
-/query-graph-cmd 「注文」に関連するすべてのクラスを教えて
-/query-graph-cmd 在庫管理ドメインのエンティティ一覧
+/query-graph 「注文」に関連するすべてのクラスを教えて
+/query-graph 在庫管理ドメインのエンティティ一覧
 
 # Cypherクエリ
-/query-graph-cmd MATCH (e:Entity)-[:BELONGS_TO]->(d:Domain) RETURN e.name, d.name
-/query-graph-cmd MATCH (a:Actor)-[:PERFORMS]->(act:Activity) RETURN a, act
-/query-graph-cmd MATCH (t:UbiquitousTerm) WHERE t.name CONTAINS '注文' RETURN t
+/query-graph MATCH (e:Entity)-[:BELONGS_TO]->(d:Domain) RETURN e.name, d.name
+/query-graph MATCH (a:Actor)-[:PERFORMS]->(act:Activity) RETURN a, act
+/query-graph MATCH (t:UbiquitousTerm) WHERE t.name CONTAINS '注文' RETURN t
 ```
 
 ### グラフスキーマ
@@ -450,7 +533,7 @@ ScalarDB Clusterは、異種データベース間で分散トランザクショ�
 
 ```bash
 # マイクロサービス設計後にScalarDB Cluster設計を実行
-/design-scalardb-cmd ./src
+/design-scalardb ./src
 
 # 分析要件がある場合はScalarDB Analytics設計も実行
 /design-scalardb-analytics ./src
@@ -460,11 +543,11 @@ ScalarDB Clusterは、異種データベース間で分散トランザクショ�
 
 | ファイル | 内容 |
 |---------|------|
-| `scalardb_architecture.md` | クラスター構成、接続方式、セキュリティ設計 |
-| `scalardb_schema.md` | Namespace、テーブル定義、パーティション戦略 |
-| `scalardb_transaction.md` | トランザクションパターン、Saga設計、例外処理 |
-| `scalardb_migration.md` | フェーズ別計画、データ移行手順、ロールバック |
-| `scalardb_analytics_*.md` | 分析基盤設計（Analytics使用時） |
+| `scalardb-architecture.md` | クラスター構成、接続方式、セキュリティ設計 |
+| `scalardb-schema.md` | Namespace、テーブル定義、パーティション戦略 |
+| `scalardb-transaction.md` | トランザクションパターン、Saga設計、例外処理 |
+| `scalardb-migration.md` | フェーズ別計画、データ移行手順、ロールバック |
+| `scalardb-analytics-*.md` | 分析基盤設計（Analytics使用時） |
 
 ### トランザクションパターン
 
@@ -583,17 +666,17 @@ open reports/00_summary/full-report.html
 ### 出力先の変更
 
 ```bash
-/refactor-system-cmd ./src --output=./custom-output/
+/refactor-system ./src --output=./custom-output/
 ```
 
 ### スキップオプション
 
 ```bash
-# MMI評価をスキップ
-/refactor-system-cmd ./src --skip-mmi
+# MMI評価をスキップ（/refactor-system）
+/refactor-system ./src --skip-mmi
 
-# ドメインストーリーをスキップ
-/refactor-system-cmd ./src --skip-stories
+# ドメインストーリーをスキップ（/full-pipeline のみ）
+/full-pipeline ./src --skip-stories
 ```
 
 ## トラブルシューティング
@@ -616,52 +699,63 @@ Serenaツールが対応していない言語の場合、Grep/Glob による基�
 refactoring-agent/
 ├── README.md                              # このファイル
 ├── CLAUDE.md                              # プロジェクト設定
-├── docs/
-│   └── USER_GUIDE.md                      # 詳細ユーザーガイド
 ├── .claude/
-│   ├── settings.json                      # スキル登録
-│   ├── commands/                          # コマンド定義
-│   │   ├── refactor-system-cmd.md        # メインオーケストレーター
-│   │   ├── analyze-system-cmd.md         # システム分析
-│   │   ├── evaluate-mmi-cmd.md           # MMI評価
-│   │   ├── map-domains-cmd.md            # ドメインマッピング
-│   │   ├── design-microservices-cmd.md   # マイクロサービス設計
-│   │   ├── design-api-cmd.md             # API設計
-│   │   ├── design-scalardb-cmd.md        # ScalarDB Cluster設計
-│   │   ├── create-domain-story-cmd.md    # ドメインストーリー
-│   │   ├── estimate-cost-cmd.md          # コスト見積もり
-│   │   ├── build-graph-cmd.md            # グラフ構築
-│   │   ├── query-graph-cmd.md            # グラフ探索
-│   │   ├── visualize-graph-cmd.md        # グラフ可視化
-│   │   └── compile-report-cmd.md         # レポートコンパイル
-│   ├── skills/                            # スキル定義
-│   │   ├── refactor-system/
-│   │   ├── analyze-system/
-│   │   ├── evaluate-mmi/
-│   │   ├── map-domains/
-│   │   ├── design-microservices/
-│   │   ├── design-api/                   # API設計スキル
-│   │   ├── design-scalardb/              # ScalarDB Cluster設計スキル
-│   │   ├── design-scalardb-analytics/    # ScalarDB Analytics設計スキル
+│   ├── settings.json                      # Hook設定
+│   ├── hooks/
+│   │   └── validate-mermaid.sh           # Mermaid検証フック
+│   ├── rules/                             # コーディングパターン・ルール
+│   │   ├── scalardb-coding-patterns.md
+│   │   ├── spring-boot-integration.md
+│   │   ├── mermaid-best-practices.md
+│   │   ├── output-conventions.md
+│   │   ├── evaluation-frameworks.md
+│   │   └── examples/                     # 実装例
+│   ├── skills/                            # スキル定義（33スキル）
+│   │   ├── workflow/                     # インタラクティブワークフロー
+│   │   ├── full-pipeline/                # 完全パイプライン実行
+│   │   ├── refactor-system/              # 統合リファクタリング
+│   │   ├── system-investigation/         # システム調査
+│   │   ├── analyze-system/               # システム分析
+│   │   ├── evaluate-mmi/                 # MMI評価
+│   │   ├── mmi-analyzer/                 # MMI自動分析
+│   │   ├── ddd-evaluation/               # DDD評価
+│   │   ├── integrate-evaluations/        # 評価統合
+│   │   ├── ddd-redesign/                 # DDD再設計
+│   │   ├── map-domains/                  # ドメインマッピング
+│   │   ├── design-microservices/         # マイクロサービス設計
+│   │   ├── design-api/                   # API設計
+│   │   ├── design-scalardb/              # ScalarDB Cluster設計
+│   │   ├── design-scalardb-analytics/    # ScalarDB Analytics設計
+│   │   ├── design-implementation/        # 実装仕様生成
+│   │   ├── generate-test-specs/          # テスト仕様生成
+│   │   ├── generate-scalardb-code/       # コード生成
 │   │   ├── scalardb-sizing-estimator/    # ScalarDBサイジング見積もり
-│   │   ├── create-domain-story/
-│   │   ├── estimate-cost/                # コスト見積もりスキル
-│   │   ├── build-graph/                  # グラフ構築スキル
-│   │   ├── query-graph/                  # グラフ探索スキル
-│   │   ├── visualize-graph/              # グラフ可視化スキル
-│   │   ├── compile-report/               # レポートコンパイルスキル
-│   │   ├── fix-mermaid/
-│   │   ├── render-mermaid/
-│   │   └── init-output/
-│   └── templates/
-│       └── output-structure.md           # 出力構造テンプレート
+│   │   ├── create-domain-story/          # ドメインストーリー
+│   │   ├── estimate-cost/                # コスト見積もり
+│   │   ├── security-analysis/            # セキュリティ分析
+│   │   ├── access-control-analysis/      # アクセス制御分析
+│   │   ├── data-model-analysis/          # データモデル分析
+│   │   ├── db-design-analysis/           # DB設計分析
+│   │   ├── er-diagram-analysis/          # ER図分析
+│   │   ├── build-graph/                  # グラフ構築
+│   │   ├── query-graph/                  # グラフ探索
+│   │   ├── visualize-graph/              # グラフ可視化
+│   │   ├── compile-report/               # レポートコンパイル
+│   │   ├── fix-mermaid/                  # Mermaid修正
+│   │   ├── render-mermaid/               # Mermaidレンダリング
+│   │   ├── init-output/                  # 出力ディレクトリ初期化
+│   │   └── common/                       # 共通パターン
+│   └── templates/                         # 出力テンプレート
 ├── scripts/                               # ユーティリティスクリプト
 │   ├── parse_analysis.py                 # 分析結果パーサー
 │   ├── build_graph.py                    # グラフ構築スクリプト
 │   ├── query_graph.py                    # グラフクエリスクリプト
 │   ├── visualize_graph.py                # グラフ可視化スクリプト
-│   └── compile_report.py                 # レポートコンパイルスクリプト
-└── reports/                               # 分析結果出力先
+│   ├── compile_report.py                 # レポートコンパイルスクリプト
+│   ├── setup_nextra.py                   # Nextraセットアップ
+│   └── convert_to_nextra.py              # Nextra変換
+├── .serena/                               # Serena MCP設定
+└── reports/                               # 分析結果出力先（git-ignored）
 ```
 
 ## 参考資料
