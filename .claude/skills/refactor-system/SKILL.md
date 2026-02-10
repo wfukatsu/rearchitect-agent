@@ -124,6 +124,11 @@ reports/
     ├── deployment-guide.md           # デプロイ手順書
     ├── environment-matrix.md         # 環境比較マトリクス
     └── security-configuration.md     # セキュリティ設定ガイド
+
+generated/infrastructure/                # IaC & K8sマニフェスト（Phase 8.7）
+├── k8s/                                 # Kubernetes manifests (Kustomize base + overlays)
+├── terraform/                           # Terraform modules & environments
+└── openshift/                           # OpenShift configs（選択時のみ）
 ```
 
 ## 進捗追跡レジストリ
@@ -179,7 +184,7 @@ graph TD
 
 ### 初期化: 入力収集と初期分析
 
-1. 出力ディレクトリの作成: `mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}`
+1. 出力ディレクトリの作成: `mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,08_infrastructure,graph/data,graph/visualizations,sizing-estimates}`
 2. 対象ディレクトリのスキャン
 3. 設計書ファイルの特定（`.md`, `.docx`, `.xlsx`, `.pdf` など）
 4. ソースコードの構造解析

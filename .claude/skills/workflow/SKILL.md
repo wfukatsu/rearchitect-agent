@@ -468,7 +468,7 @@ AskUserQuestionツールを使用して以下を質問：
 | Phase 7 | Phase 6完了 |
 | Phase 8 | Phase 6-7完了 |
 | Phase 8.5 | Phase 8完了 |
-| Phase 8.7 | Phase 8.5完了（オプション） |
+| Phase 8.7 | Phase 4完了（target-architecture.md） |
 | Phase 9 | Phase 3-5完了推奨 |
 | Phase 10 | Phase 3完了 |
 | Phase 11 | Phase 1完了 |
