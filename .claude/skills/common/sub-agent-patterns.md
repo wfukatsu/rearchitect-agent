@@ -9,7 +9,7 @@
 
 ### 対象スキル
 
-system-investigation, analyze-system, evaluate-mmi, ddd-evaluation
+system-investigation, analyze-system, evaluate-mmi, mmi-analyzer, ddd-evaluation
 
 ### 使用方法
 
@@ -48,7 +48,7 @@ Task(subagent_type="Explore", prompt="外部連携とAPI定義を調査...", des
 
 ### 対象スキル
 
-integrate-evaluations, ddd-redesign, map-domains, design-microservices, design-api, design-scalardb, design-scalardb-analytics, design-infrastructure, design-implementation, generate-test-specs, generate-scalardb-code, estimate-cost
+integrate-evaluations, ddd-redesign, map-domains, design-microservices, design-scalardb-app-patterns, design-api, design-scalardb, design-scalardb-analytics, design-infrastructure, design-implementation, generate-test-specs, generate-scalardb-code, estimate-cost, create-domain-story
 
 ### 使用方法
 
@@ -407,11 +407,11 @@ Task(subagent_type="Explore", prompt="reports/03_design/ の全ファイルを�
 
 | パターン | 対象カテゴリ | 対象スキル数 | サブエージェント種別 |
 |---------|------------|------------|-------------------|
-| 1. コードベース探索 | 調査・分析 | 4 | Explore |
-| 2. 前フェーズ出力読み込み | 設計・生成 | 12 | Explore |
+| 1. コードベース探索 | 調査・分析 | 5 | Explore |
+| 2. 前フェーズ出力読み込み | 設計・生成 | 14 | Explore |
 | 3. Context7 ドキュメント取得 | ScalarDB関連 | 4 | general-purpose |
 | 4. レビュー | レビュー | 1 | Explore |
 | 5. セキュリティ分析 | セキュリティ | 2 | Explore |
 | 6. データモデル分析 | データ分析 | 3 | Explore |
 | 7. コード生成・実装仕様 | 生成 | 3 | general-purpose |
-| 8. ユーティリティ・レポート | ユーティリティ | 7 | Explore |
+| 8. ユーティリティ・レポート | ユーティリティ | 8 | Explore |

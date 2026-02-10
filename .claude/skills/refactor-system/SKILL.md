@@ -112,13 +112,18 @@ reports/
 │   ├── saga-orchestration-spec.md    # Saga仕様
 │   ├── implementation-checklist.md   # 実装チェックリスト
 │   └── api-gateway-implementation-spec.md # API Gateway実装仕様
-└── 07_test-specs/                    # テスト仕様
-    ├── bdd-scenarios/                # Gherkin形式のBDDシナリオ
-    ├── unit-test-specs.md            # ユニットテスト仕様
-    ├── integration-test-specs.md     # 統合テスト仕様
-    ├── edge-case-specs.md            # 境界値・エラーケース
-    ├── performance-test-specs.md     # パフォーマンステスト仕様
-    └── test-data-requirements.md     # テストデータ定義
+├── 07_test-specs/                    # テスト仕様
+│   ├── bdd-scenarios/                # Gherkin形式のBDDシナリオ
+│   ├── unit-test-specs.md            # ユニットテスト仕様
+│   ├── integration-test-specs.md     # 統合テスト仕様
+│   ├── edge-case-specs.md            # 境界値・エラーケース
+│   ├── performance-test-specs.md     # パフォーマンステスト仕様
+│   └── test-data-requirements.md     # テストデータ定義
+└── 08_infrastructure/                # インフラ構成
+    ├── infrastructure-architecture.md # アーキテクチャ総合図
+    ├── deployment-guide.md           # デプロイ手順書
+    ├── environment-matrix.md         # 環境比較マトリクス
+    └── security-configuration.md     # セキュリティ設定ガイド
 ```
 
 ## 進捗追跡レジストリ
@@ -156,7 +161,8 @@ graph TD
     K59 --> K["Phase 5.95: /design-api"]
     K --> IMPL["Phase 6: /design-implementation"]
     IMPL --> TEST["Phase 7: /generate-test-specs"]
-    TEST --> M["Phase 9: /estimate-cost"]
+    TEST --> INFRA["Phase 8.7: /design-infrastructure"]
+    INFRA --> M["Phase 9: /estimate-cost"]
     M --> N["Phase 10: /create-domain-story"]
     N --> MV["Phase 12: /fix-mermaid"]
     MV --> O["Phase 13: エグゼクティブサマリー"]
@@ -269,6 +275,21 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 **Phase 4.8完了時に出力**:
 - `reports/03_design/scalardb-app-patterns.md`
 
+### Phase 5: ScalarDB設計
+
+Taskツールで `scalardb-architect` エージェントを起動し、以下を策定：
+- **デプロイモード選定** - ScalarDB Core（ライブラリ）vs Cluster（サーバー）
+- **ストレージバックエンド設計** - 各サービスに適したDB選定（PostgreSQL, DynamoDB, Cassandra等）
+- **スキーマ設計** - Namespace、テーブル定義、パーティションキー、クラスタリングキー
+- **トランザクション設計** - Consensus Commit、Two-Phase Commit、Sagaパターン
+- **マイグレーション計画** - 既存DBからの移行戦略
+
+**Phase 5完了時に出力**:
+- `reports/03_design/scalardb-architecture.md`
+- `reports/03_design/scalardb-schema.md`
+- `reports/03_design/scalardb-transaction.md`
+- `reports/03_design/scalardb-migration.md`
+
 ### Phase 5.9: ScalarDB設計レビュー
 
 **スキル**: `/review-scalardb --mode=design`
@@ -289,21 +310,6 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 - `reports/03_design/api-gateway-design.md`
 - `reports/03_design/api-security-design.md`
 - `reports/03_design/api-specifications/*.yaml`
-
-### Phase 5: ScalarDB設計
-
-Taskツールで `scalardb-architect` エージェントを起動し、以下を策定：
-- **デプロイモード選定** - ScalarDB Core（ライブラリ）vs Cluster（サーバー）
-- **ストレージバックエンド設計** - 各サービスに適したDB選定（PostgreSQL, DynamoDB, Cassandra等）
-- **スキーマ設計** - Namespace、テーブル定義、パーティションキー、クラスタリングキー
-- **トランザクション設計** - Consensus Commit、Two-Phase Commit、Sagaパターン
-- **マイグレーション計画** - 既存DBからの移行戦略
-
-**Phase 5完了時に出力**:
-- `reports/03_design/scalardb-architecture.md`
-- `reports/03_design/scalardb-schema.md`
-- `reports/03_design/scalardb-transaction.md`
-- `reports/03_design/scalardb-migration.md`
 
 ### Phase 6: 実装仕様生成
 
@@ -345,6 +351,25 @@ Taskツールで `test-spec-generator` エージェントを起動し、テス�
 
 **注意**: `/refactor-system` はコード生成なしの分析・設計オーケストレーターです。
 コード生成（Phase 8: `/generate-scalardb-code`）が必要な場合は `/full-pipeline` を使用してください。
+
+### Phase 8.7: インフラ基盤構成設計（オプション）
+
+**スキル**: `/design-infrastructure`
+
+**前提**: Phase 4（`target-architecture.md`）が完了していること。
+
+Taskツールで `infrastructure-designer` エージェントを起動し、以下を策定：
+- **Kubernetesアーキテクチャ** - クラスタ構成、ネームスペース、ネットワーク設計
+- **IaC構成** - Terraform/Helm/Kustomize/OpenShift設定
+- **セキュリティ設計** - mTLS、Network Policy、Secret管理
+- **マルチ環境戦略** - dev/staging/production環境設定
+
+**Phase 8.7完了時に出力**:
+- `reports/08_infrastructure/infrastructure-architecture.md`
+- `reports/08_infrastructure/deployment-guide.md`
+- `reports/08_infrastructure/environment-matrix.md`
+- `reports/08_infrastructure/security-configuration.md`
+- `generated/infrastructure/` - IaC & K8sマニフェスト
 
 ### Phase 9: コスト見積もり
 
@@ -430,6 +455,9 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 ### 実装仕様スキル
 - `/design-implementation` - 実装仕様（ドメインサービス、リポジトリ、値オブジェクト、例外マッピング）
 - `/generate-test-specs` - テスト仕様（BDDシナリオ、ユニットテスト、統合テスト）
+
+### インフラ設計スキル
+- `/design-infrastructure` - インフラ基盤構成設計（Kubernetes・IaC、オプション）
 
 ### 補助スキル
 - `/create-domain-story` - ドメインストーリー作成

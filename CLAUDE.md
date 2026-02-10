@@ -299,7 +299,7 @@ Levels: 8-10 Good | 4-8 Warning | 0-4 Critical
 | Path | Purpose |
 |------|---------|
 | `.claude/skills/*/SKILL.md` | Skill definitions (37 skills) |
-| `.claude/skills/common/progress-registry.md` | Pipeline phase tracking (27 phases, dependencies, resume support) |
+| `.claude/skills/common/progress-registry.md` | Pipeline phase tracking (33 phases, dependencies, resume support) |
 | `.claude/skills/common/sub-agent-patterns.md` | Task tool usage patterns (8 categories, subagent type guidance) |
 | `.claude/rules/*.md` | Coding patterns (ScalarDB, Spring Boot) |
 | `.claude/templates/*.md` | Output templates, error handling patterns |
