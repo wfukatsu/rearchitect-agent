@@ -360,6 +360,14 @@ graph LR
 | マート | 増分バックアップ | 日次 | 7日 |
 ```
 
+### Step 8: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+/fix-mermaid ./reports/03_design
+```
+
 ## 出力フォーマット
 
 ### scalardb-analytics-architecture.md
@@ -572,6 +580,22 @@ AWS環境では、AWS Marketplace経由のPay-as-you-go課金が利用可能で�
    - [ ] 通常時のSDBO数
    - [ ] オートスケーリングの採用可否
 ```
+
+## エラーハンドリング
+
+- ScalarDB設計が未実施 → `/design-scalardb` を先に実行するよう案内
+- 分析要件が不明確 → ユーザーにヒアリングを実施（レポート種類、更新頻度等）
+- Enterprise版未選定 → Analytics機能はEnterprise Standard以上が必要と案内
+- Spark環境が未構築 → EMR/Databricksの構成をデフォルトで提案
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/design-scalardb` | ScalarDBデータアーキテクチャ設計（入力） |
+| `/select-scalardb-edition` | エディション選定（前提） |
+| `/estimate-cost` | コスト見積もり（補完） |
+| `/build-graph` | ナレッジグラフ構築（出力活用） |
 
 ## 参考資料
 

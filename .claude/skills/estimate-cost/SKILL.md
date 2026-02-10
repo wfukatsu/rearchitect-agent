@@ -33,12 +33,15 @@ user_invocable: true
 
 ## 出力先
 
+結果は `reports/05_estimate/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ```
 reports/05_estimate/
-├── cost-summary.md           # コストサマリー
-├── infrastructure-detail.md  # インフラ詳細見積もり
-├── license-requirements.md   # ライセンス要件・問い合わせ情報
-└── cost-assumptions.md       # 見積もり前提条件
+├── cost-summary.md           # コストサマリー（Step 9完了時）
+├── infrastructure-detail.md  # インフラ詳細見積もり（Step 3-7完了時）
+├── license-requirements.md   # ライセンス要件・問い合わせ情報（Step 5完了時）
+└── cost-assumptions.md       # 見積もり前提条件（Step 1完了時）
 ```
 
 ## 実行プロンプト
@@ -502,6 +505,13 @@ WebFetch: https://azure.microsoft.com/pricing/calculator/
 2. **為替レート**: USD建ての価格です。JPYへの換算は見積もり時点のレートを使用してください。
 3. **ライセンス価格**: ScalarDB等の商用ライセンスは直接問い合わせが必要です。
 4. **隠れコスト**: データ転送、API呼び出し回数等の変動費用に注意してください。
+
+## エラーハンドリング
+
+- 設計情報が不足 → `/design-microservices`、`/design-scalardb` を先に実行するよう案内
+- クラウド料金が変更されている可能性 → 最新料金は各プロバイダーサイトで確認を推奨
+- ScalarDBライセンス価格が不明 → Scalar社への問い合わせを案内
+- 複数クラウドの比較が必要 → 全プロバイダーの見積もりを並行生成
 
 ## 関連スキル
 

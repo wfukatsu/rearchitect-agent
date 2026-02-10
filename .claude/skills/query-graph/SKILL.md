@@ -429,3 +429,11 @@ Agent: [OrderSaga の COMPENSATES を表示]
 2. **Readツール** - 該当ソースコードの表示
 3. **Serenaツール** - シンボルの詳細取得
 4. **Grepツール** - 追加のテキスト検索
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/build-graph` | グラフ構築（前提） |
+| `/visualize-graph` | グラフ可視化（補完） |
+| `/analyze-system` | システム分析（入力元） |

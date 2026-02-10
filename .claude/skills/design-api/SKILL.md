@@ -1140,6 +1140,22 @@ npx @asyncapi/cli generate fromTemplate asyncapi.yaml @asyncapi/html-template
 | 曖昧なエラー | `{"error": "failed"}` | 構造化エラーレスポンス |
 | 認証情報をURLに | `?token=xxx` | Authorizationヘッダー |
 
+## エラーハンドリング
+
+- マイクロサービス設計が未実施 → `/design-microservices` を先に実行するよう案内
+- API数が多すぎる場合 → ドメイン単位で分割して段階的に設計
+- 非同期通信パターンが不明確 → ユーザーにユースケースの確認を求める
+- OpenAPI/AsyncAPI仕様の構文エラー → バリデーションツールでの検証を推奨
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/design-microservices` | マイクロサービス設計（入力） |
+| `/design-implementation` | 実装仕様生成（次ステップ） |
+| `/design-scalardb` | データアーキテクチャ設計（補完） |
+| `/generate-test-specs` | APIテスト仕様生成（補完） |
+
 ## 参考資料
 
 - [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)

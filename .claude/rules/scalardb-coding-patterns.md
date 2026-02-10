@@ -1,6 +1,6 @@
 # ScalarDB Coding Patterns (Compact)
 
-ScalarDBコーディングパターンの要点のみをまとめた簡素版。詳細な実装例は `examples/` 参照。
+ScalarDBコーディングパターンの要点のみをまとめた簡素版。
 
 ## 1. プロジェクト構造
 
@@ -64,7 +64,6 @@ public class Order {
 }
 ```
 
-📖 **詳細例**: `.claude/rules/examples/entity-examples.md`
 
 ## 5. リポジトリ原則
 
@@ -82,7 +81,6 @@ public interface OrderRepository {
 - **楽観ロックチェック**: 更新時に `version` 検証
 - **例外変換**: `TransactionException` → ドメイン例外
 
-📖 **詳細例**: `.claude/rules/examples/repository-examples.md`
 
 ## 6. トランザクション管理
 
@@ -101,7 +99,6 @@ try {
 }
 ```
 
-📖 **詳細例**: `.claude/rules/examples/transaction-examples.md`
 
 ## 7. ScalarDB設定
 
@@ -129,7 +126,6 @@ public DistributedTransactionManager transactionManager() {
 }
 ```
 
-📖 **詳細例**: `.claude/rules/examples/config-examples.md`
 
 ### 7A. OSS/Community Edition（組み込みモード）
 
@@ -208,7 +204,6 @@ public class GlobalExceptionHandler {
 }
 ```
 
-📖 **詳細例**: `.claude/rules/examples/exception-examples.md`
 
 ## 9. チェックリスト
 

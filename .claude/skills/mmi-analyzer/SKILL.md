@@ -165,6 +165,22 @@ Serena連携の詳細は `references/serena_integration.md` を参照。
 値は 0（No）, 5（partial）, 10（Yes）のいずれか。
 ユーザーにインタラクティブに確認して入力するのが望ましい。
 
+## エラーハンドリング
+
+- Pythonスクリプトが見つからない → `.claude/skills/mmi-analyzer/scripts/` のパスを確認
+- 対象がPythonプロジェクトでない → `/evaluate-mmi`（手動定性評価）の使用を推奨
+- Serena MCPが利用不可 → 静的解析（import/ファイル構造ベース）で代替
+- radon/networkxが未インストール → `pip install radon networkx` を案内
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/evaluate-mmi` | MMI手動定性評価（代替/補完） |
+| `/ddd-evaluation` | DDD評価（並行実施） |
+| `/integrate-evaluations` | 評価統合（次ステップ） |
+| `/analyze-system` | システム分析（入力） |
+
 ## スコアリング詳細
 
 各基準の閾値テーブルは `references/mmi_scoring_table.md` に記載。

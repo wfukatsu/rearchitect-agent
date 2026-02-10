@@ -587,6 +587,14 @@ Put put = Put.newBuilder()
 - ドキュメント更新
 ```
 
+### Step 11: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+/fix-mermaid ./reports/03_design
+```
+
 ## 出力フォーマット
 
 ### scalardb-architecture.md
@@ -719,6 +727,13 @@ scalardbCluster:
 | 大きなトランザクション | ロック競合 | トランザクション分割 |
 | Group Commit + カスタムTX ID | 未サポート | 自動生成ID使用 |
 | 非JDBC DBでSERIALIZABLE前提 | SNAPSHOTになる可能性 | 整合性レベル確認 |
+
+## エラーハンドリング
+
+- エディション未選定 → `/select-scalardb-edition` を先に実行するよう案内
+- Context7で最新情報が取得できない場合 → `.claude/rules/scalardb-edition-profiles.md` の静的情報で設計
+- DDD設計が未実施 → 対象パスのコード解析からドメイン境界を推定（精度低下を警告）
+- ストレージバックエンドが未定 → PostgreSQLをデフォルトで設計し、後から変更可能と案内
 
 ## 関連スキル
 

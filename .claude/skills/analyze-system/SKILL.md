@@ -188,6 +188,14 @@ mcp__serena__find_symbol で重要なクラス/関数を特定
 - `analysis.status` を `"completed"` に変更
 - 各カウントを実際の値で更新
 
+### Step 8: Mermaid図の検証
+
+出力したファイルのMermaid図を検証し、エラーがあれば修正：
+
+```bash
+/fix-mermaid ./reports/01_analysis
+```
+
 ## 出力フォーマット
 
 ### 1. ubiquitous-language.md
@@ -362,3 +370,13 @@ graph TD
 - 設計書が見つからない場合 → コードのみから推論（精度低下を警告）
 - コードが解析不能な場合 → 対応言語を確認、手動解析を提案
 - 大規模コードベースの場合 → サンプリング分析を提案
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/system-investigation` | コードベース調査（入力） |
+| `/ddd-evaluation` | DDD評価（次ステップ） |
+| `/evaluate-mmi` | MMI評価（次ステップ） |
+| `/data-model-analysis` | データモデル詳細分析（補完） |
+| `/build-graph` | ナレッジグラフ構築（出力活用） |

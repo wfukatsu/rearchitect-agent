@@ -1,0 +1,26 @@
+# rearchitect-agent Python dependencies
+# Install: pip install -r requirements.txt
+
+# Core: Graph database
+ryugraph==25.9.2
+
+# Core: Data processing
+pandas==2.3.3
+numpy==2.4.0
+
+# Core: Markdown report generation
+Markdown==3.10
+pymdown-extensions==10.19.1
+PyYAML==6.0.3
+
+# Core: Code metrics (used by mmi-analyzer)
+radon>=5.1
+
+# Core: Dependency graph analysis (used by mmi-analyzer)
+networkx>=3.1
+
+# Transitive dependencies (pinned)
+python-dateutil==2.9.0.post0
+pytz==2025.2
+six==1.17.0
+tzdata==2025.3

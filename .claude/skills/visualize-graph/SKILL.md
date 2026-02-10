@@ -27,7 +27,8 @@ RyuGraphデータベースの内容を可視化し、Mermaid図やインタラ�
 
 ## 出力先
 
-結果は `reports/graph/visualizations/` に出力します：
+結果は `reports/graph/visualizations/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
 - Mermaid形式のグラフ図
 - DOT形式のグラフデータ
 - インタラクティブHTML
@@ -205,6 +206,14 @@ dot -Tsvg graph.dot -o graph.svg
 | `--saga` | 可視化するSaga名 | なし |
 | `--show-actors` | プロセス図にアクターを表示 | false |
 | `--show-compensations` | Saga図に補償フローを表示 | true |
+
+### Step 6: Mermaid図の検証
+
+出力したMermaid図を検証し、エラーがあれば修正：
+
+```bash
+/fix-mermaid ./reports/graph/visualizations
+```
 
 ## 出力ファイル
 

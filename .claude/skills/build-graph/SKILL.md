@@ -34,6 +34,8 @@ user_invocable: true
 
 ## 出力先
 
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 - `knowledge.ryugraph` - RyuGraphデータベースファイル
 - `reports/graph/data/` - CSV形式のグラフデータ
 
@@ -433,3 +435,11 @@ RETURN e.name, t.name_ja LIMIT 10;
 - ryugraphがインストールされていない → `pip install ryugraph` を提案
 - 分析結果がない → コードのみから構築（精度低下を警告）
 - 対象言語非対応 → 手動でCSVを作成するよう案内
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/query-graph` | グラフ探索（次ステップ） |
+| `/visualize-graph` | グラフ可視化（次ステップ） |
+| `/analyze-system` | システム分析（入力） |

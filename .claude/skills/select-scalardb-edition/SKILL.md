@@ -27,9 +27,12 @@ user_invocable: true
 
 ## 出力先
 
+結果は `work/{project}/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ```
 work/{project}/
-└── scalardb-edition-config.md    # エディション設定ファイル
+└── scalardb-edition-config.md    # エディション設定ファイル（Step 4完了時）
 ```
 
 ## サブエージェント活用
@@ -288,3 +291,12 @@ scalardb_version: "3.14.0"
 - Context7で最新情報が取得できない場合 → `.claude/rules/scalardb-edition-profiles.md` の静的情報を使用
 - ユーザーが要件を決められない場合 → Enterprise Standardをデフォルト推奨（最もバランスが良い）
 - ストレージが未定の場合 → PostgreSQLをデフォルトで設定し、後から変更可能と案内
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/design-scalardb` | ScalarDBデータアーキテクチャ設計（次ステップ） |
+| `/design-scalardb-app-patterns` | アプリケーション設計パターン（次ステップ） |
+| `/generate-scalardb-code` | コード生成（次ステップ） |
+| `/scalardb-sizing-estimator` | サイジング見積もり（補完） |

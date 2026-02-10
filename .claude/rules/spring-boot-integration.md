@@ -1,6 +1,6 @@
 # Spring Boot Integration Patterns (Compact)
 
-Spring BootとScalarDB統合の要点。詳細は `examples/` 参照。
+Spring BootとScalarDB統合の要点。
 
 ## 1. 依存関係
 
@@ -42,7 +42,6 @@ dependencies {
 ```
 
 📖 **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md`
-📖 **依存関係詳細**: `.claude/rules/examples/spring-boot-dependencies.md`
 
 ## 2. レイヤー構成
 
@@ -62,7 +61,6 @@ public class OrderApplicationService {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-service.md`
 
 ## 3. Controller
 
@@ -79,7 +77,6 @@ public class OrderController {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-controller.md`
 
 ## 4. Event駆動
 
@@ -105,7 +102,6 @@ public class KafkaEventPublisher implements DomainEventPublisher {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-events.md`
 
 ## 5. MapStruct
 
@@ -118,7 +114,6 @@ public interface OrderMapper {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-mapping.md`
 
 ## 6. テスト
 
@@ -135,7 +130,6 @@ public abstract class IntegrationTestBase {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-testing.md`
 
 ## 7. 設定ファイル
 
@@ -195,7 +189,6 @@ public class ScalarDbSpringDataConfig {
 ```
 
 📖 **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md`
-📖 **設定詳細**: `.claude/rules/examples/spring-boot-config.md`
 
 ## 8. Kubernetes
 
@@ -224,7 +217,6 @@ spec:
               port: 8080
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-k8s.md`
 
 ## 9. チェックリスト
 

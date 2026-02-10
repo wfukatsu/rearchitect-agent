@@ -25,6 +25,7 @@ dist/
 # Python
 __pycache__/
 *.pyc
+.venv/
 
 # Backup files
 *.backup

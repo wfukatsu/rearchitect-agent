@@ -31,10 +31,13 @@ ScalarDB関連の設計およびコードをレビューし、品質・整合性
 
 ## 出力先
 
+結果は `reports/03_design/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ```
 reports/03_design/
-├── scalardb-design-review.md    # Mode A 出力
-└── scalardb-code-review.md      # Mode B 出力
+├── scalardb-design-review.md    # Mode A: Step 7A完了時
+└── scalardb-code-review.md      # Mode B: Step 7B完了時
 ```
 
 ## サブエージェント活用
@@ -279,3 +282,12 @@ input_files:
 - レビュー対象がない → 前提スキルの実行を案内
 - Context7で最新情報が取得できない → 静的ルールのみでレビュー実行（警告付き）
 - 複数サービスのコードがある → ユーザーに対象サービスの選択を促す
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/design-scalardb` | ScalarDB設計（レビュー対象） |
+| `/design-scalardb-app-patterns` | アプリケーション設計パターン（レビュー対象） |
+| `/generate-scalardb-code` | コード生成（レビュー対象） |
+| `/select-scalardb-edition` | エディション選定（前提） |

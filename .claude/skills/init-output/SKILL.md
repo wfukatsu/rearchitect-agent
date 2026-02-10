@@ -150,8 +150,16 @@ echo "Output directory initialized: ${OUTPUT_DIR}"
 Bash: mkdir -p reports/{00_summary,01_analysis,02_evaluation,03_design,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}
 ```
 
-## 注意事項
+## エラーハンドリング
 
-- 書き込み権限がない場合はエラーになります
-- 大文字小文字は区別されます
-- 相対パスと絶対パスの両方が使用可能です
+- 書き込み権限がない場合 → 権限エラーを報告し、`sudo` または別パスの指定を案内
+- 既にディレクトリが存在する場合 → スキップして続行（`--force` で再作成）
+- ディスク容量不足 → エラーを報告
+
+## 関連スキル
+
+| スキル | 関係 |
+|-------|------|
+| `/full-pipeline` | パイプライン開始時に自動で呼び出し |
+| `/workflow` | ワークフロー開始時に自動で呼び出し |
+| `/compile-report` | 出力ディレクトリのファイルをHTML統合 |

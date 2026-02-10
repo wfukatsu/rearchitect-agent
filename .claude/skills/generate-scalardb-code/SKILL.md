@@ -61,6 +61,7 @@ user_invocable: true
 ## 出力先
 
 結果は `generated/{service-name}/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
 
 ```
 generated/{service-name}/
@@ -399,6 +400,13 @@ Kubernetes マニフェスト生成をスキップ
 ```
 /generate-scalardb-code ./reports --output=./src
 ```
+
+## エラーハンドリング
+
+- 設計仕様が不足 → `/design-implementation`、`/design-scalardb` を先に実行するよう案内
+- エディション未選定 → `/select-scalardb-edition` を先に実行するよう案内
+- 生成対象サービスが不明確 → ユーザーに対象サービスの選択を促す
+- コーディングパターンが不明 → `.claude/rules/scalardb-coding-patterns.md` を参照
 
 ## 関連スキル
 

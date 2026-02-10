@@ -32,6 +32,9 @@ user_invocable: true
 
 ## 出力先
 
+結果は `reports/03_design/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ```
 reports/03_design/
 ├── scalardb-app-patterns.md       # Step 3-6完了時
@@ -471,3 +474,12 @@ generated_at: [timestamp]
 - エディション設定が未選定 → `/select-scalardb-edition` を先に実行するよう案内
 - DDD設計が未実施 → 対象パスのコード解析からコンテキストを推定（精度低下を警告）
 - 不明なドメインタイプ → ユーザーに確認（AskUserQuestion）
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/select-scalardb-edition` | エディション選定（入力） |
+| `/design-scalardb` | ScalarDBデータアーキテクチャ設計（次ステップ） |
+| `/generate-scalardb-code` | コード生成（次ステップ） |
+| `/design-implementation` | 実装仕様生成（補完） |

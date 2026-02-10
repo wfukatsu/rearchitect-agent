@@ -139,11 +139,12 @@
       "completed_at": null,
       "outputs": []
     },
-    "review-scalardb --mode=design": {
+    "review-scalardb-design": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
-      "outputs": []
+      "outputs": [],
+      "args": "--mode=design"
     },
     "design-api": {
       "status": "pending",
@@ -169,11 +170,12 @@
       "completed_at": null,
       "outputs": []
     },
-    "review-scalardb --mode=code": {
+    "review-scalardb-code": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
-      "outputs": []
+      "outputs": [],
+      "args": "--mode=code"
     },
     "design-infrastructure": {
       "status": "pending",
@@ -278,7 +280,7 @@ access-control-analysis    ↓
                                               ↓
                              design-scalardb-analytics (optional)
                                               ↓
-                                    review-scalardb --mode=design (optional)
+                                    review-scalardb-design (optional)
                                               ↓
                                          design-api
                                               ↓
@@ -288,7 +290,7 @@ access-control-analysis    ↓
                                               ↓
                                     generate-scalardb-code
                                               ↓
-                                    review-scalardb --mode=code (optional)
+                                    review-scalardb-code (optional)
                                               ↓
                                     design-infrastructure (optional)
                                               ↓

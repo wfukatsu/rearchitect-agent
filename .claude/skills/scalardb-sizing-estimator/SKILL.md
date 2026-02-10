@@ -910,6 +910,30 @@ D) Jenkins / カスタム構成 - 既存Jenkins環境または独自CI/CD構成
 }
 ```
 
+## 9. Mermaid図の検証
+
+出力したMermaid図を検証し、エラーがあれば修正：
+
+```bash
+/fix-mermaid ./reports/sizing-estimates
+```
+
+## エラーハンドリング
+
+- エディション未選定 → `/select-scalardb-edition` を先に実行するよう案内
+- 要件が不明確 → デフォルト値で試算し、後から調整可能と案内
+- クラウド料金が変更されている可能性 → 最新料金は各プロバイダーサイトで確認を推奨
+- ScalarDBライセンス価格が不明 → Scalar社への問い合わせを案内
+
+## 関連スキル
+
+| スキル | 用途 |
+|-------|-----|
+| `/select-scalardb-edition` | エディション選定（入力） |
+| `/design-scalardb` | ScalarDBデータアーキテクチャ設計（入力） |
+| `/estimate-cost` | 総合コスト見積もり（補完） |
+| `/design-infrastructure` | インフラ構成設計（次ステップ） |
+
 ## 参照ファイル
 
 - `references/scalardb-cluster-sizing.md` - ScalarDB Cluster詳細サイジング（オーバーヘッド計算含む）
