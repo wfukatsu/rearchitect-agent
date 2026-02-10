@@ -137,16 +137,19 @@ reports/
 | `/ddd-evaluation` | DDD評価。戦略的・戦術的設計の適合度を評価 |
 | `/integrate-evaluations` | 評価統合。MMI+DDD評価結果を統合し改善計画を策定 |
 
-### 設計スキル (8)
+### 設計スキル (11)
 
 | コマンド | 説明 |
 |---------|------|
 | `/ddd-redesign` | DDD再設計。境界コンテキスト、集約、値オブジェクトを再設計 |
 | `/map-domains` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
 | `/design-microservices` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
+| `/select-scalardb-edition` | ScalarDBエディション選定。OSS/Standard/Premiumを対話的に選定 |
 | `/design-api` | API設計。REST/GraphQL/gRPC/AsyncAPI仕様、Gateway、セキュリティを策定 |
 | `/design-scalardb` | ScalarDB Cluster設計。分散トランザクション、スキーマ設計を策定 |
+| `/design-scalardb-app-patterns` | ScalarDBアプリケーション設計パターン。ドメインタイプ別設計パターンを選定 |
 | `/design-scalardb-analytics` | ScalarDB Analytics設計。分析基盤、データカタログを策定 |
+| `/review-scalardb` | ScalarDB設計・コードレビュー。設計またはコード生成後のレビュー |
 | `/design-implementation` | 実装仕様生成。AIエージェント向け詳細実装仕様を生成 |
 | `/create-domain-story` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
 
@@ -710,7 +713,7 @@ refactoring-agent/
 │   │   ├── output-conventions.md
 │   │   ├── evaluation-frameworks.md
 │   │   └── examples/                     # 実装例
-│   ├── skills/                            # スキル定義（33スキル）
+│   ├── skills/                            # スキル定義（36スキル）
 │   │   ├── workflow/                     # インタラクティブワークフロー
 │   │   ├── full-pipeline/                # 完全パイプライン実行
 │   │   ├── refactor-system/              # 統合リファクタリング
