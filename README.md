@@ -89,6 +89,15 @@ reports/
 ├── 05_estimate/
 │   ├── cost-summary.md               # コストサマリー
 │   └── infrastructure-detail.md      # インフラ詳細
+├── 06_implementation/                # 実装仕様
+│   └── *.md                          # ドメインサービス仕様、リポジトリ仕様等
+├── 07_test-specs/                    # テスト仕様
+│   └── *.md                          # BDDシナリオ、ユニット/統合テスト仕様
+├── 08_infrastructure/                # インフラ構成
+│   ├── infrastructure-architecture.md # アーキテクチャ総合図
+│   ├── deployment-guide.md           # デプロイ手順書
+│   ├── environment-matrix.md         # 環境比較マトリクス
+│   └── security-configuration.md     # セキュリティ設定ガイド
 ├── sizing-estimates/                 # ScalarDBサイジング見積もり
 │   ├── scalardb-*-sizing-estimate.md  # 詳細見積もり（Markdown）
 │   ├── scalardb-*-sizing-estimate.html # HTMLレポート
@@ -102,6 +111,10 @@ reports/
 <プロジェクトルート>/
 ├── knowledge.ryugraph                # RyuGraphデータベース
 ├── generated/{service}/              # 生成されたSpring Bootコード
+├── generated/infrastructure/         # IaC & K8sマニフェスト
+│   ├── k8s/                          # Kubernetes manifests (Kustomize)
+│   ├── terraform/                    # Terraform modules & environments
+│   └── openshift/                    # OpenShift configs（選択時のみ）
 ├── work/{project}/                   # 中間状態（git-ignored）
 └── workspace/                        # 代替作業ディレクトリ（git-ignored）
 ```
@@ -137,7 +150,7 @@ reports/
 | `/ddd-evaluation` | DDD評価。戦略的・戦術的設計の適合度を評価 |
 | `/integrate-evaluations` | 評価統合。MMI+DDD評価結果を統合し改善計画を策定 |
 
-### 設計スキル (11)
+### 設計スキル (12)
 
 | コマンド | 説明 |
 |---------|------|
@@ -145,12 +158,13 @@ reports/
 | `/map-domains` | ドメインマッピング。境界づけられたコンテキストとコンテキストマップを作成 |
 | `/design-microservices` | マイクロサービス設計。ターゲットアーキテクチャと移行計画を策定 |
 | `/select-scalardb-edition` | ScalarDBエディション選定。OSS/Standard/Premiumを対話的に選定 |
-| `/design-api` | API設計。REST/GraphQL/gRPC/AsyncAPI仕様、Gateway、セキュリティを策定 |
 | `/design-scalardb` | ScalarDB Cluster設計。分散トランザクション、スキーマ設計を策定 |
 | `/design-scalardb-app-patterns` | ScalarDBアプリケーション設計パターン。ドメインタイプ別設計パターンを選定 |
 | `/design-scalardb-analytics` | ScalarDB Analytics設計。分析基盤、データカタログを策定 |
 | `/review-scalardb` | ScalarDB設計・コードレビュー。設計またはコード生成後のレビュー |
+| `/design-api` | API設計。REST/GraphQL/gRPC/AsyncAPI仕様、Gateway、セキュリティを策定 |
 | `/design-implementation` | 実装仕様生成。AIエージェント向け詳細実装仕様を生成 |
+| `/design-infrastructure` | インフラ設計。AWS/Azure/GCP/OpenShift向けKubernetes・IaC構成を設計 |
 | `/create-domain-story` | ドメインストーリー作成。ビジネスプロセスを物語形式で整理 |
 
 ### コード生成・テストスキル (2)
@@ -400,18 +414,22 @@ graph TD
     P2a --> P2c["/integrate-evaluations"]
     P2b --> P2c
     P2c --> P3["/ddd-redesign"]
-    P3 --> P4["/map-domains"]
-    P4 --> P5["/design-microservices"]
-    P5 --> P5a["/design-api"]
-    P5a --> P5b["/design-scalardb"]
-    P5b --> P5c{"分析要件あり?"}
-    P5c -->|Yes| P5d["/design-scalardb-analytics"]
-    P5c -->|No| P6
-    P5d --> P6["/design-implementation"]
+    P3 --> P4["/design-microservices"]
+    P4 --> P47["/select-scalardb-edition"]
+    P47 --> P48["/design-scalardb-app-patterns"]
+    P48 --> P5["/design-scalardb"]
+    P5 --> P5c{"分析要件あり?"}
+    P5c -->|"Yes"| P55["/design-scalardb-analytics"]
+    P5c -->|"No"| P59
+    P55 --> P59["/review-scalardb --mode=design"]
+    P59 --> P595["/design-api"]
+    P595 --> P6["/design-implementation"]
     P6 --> P7["/generate-test-specs"]
     P7 --> P8["/generate-scalardb-code"]
-    P8 --> P9["/create-domain-story"]
-    P9 --> P10["/estimate-cost"]
+    P8 --> P85["/review-scalardb --mode=code"]
+    P85 --> P87["/design-infrastructure"]
+    P87 --> P9["/estimate-cost"]
+    P9 --> P10["/create-domain-story"]
     P10 --> P11["Executive Summary"]
     P11 --> P12["/compile-report"]
     P12 --> P13["終了"]
@@ -713,7 +731,7 @@ refactoring-agent/
 │   │   ├── output-conventions.md
 │   │   ├── evaluation-frameworks.md
 │   │   └── examples/                     # 実装例
-│   ├── skills/                            # スキル定義（36スキル）
+│   ├── skills/                            # スキル定義（37スキル）
 │   │   ├── workflow/                     # インタラクティブワークフロー
 │   │   ├── full-pipeline/                # 完全パイプライン実行
 │   │   ├── refactor-system/              # 統合リファクタリング
@@ -726,10 +744,14 @@ refactoring-agent/
 │   │   ├── ddd-redesign/                 # DDD再設計
 │   │   ├── map-domains/                  # ドメインマッピング
 │   │   ├── design-microservices/         # マイクロサービス設計
+│   │   ├── select-scalardb-edition/      # ScalarDBエディション選定
 │   │   ├── design-api/                   # API設計
 │   │   ├── design-scalardb/              # ScalarDB Cluster設計
+│   │   ├── design-scalardb-app-patterns/ # ScalarDBアプリ設計パターン
 │   │   ├── design-scalardb-analytics/    # ScalarDB Analytics設計
+│   │   ├── review-scalardb/              # ScalarDB設計・コードレビュー
 │   │   ├── design-implementation/        # 実装仕様生成
+│   │   ├── design-infrastructure/        # インフラ基盤構成設計
 │   │   ├── generate-test-specs/          # テスト仕様生成
 │   │   ├── generate-scalardb-code/       # コード生成
 │   │   ├── scalardb-sizing-estimator/    # ScalarDBサイジング見積もり
@@ -778,6 +800,7 @@ refactoring-agent/
 | 1.0.0 | 2024 | 初版リリース |
 | 1.1.0 | 2025-01 | ナレッジグラフ機能追加、ScalarDB Analytics対応 |
 | 1.2.0 | 2026-01 | API設計、ScalarDBサイジング、HTMLレポート生成追加 |
+| 1.3.0 | 2026-02 | インフラ基盤構成設計（AWS/Azure/GCP/OpenShift）、ScalarDBエディション選定・アプリパターン・レビュー追加（37スキル） |
 
 ## ライセンス
 

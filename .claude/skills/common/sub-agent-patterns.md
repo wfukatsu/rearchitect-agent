@@ -48,7 +48,7 @@ Task(subagent_type="Explore", prompt="外部連携とAPI定義を調査...", des
 
 ### 対象スキル
 
-integrate-evaluations, ddd-redesign, map-domains, design-microservices, design-api, design-scalardb, design-scalardb-analytics, design-implementation, generate-test-specs, generate-scalardb-code, estimate-cost
+integrate-evaluations, ddd-redesign, map-domains, design-microservices, design-api, design-scalardb, design-scalardb-analytics, design-infrastructure, design-implementation, generate-test-specs, generate-scalardb-code, estimate-cost
 
 ### 使用方法
 
@@ -368,7 +368,7 @@ Mermaid検証、レポートコンパイル、グラフ操作等のバッチ処�
 
 ### 対象スキル
 
-compile-report, fix-mermaid, render-mermaid, build-graph, visualize-graph, estimate-cost, scalardb-sizing-estimator
+compile-report, fix-mermaid, render-mermaid, build-graph, visualize-graph, estimate-cost, design-infrastructure, scalardb-sizing-estimator
 
 ### 使用方法
 
@@ -408,7 +408,7 @@ Task(subagent_type="Explore", prompt="reports/03_design/ の全ファイルを�
 | パターン | 対象カテゴリ | 対象スキル数 | サブエージェント種別 |
 |---------|------------|------------|-------------------|
 | 1. コードベース探索 | 調査・分析 | 4 | Explore |
-| 2. 前フェーズ出力読み込み | 設計・生成 | 11 | Explore |
+| 2. 前フェーズ出力読み込み | 設計・生成 | 12 | Explore |
 | 3. Context7 ドキュメント取得 | ScalarDB関連 | 4 | general-purpose |
 | 4. レビュー | レビュー | 1 | Explore |
 | 5. セキュリティ分析 | セキュリティ | 2 | Explore |

@@ -1,6 +1,6 @@
 # 出力規則
 
-スキルが `reports/` にファイルを出力する際の共通ルール。19/27スキルが対象。
+スキルが `reports/` にファイルを出力する際の共通ルール。
 
 ## ディレクトリ構造
 
@@ -16,10 +16,16 @@ reports/
 ├── 05_estimate/          # コスト見積もり（/estimate-cost）
 ├── 06_implementation/    # 実装仕様（/design-implementation）
 ├── 07_test-specs/        # テスト仕様（/generate-test-specs）
+├── 08_infrastructure/    # インフラ構成（/design-infrastructure）
 ├── graph/                # ナレッジグラフ（/build-graph, /visualize-graph）
 │   ├── data/             # CSV データ
 │   └── visualizations/   # 可視化出力
 └── sizing-estimates/     # サイジング見積もり（/scalardb-sizing-estimator）
+
+generated/infrastructure/    # IaC & K8s manifests（/design-infrastructure）
+├── k8s/                     # Kubernetes manifests (Kustomize base + overlays)
+├── terraform/               # Terraform modules & environments
+└── openshift/               # OpenShift configs（選択時のみ）
 ```
 
 ## ファイル命名規則

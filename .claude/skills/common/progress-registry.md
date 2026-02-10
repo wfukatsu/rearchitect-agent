@@ -175,6 +175,12 @@
       "completed_at": null,
       "outputs": []
     },
+    "design-infrastructure": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
     "estimate-cost": {
       "status": "pending",
       "started_at": null,
@@ -283,6 +289,8 @@ access-control-analysis    ↓
                                     generate-scalardb-code
                                               ↓
                                     review-scalardb --mode=code (optional)
+                                              ↓
+                                    design-infrastructure (optional)
                                               ↓
                                         estimate-cost
                                               ↓

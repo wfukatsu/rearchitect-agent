@@ -36,6 +36,7 @@ user_invocable: true
 | 7 | /generate-test-specs | reports/07_test-specs/ |
 | 8 | /generate-scalardb-code | generated/{service}/ |
 | 8.5 | /review-scalardb --mode=code | reports/03_design/ |
+| 8.7 | /design-infrastructure | reports/08_infrastructure/, generated/infrastructure/ |
 | 9 | /estimate-cost | reports/05_estimate/ |
 | 10 | /create-domain-story | reports/04_stories/ |
 | 11 | /build-graph | reports/graph/ |
@@ -81,6 +82,9 @@ user_invocable: true
 
 # ドメインストーリースキップ
 /full-pipeline ./path/to/source --skip-stories
+
+# インフラ設計スキップ
+/full-pipeline ./path/to/source --skip-infrastructure
 
 # グラフ構築スキップ
 /full-pipeline ./path/to/source --skip-graph
@@ -160,7 +164,7 @@ AskUserQuestionツールを使用：
    ```
    対象パス: $ARGUMENTS または Step 0 で確認した値（必須）
    出力先: --output オプション または Step 0 で確認した値 (デフォルト: ./reports/, ./generated/)
-   オプション: --domain, --analyze-only, --skip-codegen, --skip-security, --skip-data-model, --skip-analytics, --skip-stories, --skip-graph, --resume-from
+   オプション: --domain, --analyze-only, --skip-codegen, --skip-security, --skip-data-model, --skip-analytics, --skip-infrastructure, --skip-stories, --skip-graph, --resume-from
    ```
 
 2. **プロジェクト名の決定**
@@ -168,8 +172,8 @@ AskUserQuestionツールを使用：
 
 3. **出力ディレクトリの初期化**
    ```bash
-   mkdir -p reports/{before/$PROJECT,00_summary,01_analysis,02_evaluation,03_design/api-specifications,04_stories,05_estimate,06_implementation,07_test-specs,graph/data,graph/visualizations,sizing-estimates}
-   mkdir -p generated
+   mkdir -p reports/{before/$PROJECT,00_summary,01_analysis,02_evaluation,03_design/api-specifications,04_stories,05_estimate,06_implementation,07_test-specs,08_infrastructure,graph/data,graph/visualizations,sizing-estimates}
+   mkdir -p generated generated/infrastructure
    mkdir -p work/$PROJECT
    ```
 
@@ -496,6 +500,32 @@ AskUserQuestionツールを使用：
 
 **注意**: 生成コードの品質を検証し、coding-patterns準拠・エディション別API使用・トランザクション管理をチェックします。
 
+### Step 19.5: Phase 8.7 - インフラ基盤構成設計（オプション）
+
+**条件**: `--skip-infrastructure` が指定されていない場合
+
+**スキル**: `/design-infrastructure`
+
+```
+実行: /design-infrastructure
+```
+
+入力:
+- `reports/03_design/target-architecture.md` ← Phase 4
+- `reports/03_design/scalardb-schema.md` ← Phase 5
+- `work/{project}/scalardb-edition-config.md` ← Phase 4.7
+- `reports/sizing-estimates/*.md` ← 事前に `/scalardb-sizing-estimator` 実行済みの場合のみ
+
+**出力ファイル**:
+- `reports/08_infrastructure/infrastructure-architecture.md`
+- `reports/08_infrastructure/deployment-guide.md`
+- `reports/08_infrastructure/environment-matrix.md`
+- `reports/08_infrastructure/security-configuration.md`
+- `generated/infrastructure/k8s/` — Kubernetes manifests
+- `generated/infrastructure/terraform/` — IaC modules & environments
+
+**スキップ条件**: `--skip-infrastructure` オプション指定時
+
 ### Step 20: Phase 9 - コスト見積もり
 
 **スキル**: `/estimate-cost`
@@ -650,24 +680,29 @@ AskUserQuestionツールを使用：
 │   ├── 00_summary/              ← Phase 13
 │   ├── 01_analysis/             ← Phase 1
 │   ├── 02_evaluation/           ← Phase 2a, 2b, 2.5
-│   ├── 03_design/               ← Phase 3, 4, 4.7, 4.8, 5, 5.5, 5.9, 5.95, 8.5
+│   ├── 03_design/               ← Phase 3, 4, 4.8, 5, 5.5, 5.9, 5.95, 8.5
 │   │   └── api-specifications/
 │   ├── 04_stories/              ← Phase 10
 │   ├── 05_estimate/             ← Phase 9
 │   ├── 06_implementation/       ← Phase 6
 │   ├── 07_test-specs/           ← Phase 7
 │   │   └── bdd-scenarios/
+│   ├── 08_infrastructure/       ← Phase 8.7
 │   ├── graph/                   ← Phase 11
 │   │   ├── data/
 │   │   └── visualizations/
 │   └── sizing-estimates/        ← ScalarDBサイジング
-├── generated/                   ← Phase 8
-│   └── {service}/
-│       ├── src/
-│       ├── build.gradle
-│       ├── Dockerfile
+├── generated/                   ← Phase 8, 8.7
+│   ├── {service}/
+│   │   ├── src/
+│   │   ├── build.gradle
+│   │   ├── Dockerfile
+│   │   ├── k8s/
+│   │   └── GENERATED.md
+│   └── infrastructure/          ← Phase 8.7
 │       ├── k8s/
-│       └── GENERATED.md
+│       ├── terraform/
+│       └── openshift/
 ├── work/{project}/              ← 中間状態
 │   └── pipeline-progress.json
 └── knowledge.ryugraph/          ← Phase 11

@@ -10,7 +10,7 @@ Legacy system analysis and microservices refactoring agent system for Claude Cod
 
 ## Core Architecture
 
-This is a **skill-based agent system** (36 skills) with three execution layers:
+This is a **skill-based agent system** (37 skills) with three execution layers:
 
 1. **Orchestration Skills** - Full workflow automation (`workflow`, `full-pipeline`, `refactor-system`)
 2. **Phase-specific Skills** - Individual analysis/design phases (investigation → analysis → evaluation → design → implementation → code generation)
@@ -82,18 +82,21 @@ Claude Code provides aliases for common skills as `/skill-name` commands.
 /ddd-redesign ./src           # Bounded contexts, aggregates, value objects
 /map-domains ./src            # Domain classification, context mapping
 /design-microservices ./src   # Target architecture, transformation plan
-/design-api ./src             # REST/GraphQL/gRPC/AsyncAPI specs
 /select-scalardb-edition          # ScalarDBエディション選定（対話形式）
-/design-scalardb ./src            # ScalarDB schema & transaction design
 /design-scalardb-app-patterns ./src  # ドメインタイプ別設計パターン
+/design-scalardb ./src            # ScalarDB schema & transaction design
 /design-scalardb-analytics ./src  # ScalarDB Analytics (Apache Spark) design
 /review-scalardb --mode=design    # ScalarDB設計レビュー
-/review-scalardb --mode=code      # ScalarDBコードレビュー
+/design-api ./src             # REST/GraphQL/gRPC/AsyncAPI specs
 
 # Phase 6-8: Implementation & Code Generation
 /design-implementation ./src   # Detailed implementation specs for AI coding agents
 /generate-test-specs ./src     # BDD scenarios, unit/integration test specs
 /generate-scalardb-code ./src  # Generate ScalarDB/Spring Boot code
+/review-scalardb --mode=code      # ScalarDBコードレビュー
+
+# Phase 8.7: Infrastructure
+/design-infrastructure         # Kubernetes & IaC (Terraform/Helm/Kustomize/OpenShift)
 
 # Phase 9-10: Documentation & Estimation
 /create-domain-story --domain=Order       # Domain storytelling (interactive)
@@ -161,10 +164,12 @@ reports/
 ├── 05_estimate/            # Cost estimation
 ├── 06_implementation/      # Phase 6: Implementation specifications
 ├── 07_test-specs/          # Phase 7: Test specifications
+├── 08_infrastructure/      # Phase 8.7: Infrastructure architecture docs
 ├── graph/                  # Knowledge graph data
 └── sizing-estimates/       # ScalarDB sizing estimation
 
 generated/{service}/         # Phase 8: Generated Spring Boot code
+generated/infrastructure/    # Phase 8.7: IaC & K8s manifests
 work/{project}/             # Intermediate state (git-ignored)
 workspace/                  # Alternative working directory (git-ignored)
 knowledge.ryugraph          # RyuGraph database file
@@ -189,7 +194,7 @@ Skills support 3 ScalarDB editions (OSS / Enterprise Standard / Enterprise Premi
 
 See `.claude/rules/scalardb-coding-patterns.md` and `.claude/rules/scalardb-edition-profiles.md` for detailed patterns.
 
-## Skill Reference (36 skills)
+## Skill Reference (37 skills)
 
 All skills are user-invocable via `/skill-name` slash commands. Each skill is defined in `.claude/skills/{skill-name}/SKILL.md`.
 
@@ -219,19 +224,20 @@ All skills are user-invocable via `/skill-name` slash commands. Each skill is de
 | `/ddd-evaluation` | DDD戦略的・戦術的設計評価 |
 | `/integrate-evaluations` | MMI+DDD統合改善計画 |
 
-### Design (11)
+### Design (12)
 | Skill | Description |
 |-------|-------------|
 | `/ddd-redesign` | DDD原則に基づくシステム再設計 |
 | `/map-domains` | ドメイン分類・コンテキストマップ作成 |
 | `/design-microservices` | ターゲットアーキテクチャ策定 |
-| `/design-api` | REST/GraphQL/gRPC/AsyncAPI仕様書 |
 | `/select-scalardb-edition` | ScalarDBエディション選定（対話形式） |
 | `/design-scalardb` | エディション設定に基づくScalarDBデータアーキテクチャ |
 | `/design-scalardb-app-patterns` | ドメインタイプ別アプリケーション設計パターン |
 | `/design-scalardb-analytics` | ScalarDB Analytics分析基盤設計 |
 | `/review-scalardb` | ScalarDB設計・コードレビュー |
+| `/design-api` | REST/GraphQL/gRPC/AsyncAPI仕様書 |
 | `/design-implementation` | AI向け詳細実装仕様生成 |
+| `/design-infrastructure` | Kubernetes・IaC構成生成（Terraform/Helm/Kustomize/OpenShift） |
 | `/create-domain-story` | ドメインストーリー作成（対話形式） |
 
 ### Code Generation & Test (2)
@@ -292,7 +298,7 @@ Levels: 8-10 Good | 4-8 Warning | 0-4 Critical
 
 | Path | Purpose |
 |------|---------|
-| `.claude/skills/*/SKILL.md` | Skill definitions (36 skills) |
+| `.claude/skills/*/SKILL.md` | Skill definitions (37 skills) |
 | `.claude/skills/common/progress-registry.md` | Pipeline phase tracking (27 phases, dependencies, resume support) |
 | `.claude/skills/common/sub-agent-patterns.md` | Task tool usage patterns (8 categories, subagent type guidance) |
 | `.claude/rules/*.md` | Coding patterns (ScalarDB, Spring Boot) |

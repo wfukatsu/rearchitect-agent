@@ -146,6 +146,8 @@ AskUserQuestionツールを使用して以下を質問：
 - Phase 6: 実装仕様
 - Phase 7: テスト仕様
 - Phase 8: コード生成
+- Phase 8.5: ScalarDBコードレビュー
+- Phase 8.7: インフラ基盤構成設計
 - Phase 9: コスト見積もり
 - Phase 10: ドメインストーリー
 - Phase 11: ナレッジグラフ構築
@@ -200,9 +202,10 @@ AskUserQuestionツールを使用して以下を質問：
 1. `/ddd-redesign {対象パス}`
 2. `/design-microservices {対象パス}`
 3. `/select-scalardb-edition` （ScalarDBエディション選定）
-4. `/design-api {対象パス}`
-5. `/design-scalardb {対象パス}` と `/design-scalardb-app-patterns {対象パス}` を並行実行
+4. `/design-scalardb-app-patterns {対象パス}` （ドメインタイプ別設計パターン）
+5. `/design-scalardb {対象パス}` （ScalarDBスキーマ・トランザクション設計）
 6. `/review-scalardb --mode=design` （ScalarDB設計レビュー）
+7. `/design-api {対象パス}` （ScalarDBスキーマ設計結果を踏まえたAPI設計）
 
 オプションで質問：
 
@@ -221,6 +224,24 @@ AskUserQuestionツールを使用して以下を質問：
 ```
 
 含める場合: `/design-scalardb-analytics {対象パス}` を追加実行
+
+オプションで質問：
+
+```json
+{
+  "questions": [{
+    "question": "インフラ基盤構成（IaC）の設計も含めますか？",
+    "header": "インフラ",
+    "options": [
+      {"label": "含める", "description": "Terraform/Kubernetes/OpenShift構成を生成"},
+      {"label": "含めない (推奨)", "description": "アプリケーション設計のみ"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
+含める場合: `/design-infrastructure` を追加実行（コード生成後）
 
 **実装仕様フェーズ（Phase 6-7）の実行**（スコープに含まれる場合）:
 1. `/design-implementation {対象パス}`
@@ -322,7 +343,7 @@ AskUserQuestionツールを使用して以下を質問：
     "header": "実装・その他",
     "options": [
       {"label": "Phase 6-7: 実装仕様 + テスト仕様", "description": "ドメインサービス仕様、BDD/統合テスト仕様"},
-      {"label": "Phase 8-8.5: コード生成 + レビュー", "description": "Spring Boot/ScalarDBコード + 品質検証"},
+      {"label": "Phase 8-8.7: コード生成 + インフラ設計", "description": "Spring Boot/ScalarDBコード + レビュー + Kubernetes/IaC構成"},
       {"label": "Phase 9-10: 見積もり + ストーリー", "description": "コスト見積もり + ドメインストーリーテリング"},
       {"label": "Phase 11-12: グラフ + Mermaid", "description": "ナレッジグラフ構築 + Mermaid検証・修正"}
     ],
@@ -447,6 +468,7 @@ AskUserQuestionツールを使用して以下を質問：
 | Phase 7 | Phase 6完了 |
 | Phase 8 | Phase 6-7完了 |
 | Phase 8.5 | Phase 8完了 |
+| Phase 8.7 | Phase 8.5完了（オプション） |
 | Phase 9 | Phase 3-5完了推奨 |
 | Phase 10 | Phase 3完了 |
 | Phase 11 | Phase 1完了 |
@@ -492,14 +514,16 @@ AskUserQuestionツールを使用して以下を質問：
 │   ├── 00_summary/              ← エグゼクティブサマリー
 │   ├── 01_analysis/             ← Phase 1
 │   ├── 02_evaluation/           ← Phase 2a, 2b, 2.5
-│   ├── 03_design/               ← Phase 3-5.5
+│   ├── 03_design/               ← Phase 3, 4, 4.8, 5, 5.5, 5.9, 5.95, 8.5
 │   ├── 04_stories/              ← Phase 10
 │   ├── 05_estimate/             ← Phase 9
 │   ├── 06_implementation/       ← Phase 6
 │   ├── 07_test-specs/           ← Phase 7
+│   ├── 08_infrastructure/       ← Phase 8.7
 │   └── graph/                   ← Phase 11
-├── generated/                   ← Phase 8
-│   └── {service}/
+├── generated/                   ← Phase 8, 8.7
+│   ├── {service}/
+│   └── infrastructure/          ← Phase 8.7
 └── work/{project}/              ← 進捗管理
     └── workflow-progress.json
 ```
