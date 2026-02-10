@@ -99,8 +99,11 @@ generated/infrastructure/
 
 ## サブエージェント活用
 
-大規模マニフェスト生成時、Task tool の Explore / general-purpose エージェントを並列起動してコンテキストを保護できます。
-詳細は `.claude/skills/common/sub-agent-patterns.md` を参照。
+Step 0 で Context7 サブエージェントを起動し、IaC/K8s の最新ドキュメントを取得します。
+詳細は `.claude/skills/common/sub-agent-patterns.md` の「Pattern 3: Context7 Documentation Fetcher」を参照。
+
+大規模マニフェスト生成時（Step 5-7）は、Task tool の general-purpose エージェントを並列起動してコンテキストを保護できます。
+詳細は `.claude/skills/common/sub-agent-patterns.md` の「Pattern 8: ユーティリティ・レポートエージェント」を参照。
 
 ## 実行プロンプト
 
@@ -138,12 +141,34 @@ ls work/*/scalardb-edition-config.md 2>/dev/null
 
 3. **Context7 によるドキュメント取得**
 
-Step 1 のユーザー選択に応じて、以下の Context7 library を参照：
+Step 1 のユーザー選択に応じて、Task tool で Context7 サブエージェントを起動し、選択された IaC/K8s ツールの最新ドキュメントを取得：
 
-- **Terraform**: `/hashicorp/terraform` — EKS/AKS/GKE module best practices
-- **Helm**: `/helm/helm` — values.yaml environment override patterns
-- **Kustomize**: `/kubernetes-sigs/kustomize` — base/overlay strategic merge
-- **OpenShift**（選択時）: OpenShift Operator patterns
+```
+Task(subagent_type="general-purpose", description="Fetch IaC/K8s docs", prompt="
+Context7 MCPを使用してインフラ構成に必要なドキュメントを取得してください。
+
+1. まず mcp__context7__resolve-library-id で以下のライブラリIDを解決:
+   - Terraform（IaC選択時）
+   - Helm（K8s選択時）
+   - Kustomize（K8s選択時）
+
+2. 解決されたIDで mcp__context7__query-docs を呼び出し:
+   - Terraform: 'EKS AKS GKE module best practices environment separation'
+   - Helm: 'values.yaml environment override patterns ScalarDB'
+   - Kustomize: 'base overlay strategic merge patch examples'
+
+3. 取得した情報から以下をまとめてください:
+   - 環境分離のベストプラクティス
+   - モジュール/overlay構造パターン
+   - セキュリティ設定の推奨事項
+")
+```
+
+対象ドキュメント:
+- **Terraform** — EKS/AKS/GKE module best practices
+- **Helm** — values.yaml environment override patterns
+- **Kustomize** — base/overlay strategic merge
+- **OpenShift**（選択時）— OpenShift Operator patterns
 
 ### Step 1: クラウドプロバイダー・K8s プラットフォーム選択
 
@@ -311,7 +336,8 @@ AskUserQuestion ツールを使用して 3 問を質問：
 
 **ScalarDB Cluster Helm values** (`generated/infrastructure/k8s/infrastructure/`):
 
-エディション設定に基づき、ScalarDB Cluster の Helm chart values.yaml を環境別に生成：
+エディション設定に基づき、ScalarDB Cluster の Helm chart values.yaml を環境別に生成。
+エディション別の設定テンプレートは `.claude/rules/scalardb-edition-profiles.md` の「§2D. Helm Values テンプレート」を参照。
 
 **Enterprise 版の場合:**
 
@@ -412,7 +438,9 @@ Step 1 で「Red Hat OpenShift」を選択した場合のみ実行。
 
 #### infrastructure-architecture.md
 
-インフラ全体のアーキテクチャ図と説明。
+インフラ全体のアーキテクチャ図と説明。`target-architecture.md` のサービス一覧に基づいて実際のサービス名で図を生成すること（以下はテンプレート例）。
+
+> **Mermaid図生成時**: `.claude/rules/mermaid-best-practices.md` のルールに従うこと（日本語テキストのダブルクオート、サブグラフ名のクオート等）。
 
 ```mermaid
 graph TB
@@ -486,13 +514,15 @@ graph TB
 
 **このステップ完了時に出力**: `reports/08_infrastructure/`
 
-### Step 10: Mermaid 検証
+### Step 10: 出力検証
 
-出力したファイルの Mermaid 図を検証し、エラーがあれば修正：
+1. **Mermaid 図検証** — `.claude/rules/mermaid-best-practices.md` に準拠しているか確認し、エラーがあれば修正：
 
 ```bash
 /fix-mermaid ./reports/08_infrastructure
 ```
+
+2. **出力ファイルフロントマター確認** — `.claude/rules/output-conventions.md` に従い、`reports/08_infrastructure/` の各ファイルに YAML フロントマター（title, phase, skill, generated_at, input_files）が付与されていることを確認。
 
 ## コマンドオプション
 
