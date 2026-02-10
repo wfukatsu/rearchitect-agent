@@ -26,13 +26,13 @@ user_invocable: true
 
 **推奨（/design-scalardb の出力）:**
 - `reports/03_design/scalardb-schema.md` - ScalarDBスキーマ
-- `reports/03_design/scalardb-design.md` - ScalarDB設計
+- `reports/03_design/scalardb-architecture.md` - ScalarDBアーキテクチャ
 
 **推奨（/analyze-system の出力）:**
 - `reports/01_analysis/system-overview.md` - システム概要
 - `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
 
-## 出力先ディレクトリ
+## 出力先
 
 設計結果は `reports/03_design/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。
@@ -67,7 +67,7 @@ reports/03_design/
 
 推奨ファイルの確認:
 ├── reports/03_design/scalardb-schema.md      [推奨] ← /design-scalardb
-├── reports/03_design/scalardb-design.md      [推奨] ← /design-scalardb
+├── reports/03_design/scalardb-architecture.md [推奨] ← /design-scalardb
 ├── reports/01_analysis/system-overview.md    [推奨] ← /analyze-system
 └── reports/01_analysis/ubiquitous-language.md [推奨] ← /analyze-system
 ```

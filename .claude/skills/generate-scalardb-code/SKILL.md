@@ -58,7 +58,7 @@ user_invocable: true
 
 エディション設定が未選定の場合はEnterprise Standardをデフォルトとする。
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `generated/{service-name}/` に出力します。
 
@@ -131,7 +131,7 @@ Read .claude/rules/spring-boot-integration.md
 
 が含まれています。ルールに従ってコードを生成してください。
 
-### Step 0.5: コード生成オプションの確認
+### Step 1: コード生成オプションの確認
 
 コード生成に影響する技術選択をAskUserQuestionで確認する。
 
@@ -176,10 +176,10 @@ Read .claude/rules/spring-boot-integration.md
 **生成への反映:**
 - Java → `build.gradle` の `sourceCompatibility`、record/sealed使用有無
 - Spring Boot → plugin version、依存関係バージョン
-- テスト → test依存関係、Step 13テストコード生成のフレームワーク選択
+- テスト → test依存関係、Step 14テストコード生成のフレームワーク選択
   - **推奨組み合わせ:** 「JUnit 5 + Mockito」+「Testcontainers」— ユニットテスト＋ScalarDB実DBでの統合テストが標準構成
 
-### Step 1: 設計仕様の読み込み
+### Step 2: 設計仕様の読み込み
 
 以下のファイルから情報を抽出：
 
@@ -206,7 +206,7 @@ Read .claude/rules/spring-boot-integration.md
    - カラム型
    - インデックス
 
-### Step 2: プロジェクト構造の生成
+### Step 3: プロジェクト構造の生成
 
 サービスごとに以下のディレクトリ構造を作成：
 
@@ -217,14 +217,14 @@ mkdir -p generated/{service-name}/src/test/java
 mkdir -p generated/{service-name}/k8s
 ```
 
-### Step 3: ビルド設定の生成
+### Step 4: ビルド設定の生成
 
 **出力**: `generated/{service-name}/build.gradle`
 
 ルール `.claude/rules/spring-boot-integration.md` の「依存関係」セクションに従い、
 build.gradleを生成してください。
 
-### Step 4: 値オブジェクトの生成
+### Step 5: 値オブジェクトの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../domain/model/`
 
@@ -238,7 +238,7 @@ build.gradleを生成してください。
 - 列挙型 (OrderStatus等)
 - 住所等の複合値オブジェクト (Address)
 
-### Step 5: エンティティの生成
+### Step 6: エンティティの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../domain/model/`
 
@@ -252,7 +252,7 @@ build.gradleを生成してください。
 - ドメインイベント登録
 - 楽観ロック用version
 
-### Step 6: ドメインイベントの生成
+### Step 7: ドメインイベントの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../domain/event/`
 
@@ -262,7 +262,7 @@ build.gradleを生成してください。
 - {Entity}DeletedEvent
 - {Entity}StatusChangedEvent
 
-### Step 7: 例外クラスの生成
+### Step 8: 例外クラスの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../domain/exception/`
 
@@ -271,7 +271,7 @@ build.gradleを生成してください。
 - Invalid{Entity}Exception
 - {BusinessRule}ViolationException
 
-### Step 8: リポジトリの生成
+### Step 9: リポジトリの生成
 
 **出力**:
 - `generated/{service-name}/src/main/java/.../domain/repository/{Entity}Repository.java`
@@ -286,7 +286,7 @@ ScalarDB実装の必須要素：
 - 楽観ロックチェック
 - 例外ハンドリング
 
-### Step 9: アプリケーションサービスの生成
+### Step 10: アプリケーションサービスの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../application/service/`
 
@@ -299,7 +299,7 @@ ScalarDB実装の必須要素：
 - バリデーション (`@Valid`)
 - ドメインイベントのパブリッシュ
 
-### Step 10: コントローラーの生成
+### Step 11: コントローラーの生成
 
 **出力**: `generated/{service-name}/src/main/java/.../presentation/rest/`
 
@@ -312,7 +312,7 @@ REST APIエンドポイントを生成してください。
 - 適切なHTTPステータス
 - エラーハンドリング
 
-### Step 11: 設定ファイルの生成
+### Step 12: 設定ファイルの生成
 
 **出力**:
 - `generated/{service-name}/src/main/resources/application.yml`
@@ -320,7 +320,7 @@ REST APIエンドポイントを生成してください。
 
 ルールに従い、設定ファイルを生成してください。
 
-### Step 12: Dockerとk8sの生成
+### Step 13: Dockerとk8sの生成
 
 **出力**:
 - `generated/{service-name}/Dockerfile`
@@ -329,7 +329,7 @@ REST APIエンドポイントを生成してください。
 ルール `.claude/rules/spring-boot-integration.md` の「Dockerfile」「Kubernetes マニフェスト」に従い、
 デプロイ用ファイルを生成してください。
 
-### Step 13: テストコードの生成
+### Step 14: テストコードの生成
 
 **出力**: `generated/{service-name}/src/test/java/`
 
@@ -339,7 +339,7 @@ REST APIエンドポイントを生成してください。
 - アプリケーションサービスの統合テスト
 - コントローラーのAPIテスト
 
-### Step 14: 生成サマリーの出力
+### Step 15: 生成サマリーの出力
 
 **出力**: `generated/{service-name}/GENERATED.md`
 

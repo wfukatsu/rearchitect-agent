@@ -8,7 +8,7 @@ user_invocable: true
 
 Mermaid CLI（mmdc）を使用してMermaid図を画像ファイルに変換するエージェントです。
 
-## 目的
+## 概要
 
 このエージェントは以下の機能を提供します：
 

@@ -35,7 +35,7 @@ MMI評価とDDD評価の結果を統合し、システム全体の品質評価�
 - `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
 - `reports/01_analysis/domain-code-mapping.md` - ドメインコードマッピング
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/02_evaluation/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。

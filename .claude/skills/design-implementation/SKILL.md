@@ -39,7 +39,7 @@ AIエージェントがコーディング可能なレベルの詳細実装仕様
 - **OSS**: Core API直接使用（Get/Put/Delete/Scan）
 - **Enterprise Standard/Premium**: SQL Interface or Spring Data JDBC
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/06_implementation/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。

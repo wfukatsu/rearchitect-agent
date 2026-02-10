@@ -1,23 +1,6 @@
 ---
 name: scalardb-sizing-estimator
-description: |
-  ScalarDB のアーキテクチャ、サイジング、構成を見積もるスキル。エディション設定に基づき、
-  Enterprise（Cluster構成）ではPod数・Kubernetes構成・バックエンドDB・API Gateway・
-  監視システム等の全体構成を見積もる。OSS（組み込み構成）ではClusterサイジングをスキップし、
-  アプリケーションリソース・バックエンドDB・インフラ構成のみ見積もる。
-  ScalarDB Analyticsを使用する場合はEMR/Databricksのサイジングも含む。
-
-  使用タイミング:
-  - 「ScalarDBのサイジングを見積もりたい」「ScalarDB環境を構築したい」
-  - 「ScalarDB Clusterの構成を決めたい」「ScalarDBの費用を算出したい」
-  - 「OSS版ScalarDBのインフラ構成を見積もりたい」
-  - 「開発/テスト/ステージング/本番環境のScalarDB構成」
-  - CI/CD、Blue/Green、Canary Deploymentを含む本番環境設計
-  - 「ScalarDB Analyticsを使いたい」「分析クエリ環境を構築したい」
-  - 「EMR/Databricksのサイジングを見積もりたい」
-
-  出力: Markdown形式の見積もり結果 + HTML形式のレポート
-  費用: USD/JPY両建て（為替レート明記）
+description: ScalarDBサイジング見積もりエージェント - Enterprise/OSSエディション別のインフラ構成・Pod数・コストを対話形式で見積もり。/scalardb-sizing-estimator で呼び出し。
 user_invocable: true
 ---
 
@@ -100,10 +83,9 @@ D) 未定 - エディション選定から実施（/select-scalardb-edition を�
 ```
 Q: 見積もる環境を選択してください
 A) 開発環境 - 開発者が機能開発・単体テストを行う環境
-B) テスト環境 - QAチームが結合テスト・E2Eテストを行う環境
-C) ステージング環境 - 本番同等構成でリリース前検証を行う環境
-D) 本番環境 - 実際のユーザーがアクセスする環境
-E) 全環境セット - CI/CDパイプライン含む全環境
+B) テスト/ステージング環境 - QAテスト・結合テスト・リリース前検証を行う環境
+C) 本番環境 - 実際のユーザーがアクセスする環境
+D) 全環境セット - 開発・テスト・ステージング・本番＋CI/CDパイプライン含む全環境
 ```
 
 #### クラウドプロバイダー
@@ -270,15 +252,13 @@ D) カスタム構成 - 独自のアーキテクチャを指定
 #### API Gateway
 ```
 Q: API Gatewayを選択してください
-A) Kong OSS (DB-less) - 高機能OSS API Gateway、DB-lessモード（推奨）
-B) Kong Enterprise (DB-less) - 商用版Kong、高度な機能・サポート付き
-C) Kong OSS (PostgreSQL) - PostgreSQLバックエンド構成
-D) Kong Enterprise (PostgreSQL) - 商用版Kong、PostgreSQLバックエンド
-E) AWS API Gateway - AWSマネージド
-F) Azure API Management - Azureマネージド
-G) Google Cloud Endpoints / Apigee - GCPマネージド
-H) Nginx Ingress - シンプルなIngress Controller
-I) 不要 - API Gatewayを使用しない
+A) Kong (推奨) - 高機能API Gateway（OSS/Enterprise、エディション・構成モードは次の質問で選択）
+B) クラウドマネージド - AWS API Gateway / Azure API Management / Apigee（クラウド選択に連動）
+C) Nginx Ingress - シンプルなIngress Controller
+D) 不要 - API Gatewayを使用しない
+
+Kongを選択した場合、続けてエディション（OSS/Enterprise）と構成モード（DB-less/PostgreSQL）を質問する。
+クラウドマネージドを選択した場合、クラウドプロバイダー選択に基づき自動決定する。
 ```
 
 #### Kong構成詳細（Kongを選択した場合）
@@ -299,10 +279,9 @@ C) Hybrid Mode - Control PlaneとData Planeを分離
 ```
 Q: 監視システムを選択してください
 A) Prometheus + Grafana - OSSスタック（推奨）
-B) Datadog - SaaSモニタリング
-C) New Relic - APM中心のSaaS
-D) CloudWatch / Azure Monitor / Cloud Monitoring - クラウドネイティブ
-E) 既存の監視システムを使用
+B) Datadog / New Relic - SaaS型モニタリング（APM含む）
+C) CloudWatch / Azure Monitor / Cloud Monitoring - クラウドネイティブ
+D) 既存の監視システムを使用
 ```
 
 #### ScalarDB Analytics（オプション、Enterprise のみ）
@@ -362,8 +341,7 @@ Q: ScalarDB Analytics のSDBU（課金単位）構成を選択してください
 A) 最小構成（6 SDBU）- 最小コスト、開発/PoC向け
 B) 小規模（12 SDBU）- XL×2台相当、小規模本番
 C) 中規模（24 SDBU）- XL×4台相当、標準本番
-D) 大規模（48 SDBU）- XL×8台相当、大規模分析
-E) カスタム - 具体的なSDBU数を指定
+D) 大規模 / カスタム（48+ SDBU）- XL×8台相当以上、具体的なSDBU数も指定可
 
 ※ SDBU単価: 33.5円/SDBU/時間
 ※ 最小構成: 6 SDBU（約14.7万円/月・常時稼働時）
@@ -747,28 +725,28 @@ HTMLには以下を含める:
 ```mermaid
 flowchart TB
     subgraph Internet
-        Client[クライアント]
+        Client["クライアント"]
     end
 
     subgraph K8s["Kubernetes Cluster"]
         subgraph Gateway["API Gateway Layer"]
-            Kong[Kong API Gateway<br/>DB-less Mode]
+            Kong["Kong API Gateway<br/>DB-less Mode"]
         end
 
         subgraph App["Application Layer"]
-            BFF[BFF<br/>Backend for Frontend]
-            Process[Process API<br/>ビジネスロジック]
-            System[System API<br/>データアクセス]
+            BFF["BFF<br/>Backend for Frontend"]
+            Process["Process API<br/>ビジネスロジック"]
+            System["System API<br/>データアクセス"]
         end
 
         subgraph Data["Data Layer"]
-            ScalarDB[ScalarDB Cluster<br/>ACIDトランザクション管理]
+            ScalarDB["ScalarDB Cluster<br/>ACIDトランザクション管理"]
         end
     end
 
     subgraph DB["Backend Database"]
-        Primary[(Primary DB<br/>Aurora PostgreSQL)]
-        Replica[(Read Replica)]
+        Primary[("Primary DB<br/>Aurora PostgreSQL")]
+        Replica[("Read Replica")]
     end
 
     Client --> Kong
@@ -785,12 +763,12 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph Internet
-        Client[クライアント]
+        Client["クライアント"]
     end
 
     subgraph K8s["Kubernetes Cluster"]
         subgraph Gateway["API Gateway Layer"]
-            Kong[Kong API Gateway<br/>DB-less Mode]
+            Kong["Kong API Gateway<br/>DB-less Mode"]
         end
 
         subgraph App["Application Layer"]
@@ -800,19 +778,19 @@ flowchart TB
         end
 
         subgraph Data["Data Layer"]
-            ScalarDB[ScalarDB Cluster<br/>分散トランザクション]
+            ScalarDB["ScalarDB Cluster<br/>分散トランザクション"]
         end
     end
 
     subgraph Databases["異種データベース"]
         subgraph RDBMS
-            Aurora[(Aurora PostgreSQL<br/>マスターデータ)]
+            Aurora[("Aurora PostgreSQL<br/>マスターデータ")]
         end
         subgraph NoSQL
-            DynamoDB[(DynamoDB<br/>高スループット)]
+            DynamoDB[("DynamoDB<br/>高スループット")]
         end
         subgraph GlobalDB["グローバル分散"]
-            Spanner[(Cloud Spanner<br/>地理分散)]
+            Spanner[("Cloud Spanner<br/>地理分散")]
         end
     end
 
@@ -831,7 +809,7 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph Internet
-        Client[クライアント]
+        Client["クライアント"]
     end
 
     subgraph AWS["AWS"]
@@ -871,8 +849,8 @@ flowchart LR
 
     subgraph CI["継続的インテグレーション"]
         GLCI[GitLab CI]
-        Build[ビルド/テスト]
-        Scan[セキュリティスキャン]
+        Build["ビルド/テスト"]
+        Scan["セキュリティスキャン"]
     end
 
     subgraph CD["継続的デリバリー"]
@@ -880,18 +858,18 @@ flowchart LR
     end
 
     subgraph Environments["環境"]
-        Dev[開発環境]
-        Test[テスト環境]
-        Staging[ステージング]
-        Prod[本番環境]
+        Dev["開発環境"]
+        Test["テスト環境"]
+        Staging["ステージング"]
+        Prod["本番環境"]
     end
 
     GL --> GLCI
     GLCI --> Build --> Scan --> Argo
     Argo --> Dev
-    Dev -->|自動| Test
-    Test -->|承認| Staging
-    Staging -->|承認| Prod
+    Dev -->|"自動"| Test
+    Test -->|"承認"| Staging
+    Staging -->|"承認"| Prod
 ```
 
 ### CI/CDツール（標準構成）
@@ -900,8 +878,7 @@ Q: CI/CDツールを選択してください
 A) GitLab CI + ArgoCD - GitOps標準構成（推奨）
 B) GitHub Actions + ArgoCD - GitHub環境向け
 C) Azure DevOps + ArgoCD - Azure環境向け
-D) Jenkins + ArgoCD - 既存Jenkins環境向け
-E) カスタム構成 - 独自のCI/CD構成
+D) Jenkins / カスタム構成 - 既存Jenkins環境または独自CI/CD構成
 ```
 
 ### 標準CI/CD構成
@@ -923,9 +900,9 @@ E) カスタム構成 - 独自のCI/CD構成
       "header": "環境",
       "options": [
         {"label": "開発環境", "description": "開発者が機能開発・単体テストを行う環境"},
-        {"label": "テスト環境", "description": "QAチームが結合テスト・E2Eテストを行う環境"},
-        {"label": "ステージング環境", "description": "本番同等構成でリリース前検証"},
-        {"label": "本番環境", "description": "実際のユーザーがアクセスする環境"}
+        {"label": "テスト/ステージング環境", "description": "QAテスト・結合テスト・リリース前検証を行う環境"},
+        {"label": "本番環境", "description": "実際のユーザーがアクセスする環境"},
+        {"label": "全環境セット", "description": "開発・テスト・ステージング・本番＋CI/CDパイプライン含む全環境"}
       ],
       "multiSelect": false
     }

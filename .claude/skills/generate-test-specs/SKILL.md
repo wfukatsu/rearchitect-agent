@@ -32,7 +32,7 @@ AIエージェントがテストコードを実装可能なレベルのテスト
 - `reports/06_implementation/saga-orchestration-spec.md` ← /design-implementation
 - `reports/03_design/api-specifications/` ← /design-api
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/07_test-specs/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。

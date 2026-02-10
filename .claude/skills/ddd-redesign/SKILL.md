@@ -1,6 +1,6 @@
 ---
 name: ddd-redesign
-description: DDDの原則に基づいてシステムを再設計します。ddd-evaluationの結果を入力として、戦略的設計（境界コンテキスト、コンテキストマップ）と戦術的設計（集約、エンティティ、値オブジェクト）の改善計画を生成します。中間状態はwork/{project}/design/ddd-redesign/に記録されます。
+description: DDD再設計エージェント - 境界コンテキスト・集約・値オブジェクトの再設計計画を生成。/ddd-redesign [対象パス] で呼び出し。
 user_invocable: true
 ---
 
@@ -8,7 +8,7 @@ user_invocable: true
 
 DDD評価結果に基づいて、システムの再設計計画を策定するエージェントです。
 
-## 目的
+## 概要
 
 このエージェントは以下を実行します：
 
@@ -38,7 +38,7 @@ DDD評価結果に基づいて、システムの再設計計画を策定する�
 - `reports/02_evaluation/mmi-improvement-plan.md` ← /evaluate-mmi で生成
 - `reports/02_evaluation/integrated-evaluation.md` ← /integrate-evaluations で生成
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/03_design/` に出力します。
 中間状態は `work/{project}/design/ddd-redesign/` に記録します。

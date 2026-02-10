@@ -41,9 +41,10 @@ user_invocable: true
 ## 出力先
 
 結果は `reports/03_design/` に出力します：
+- `scalardb-architecture.md` - アーキテクチャ設計
 - `scalardb-schema.md` - ScalarDBスキーマ設計
-- `scalardb-transaction-design.md` - トランザクション設計
-- `scalardb-migration-plan.md` - マイグレーション計画
+- `scalardb-transaction.md` - トランザクション設計
+- `scalardb-migration.md` - マイグレーション計画
 
 **重要**: 各ステップ完了時に即座にファイルを出力してください。
 
@@ -144,7 +145,7 @@ ScalarDBは、異種データベース間で分散トランザクションを実
 - 必須ファイルが存在しない場合 → `/design-microservices` を先に実行するよう案内
 - 推奨ファイルが存在しない場合 → 警告を表示して続行
 
-### Step 0.5: エディション別ワークフロー分岐
+### Step 1: エディション別ワークフロー分岐
 
 `work/{project}/scalardb-edition-config.md` を読み込み、エディションに応じてワークフローを分岐する。
 
@@ -155,14 +156,14 @@ ScalarDBは、異種データベース間で分散トランザクションを実
 
 | ステップ | Enterprise (Cluster) | OSS (Embedded) |
 |---------|---------------------|----------------|
-| Step 1: 現状分析 | 実行 | 実行（変更なし） |
-| Step 2: Cluster構成設計 | 実行 | **スキップ** — Cluster不要 |
-| Step 3: ストレージバックエンド設計 | 実行 | 実行（OSS対応ストレージに限定） |
-| Step 4: スキーマ設計 | 実行 | 実行（変更なし） |
-| Step 5: トランザクション設計 | 実行 | 実行（Core API例に置換） |
-| Step 6: 例外処理設計 | 実行 | 実行（変更なし） |
-| Step 7: パフォーマンス最適化 | 実行 | 実行（Helm設定を除外） |
-| Step 8: マイグレーション計画 | 実行 | 実行（ライブラリ組み込み設定に置換） |
+| Step 2: 現状分析 | 実行 | 実行（変更なし） |
+| Step 4: Cluster構成設計 | 実行 | **スキップ** — Cluster不要 |
+| Step 5: ストレージバックエンド設計 | 実行 | 実行（OSS対応ストレージに限定） |
+| Step 6: スキーマ設計 | 実行 | 実行（変更なし） |
+| Step 7: トランザクション設計 | 実行 | 実行（Core API例に置換） |
+| Step 8: 例外処理設計 | 実行 | 実行（変更なし） |
+| Step 9: パフォーマンス最適化 | 実行 | 実行（Helm設定を除外） |
+| Step 10: マイグレーション計画 | 実行 | 実行（ライブラリ組み込み設定に置換） |
 
 **OSS版の制約:**
 - SQL Interface / Spring Data JDBC / GraphQL は使用不可 → Core API のみ
@@ -170,7 +171,7 @@ ScalarDBは、異種データベース間で分散トランザクションを実
 - 対応ストレージ: PostgreSQL, MySQL (JDBC), DynamoDB, Cosmos DB, Cassandra
 - 設定テンプレート: `.claude/rules/scalardb-edition-profiles.md` §2A を使用
 
-### Step 1: 現状分析
+### Step 2: 現状分析
 
 現在のデータアーキテクチャを分析：
 
@@ -190,7 +191,7 @@ ScalarDBは、異種データベース間で分散トランザクションを実
 - [課題2]
 ```
 
-### Step 1.5: 非機能要件の確認
+### Step 3: 非機能要件の確認
 
 データアーキテクチャに影響する非機能要件をAskUserQuestionで確認する。
 
@@ -235,10 +236,10 @@ ScalarDBは、異種データベース間で分散トランザクションを実
 
 **設計への反映:**
 - 整合性 → ScalarDB設定の `isolation_level` / `serializable_strategy` に反映
-- ワークロード → ストレージ選定（Step 3）、パフォーマンス最適化（Step 7）に反映
-- データ保持 → スキーマ設計（Step 4）に `deleted_at`, `archived_at` カラム追加検討
+- ワークロード → ストレージ選定（Step 5）、パフォーマンス最適化（Step 9）に反映
+- データ保持 → スキーマ設計（Step 6）に `deleted_at`, `archived_at` カラム追加検討
 
-### Step 2: ScalarDB Cluster構成設計
+### Step 4: ScalarDB Cluster構成設計
 
 ScalarDB Clusterのクラスター構成を設計します。
 
@@ -289,10 +290,10 @@ ScalarDB Clusterのクラスター構成を設計します。
 ```mermaid
 graph TB
     subgraph "Application Services"
-        A[Order Service<br/>gRPC]
-        B[Inventory Service<br/>gRPC]
-        C[Analytics<br/>SQL]
-        D[BFF<br/>GraphQL]
+        A["Order Service<br/>gRPC"]
+        B["Inventory Service<br/>gRPC"]
+        C["Analytics<br/>SQL"]
+        D["BFF<br/>GraphQL"]
     end
 
     subgraph "ScalarDB Cluster"
@@ -311,7 +312,7 @@ graph TB
     LB --> N3
 ```
 
-### Step 3: ストレージバックエンド設計
+### Step 5: ストレージバックエンド設計
 
 各マイクロサービスに適したストレージを選定：
 
@@ -354,7 +355,7 @@ graph TB
 ```
 ```
 
-### Step 4: スキーマ設計
+### Step 6: スキーマ設計
 
 ScalarDBのスキーマ設計原則に従ってテーブルを設計：
 
@@ -397,7 +398,7 @@ ScalarDBのスキーマ設計原則に従ってテーブルを設計：
 ```
 ```
 
-### Step 5: トランザクション設計
+### Step 7: トランザクション設計
 
 #### 単一ストレージトランザクション（Consensus Commit）
 
@@ -499,7 +500,7 @@ sequenceDiagram
     OrderSvc->>Client: 注文完了
 ```
 
-### Step 6: 例外処理設計
+### Step 8: 例外処理設計
 
 ScalarDBの例外カテゴリに基づく処理戦略：
 
@@ -530,7 +531,7 @@ for (int i = 0; i < maxRetries; i++) {
 }
 ```
 
-### Step 7: パフォーマンス最適化
+### Step 9: パフォーマンス最適化
 
 #### Group Commit（書き込み最適化）
 
@@ -558,7 +559,7 @@ Put put = Put.newBuilder()
     .build();
 ```
 
-### Step 8: マイグレーション計画
+### Step 10: マイグレーション計画
 
 ```markdown
 ## マイグレーション計画

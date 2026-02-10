@@ -8,7 +8,7 @@ user_invocable: true
 
 RyuGraphデータベースの内容を可視化し、Mermaid図やインタラクティブHTMLとして出力するエージェントです。
 
-## 目的
+## 概要
 
 このエージェントは以下の機能を提供します：
 
@@ -100,23 +100,23 @@ digraph G {
 ```mermaid
 flowchart TD
     subgraph OrderProcessing["注文処理"]
-        Start([開始]) --> ValidateOrder[注文検証]
-        ValidateOrder --> CheckInventory[在庫確認]
-        CheckInventory --> IsHighValue{高額判定}
-        IsHighValue -->|"< 100,000円"| ProcessPayment[決済処理]
-        IsHighValue -->|">= 100,000円"| ApprovalRequired[承認必要]
-        ApprovalRequired --> ManagerApproval[マネージャー承認]
-        ManagerApproval -->|承認| ProcessPayment
-        ManagerApproval -->|却下| OrderRejected[注文却下]
-        ProcessPayment --> SendConfirmation[確認送信]
-        SendConfirmation --> End([終了])
+        Start(["開始"]) --> ValidateOrder["注文検証"]
+        ValidateOrder --> CheckInventory["在庫確認"]
+        CheckInventory --> IsHighValue{"高額判定"}
+        IsHighValue -->|"< 100,000円"| ProcessPayment["決済処理"]
+        IsHighValue -->|">= 100,000円"| ApprovalRequired["承認必要"]
+        ApprovalRequired --> ManagerApproval["マネージャー承認"]
+        ManagerApproval -->|"承認"| ProcessPayment
+        ManagerApproval -->|"却下"| OrderRejected["注文却下"]
+        ProcessPayment --> SendConfirmation["確認送信"]
+        SendConfirmation --> End(["終了"])
         OrderRejected --> End
     end
 
-    Customer((顧客)) -.->|実行| ValidateOrder
-    SalesManager((営業マネージャー)) -.->|実行| ManagerApproval
-    System((システム)) -.->|実行| ProcessPayment
-    System -.->|実行| SendConfirmation
+    Customer(("顧客")) -.->|"実行"| ValidateOrder
+    SalesManager(("営業マネージャー")) -.->|"実行"| ManagerApproval
+    System(("システム")) -.->|"実行"| ProcessPayment
+    System -.->|"実行"| SendConfirmation
 ```
 
 #### Sagaシーケンス図 (saga-sequence.mmd)

@@ -192,7 +192,7 @@ AskUserQuestionツールを使用：
    }
    ```
 
-### Step 1: Phase 0 - システム調査
+### Step 2: Phase 0 - システム調査
 
 **スキル**: `/system-investigation`
 
@@ -220,7 +220,7 @@ AskUserQuestionツールを使用：
 }
 ```
 
-### Step 1.5: Phase 0.5 - セキュリティ分析（オプション）
+### Step 3: Phase 0.5 - セキュリティ分析（オプション）
 
 **スキル**: `/security-analysis`, `/access-control-analysis`
 
@@ -238,7 +238,7 @@ AskUserQuestionツールを使用：
 
 **スキップ条件**: `--skip-security` オプション指定時
 
-### Step 2: Phase 1 - システム分析
+### Step 4: Phase 1 - システム分析
 
 **スキル**: `/analyze-system`
 
@@ -252,7 +252,7 @@ AskUserQuestionツールを使用：
 - `reports/01_analysis/actors-roles-permissions.md`
 - `reports/01_analysis/domain-code-mapping.md`
 
-### Step 2.5: Phase 1.5 - データモデル詳細分析（オプション）
+### Step 5: Phase 1.5 - データモデル詳細分析（オプション）
 
 **スキル**: `/data-model-analysis`, `/db-design-analysis`, `/er-diagram-analysis`
 
@@ -272,7 +272,7 @@ AskUserQuestionツールを使用：
 
 **スキップ条件**: `--skip-data-model` オプション指定時
 
-### Step 3: Phase 2a/2b - 並行評価
+### Step 6: Phase 2a/2b - 並行評価
 
 **スキル**: `/evaluate-mmi`, `/ddd-evaluation`
 
@@ -292,7 +292,7 @@ AskUserQuestionツールを使用：
 - `reports/02_evaluation/ddd-tactical-evaluation.md`
 - `reports/02_evaluation/ddd-improvement-plan.md`
 
-### Step 4: Phase 2.5 - 評価統合
+### Step 7: Phase 2.5 - 評価統合
 
 **スキル**: `/integrate-evaluations`
 
@@ -307,7 +307,7 @@ AskUserQuestionツールを使用：
 - `reports/02_evaluation/priority-matrix.md`
 - `reports/02_evaluation/unified-improvement-plan.md`
 
-### Step 5: Phase 3 - DDD再設計
+### Step 8: Phase 3 - DDD再設計
 
 **スキル**: `/ddd-redesign`
 
@@ -316,11 +316,15 @@ AskUserQuestionツールを使用：
 ```
 
 **出力ファイル**:
+- `reports/03_design/domain-analysis.md`
 - `reports/03_design/bounded-contexts-redesign.md`
 - `reports/03_design/context-map.md`
 - `reports/03_design/aggregate-redesign.md`
+- `reports/03_design/ubiquitous-language-refined.md`
+- `reports/03_design/system-mapping.md`
+- `reports/03_design/ddd-migration-roadmap.md`
 
-### Step 6: Phase 4 - マイクロサービス設計
+### Step 9: Phase 4 - マイクロサービス設計
 
 **スキル**: `/design-microservices`
 
@@ -331,9 +335,9 @@ AskUserQuestionツールを使用：
 **出力ファイル**:
 - `reports/03_design/target-architecture.md`
 - `reports/03_design/transformation-plan.md`
-- `reports/03_design/operation-plan.md`
+- `reports/03_design/operations-feedback.md`
 
-### Step 7: Phase 4.7 - ScalarDBエディション選定
+### Step 10: Phase 4.7 - ScalarDBエディション選定
 
 **スキル**: `/select-scalardb-edition`
 
@@ -346,7 +350,7 @@ AskUserQuestionツールを使用：
 
 **注意**: 対話形式のスキルです。ユーザーに要件を確認し、最適なエディション（OSS/Enterprise Standard/Premium）を選定します。
 
-### Step 7.5: Phase 4.8 - ScalarDBアプリケーション設計パターン
+### Step 11: Phase 4.8 - ScalarDBアプリケーション設計パターン
 
 **スキル**: `/design-scalardb-app-patterns`
 
@@ -362,7 +366,7 @@ AskUserQuestionツールを使用：
 
 **注意**: Phase 5（ScalarDB設計）と並行実行も可能ですが、パイプラインでは順次実行します。
 
-### Step 8: Phase 5 - ScalarDB設計
+### Step 12: Phase 5 - ScalarDB設計
 
 **スキル**: `/design-scalardb`
 
@@ -376,7 +380,7 @@ AskUserQuestionツールを使用：
 - `reports/03_design/scalardb-transaction.md`
 - `reports/03_design/scalardb-migration.md`
 
-### Step 8.5: Phase 5.5 - ScalarDB Analytics設計（オプション）
+### Step 13: Phase 5.5 - ScalarDB Analytics設計（オプション）
 
 **条件**: `--skip-analytics` が指定されていない場合
 
@@ -390,7 +394,7 @@ AskUserQuestionツールを使用：
 - `reports/03_design/scalardb-analytics-architecture.md`
 - `reports/03_design/scalardb-analytics-queries.md`
 
-### Step 9: Phase 5.9 - ScalarDB設計レビュー
+### Step 14: Phase 5.9 - ScalarDB設計レビュー
 
 **スキル**: `/review-scalardb --mode=design`
 
@@ -405,7 +409,7 @@ AskUserQuestionツールを使用：
 
 **注意**: 設計品質を検証し、エディション整合性・Key設計・トランザクション境界をチェックします。Context7で最新仕様も参照します。
 
-### Step 9.5: Phase 5.95 - API設計
+### Step 15: Phase 5.95 - API設計
 
 **スキル**: `/design-api`
 
@@ -421,7 +425,7 @@ AskUserQuestionツールを使用：
 - `reports/03_design/api-security-design.md`
 - `reports/03_design/api-specifications/*.yaml`
 
-### Step 10: Phase 6 - 実装仕様
+### Step 16: Phase 6 - 実装仕様
 
 **条件**: `--analyze-only` が指定されていない場合
 
@@ -440,7 +444,7 @@ AskUserQuestionツールを使用：
 - `reports/06_implementation/implementation-checklist.md`
 - `reports/06_implementation/api-gateway-implementation-spec.md`
 
-### Step 11: Phase 7 - テスト仕様
+### Step 17: Phase 7 - テスト仕様
 
 **条件**: `--analyze-only` が指定されていない場合
 
@@ -458,7 +462,7 @@ AskUserQuestionツールを使用：
 - `reports/07_test-specs/performance-test-specs.md`
 - `reports/07_test-specs/test-data-requirements.md`
 
-### Step 12: Phase 8 - コード生成
+### Step 18: Phase 8 - コード生成
 
 **条件**: `--analyze-only` および `--skip-codegen` が指定されていない場合
 
@@ -477,7 +481,7 @@ AskUserQuestionツールを使用：
 - `generated/{service}/k8s/...`
 - `generated/{service}/GENERATED.md`
 
-### Step 12.5: Phase 8.5 - ScalarDBコードレビュー
+### Step 19: Phase 8.5 - ScalarDBコードレビュー
 
 **条件**: Phase 8（コード生成）が完了している場合
 
@@ -492,7 +496,7 @@ AskUserQuestionツールを使用：
 
 **注意**: 生成コードの品質を検証し、coding-patterns準拠・エディション別API使用・トランザクション管理をチェックします。
 
-### Step 13: Phase 9 - コスト見積もり
+### Step 20: Phase 9 - コスト見積もり
 
 **スキル**: `/estimate-cost`
 
@@ -505,7 +509,7 @@ AskUserQuestionツールを使用：
 - `reports/05_estimate/infrastructure-detail.md`
 - `reports/05_estimate/license-requirements.md`
 
-### Step 14: Phase 10 - ドメインストーリー（オプション）
+### Step 21: Phase 10 - ドメインストーリー（オプション）
 
 **条件**: `--skip-stories` が指定されていない場合
 
@@ -519,7 +523,7 @@ AskUserQuestionツールを使用：
 **出力ファイル**:
 - `reports/04_stories/{domain}-story.md`
 
-### Step 15: Phase 11 - ナレッジグラフ構築（オプション）
+### Step 22: Phase 11 - ナレッジグラフ構築（オプション）
 
 **条件**: `--skip-graph` が指定されていない場合
 
@@ -533,7 +537,7 @@ AskUserQuestionツールを使用：
 - `reports/graph/data/*.csv`
 - `knowledge.ryugraph/`
 
-### Step 16: Phase 12 - Mermaid検証・修正
+### Step 23: Phase 12 - Mermaid検証・修正
 
 **スキル**: `/fix-mermaid`
 
@@ -543,7 +547,7 @@ AskUserQuestionツールを使用：
 
 全Markdownファイル内のMermaid図を検証・修正。
 
-### Step 17: Phase 13 - エグゼクティブサマリー生成
+### Step 24: Phase 13 - エグゼクティブサマリー生成
 
 **出力**: `reports/00_summary/executive-summary.md`
 
@@ -595,7 +599,7 @@ AskUserQuestionツールを使用：
 {pipeline-progress.jsonから}
 ```
 
-### Step 18: 最終レポートのコンパイル
+### Step 25: 最終レポートのコンパイル
 
 **スキル**: `/compile-report`
 
@@ -606,7 +610,7 @@ AskUserQuestionツールを使用：
 **出力ファイル**:
 - `reports/00_summary/full-report.html`
 
-### Step 19: 完了通知
+### Step 26: 完了通知
 
 進捗レジストリを最終更新:
 ```json

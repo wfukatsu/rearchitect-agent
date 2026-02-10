@@ -36,18 +36,6 @@ MMI = (0.3 × Cohesion + 0.3 × Coupling + 0.2 × Independence + 0.2 × Reusabil
 | 40-60 | 低中成熟 | 大幅なリファクタリングが必要 |
 | 0-40 | 未成熟 | モノリス分解の計画策定から |
 
-## 出力先ディレクトリ
-
-評価結果は `reports/02_evaluation/` に出力します。
-**重要**: 各ステップ完了時に即座にファイルを出力してください。
-
-```
-reports/02_evaluation/
-├── mmi-overview.md        # Step 3完了時
-├── mmi-by-module.md       # Step 2完了時（各モジュール評価後）
-└── mmi-improvement-plan.md # Step 4完了時
-```
-
 ## 前提条件
 
 以下のファイルが存在すること：
@@ -58,6 +46,18 @@ reports/02_evaluation/
 
 **必須:**
 - 対象コードベースへのアクセス
+
+## 出力先
+
+評価結果は `reports/02_evaluation/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
+```
+reports/02_evaluation/
+├── mmi-overview.md        # Step 3完了時
+├── mmi-by-module.md       # Step 3完了時（各モジュール詳細評価）
+└── mmi-improvement-plan.md # Step 4完了時
+```
 
 ## 実行プロンプト
 

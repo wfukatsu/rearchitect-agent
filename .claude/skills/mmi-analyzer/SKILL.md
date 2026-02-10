@@ -1,17 +1,7 @@
 ---
 name: mmi-analyzer
+description: MMI自動定量評価エージェント - Lilienthal 3軸（モジュール性・階層性・パターン一貫性）でPythonプロジェクトの技術的負債を定量評価。/mmi-analyzer [対象パス] で呼び出し。
 user_invocable: true
-description: >
-  Modularity Maturity Index (MMI) によるソフトウェアアーキテクチャの技術的負債を定量評価するスキル。
-  Pythonプロジェクトのソースコードを解析し、モジュール性・階層性・パターン一貫性の3軸でスコアリングする。
-  Serena MCP のLSP機能と組み合わせることで、シンボルレベルの依存関係解析やレイヤー違反検出の精度が向上する。
-  
-  このスキルは以下のような場面で使用する:
-  - 「アーキテクチャを評価して」「技術的負債を測定して」と言われたとき
-  - 「MMI」「モジュール性」「循環依存」「レイヤー違反」に言及されたとき
-  - Pythonプロジェクトのコード品質やリファクタリング優先度を判断したいとき
-  - レガシーシステムのリファクタリング vs 置き換えの判断材料が必要なとき
-  - 「Serenaで解析して」と言われたとき（Serena MCPとの連携を前提とする）
 ---
 
 # MMI Analyzer — Modularity Maturity Index 評価スキル

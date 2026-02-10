@@ -34,8 +34,8 @@ user_invocable: true
 
 ```
 reports/03_design/
-├── scalardb-app-patterns.md       # Step 2-5完了時
-└── scalardb-database-selection.md  # Step 3完了時
+├── scalardb-app-patterns.md       # Step 3-6完了時
+└── scalardb-database-selection.md  # Step 4完了時
 ```
 
 ## サブエージェント活用
@@ -85,7 +85,7 @@ mcp__context7__query-docs を呼び出し:
 ")
 ```
 
-### Step 0.5: 非機能要件の確認
+### Step 1: 非機能要件の確認
 
 設計パターン選択とストレージ推奨に影響する非機能要件をAskUserQuestionで確認する。
 
@@ -129,9 +129,9 @@ mcp__context7__query-docs を呼び出し:
 }
 ```
 
-**反映先:** スループット・レイテンシ→Step 3 ストレージ推奨、データ量→Step 4 パーティション戦略
+**反映先:** スループット・レイテンシ→Step 4 ストレージ推奨、データ量→Step 5 パーティション戦略
 
-### Step 1: ドメインタイプ判別
+### Step 2: ドメインタイプ判別
 
 各境界づけられたコンテキスト（またはマイクロサービス）に対して、2軸でドメインタイプを判別。
 
@@ -163,7 +163,7 @@ mcp__context7__query-docs を呼び出し:
 | 認証 | - | Supporting | 横断的関心事 |
 ```
 
-### Step 2: ドメインタイプ別設計パターン選択
+### Step 3: ドメインタイプ別設計パターン選択
 
 #### Pipeline × Process: Event Sourcing + CQRS
 
@@ -226,7 +226,7 @@ mcp__context7__query-docs を呼び出し:
 - **Enterprise**: Cluster経由で2PC実行（推奨）
 ```
 
-### Step 3: ストレージバックエンド推奨
+### Step 4: ストレージバックエンド推奨
 
 エディション設定ファイルの `edition` と要件に基づき、各コンテキストに最適なストレージを推奨。
 
@@ -272,7 +272,7 @@ mcp__context7__query-docs を呼び出し:
 
 **このステップ完了時に出力**: `reports/03_design/scalardb-database-selection.md`
 
-### Step 4: ScalarDBスキーマ設計
+### Step 5: ScalarDBスキーマ設計
 
 各コンテキストのスキーマを設計。
 
@@ -313,7 +313,7 @@ mcp__context7__query-docs を呼び出し:
 | 時系列 | entity_id | timestamp DESC | イベント履歴 |
 | 複合キー | tenant_id | entity_id | マルチテナント |
 
-### Step 5: アプリケーションアーキテクチャパターン
+### Step 6: アプリケーションアーキテクチャパターン
 
 エディション設定に基づくリポジトリ実装パターンを設計。
 
@@ -397,7 +397,7 @@ public class SpringDataOrderRepository implements OrderRepository {
 
 **このステップ完了時に出力**: `reports/03_design/scalardb-app-patterns.md`
 
-### Step 6: Mermaid図の検証
+### Step 7: Mermaid図の検証
 
 出力したファイルのMermaid図を検証し、エラーがあれば修正：
 
@@ -426,16 +426,16 @@ input_files:
 [選定エディション、API、ストレージの概要]
 
 ## ドメインタイプ判別結果
-[Step 1の結果テーブル]
+[Step 2の結果テーブル]
 
 ## コンテキスト別設計パターン
-[Step 2の各コンテキスト設計]
+[Step 3の各コンテキスト設計]
 
 ## スキーマ設計
-[Step 4の各テーブル設計]
+[Step 5の各テーブル設計]
 
 ## リポジトリ実装パターン
-[Step 5のエディション別リポジトリ]
+[Step 6のエディション別リポジトリ]
 
 ## トランザクション設計
 [単一/2PC/Sagaの使い分け]

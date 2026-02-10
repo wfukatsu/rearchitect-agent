@@ -1,6 +1,6 @@
 ---
 name: system-investigation
-description: 対象システムのコードベースを分析し、構造・技術スタック・問題点・DDD適合性を調査します。調査結果はreports/before/{project}/に出力されます。中間状態はwork/{project}/investigation/に記録されます。
+description: システム調査エージェント - コードベースの構造・技術スタック・問題点・DDD適合性を調査。/system-investigation [対象パス] で呼び出し。
 user_invocable: true
 ---
 
@@ -8,7 +8,7 @@ user_invocable: true
 
 対象システムの現行調査を実施し、リファクタリング計画の基礎情報を収集するエージェントです。
 
-## 目的
+## 概要
 
 このエージェントは以下を実行します：
 
@@ -63,7 +63,7 @@ user_invocable: true
 - 対象システムのソースコードにアクセス可能であること
 - Serena MCPが利用可能（推奨）
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/before/{project}/` に出力します。
 中間状態は `work/{project}/investigation/` に記録します。

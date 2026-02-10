@@ -31,7 +31,7 @@ user_invocable: true
 **推奨（/design-api の出力）:**
 - `reports/03_design/api-gateway-design.md` - API Gateway設計
 
-## 出力先ディレクトリ
+## 出力先
 
 ```
 reports/05_estimate/

@@ -17,6 +17,8 @@ user_invocable: true
 3. **境界づけられたコンテキストの定義**
 4. **コンテキストマップの作成**
 
+**注意**: 統合パイプライン（`/full-pipeline`, `/refactor-system`）では `/ddd-redesign` がドメインマッピング機能を包含するため、本スキルは単独実行時に使用します。ドメイン分類のみを詳細に行いたい場合に `/map-domains` を直接呼び出してください。
+
 ## ドメイン分類フレームワーク
 
 ### ビジネス構造軸（Domain Type）
@@ -37,7 +39,15 @@ user_invocable: true
 | **Integration Domain** | 外部システム連携 | アダプタ、変換処理 |
 | **Supporting/Utility Domain** | 横断的機能の提供 | 認証、ログ、通知 |
 
-## 出力先ディレクトリ
+## 前提条件
+
+**必須（/analyze-system の出力）:**
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語集
+- `reports/01_analysis/actors-roles-permissions.md` - アクター・ロール・権限
+- `reports/01_analysis/domain-code-mapping.md` - ドメイン-コード対応表
+- `reports/01_analysis/system-overview.md` - システム概要
+
+## 出力先
 
 分析結果は `reports/03_design/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。
@@ -48,14 +58,6 @@ reports/03_design/
 ├── context-map.md         # Step 5完了時
 └── system-mapping.md      # 全Step完了時
 ```
-
-## 前提条件
-
-**必須（/analyze-system の出力）:**
-- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語集
-- `reports/01_analysis/actors-roles-permissions.md` - アクター・ロール・権限
-- `reports/01_analysis/domain-code-mapping.md` - ドメイン-コード対応表
-- `reports/01_analysis/system-overview.md` - システム概要
 
 ## 実行プロンプト
 

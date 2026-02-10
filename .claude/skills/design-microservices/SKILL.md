@@ -38,15 +38,15 @@ user_invocable: true
 **推奨（/analyze-system の出力）:**
 - `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語
 
-## 出力先ディレクトリ
+## 出力先
 
 設計結果は `reports/03_design/` に出力します。
 **重要**: 各ステップ完了時に即座にファイルを出力してください。
 
 ```
 reports/03_design/
-├── target-architecture.md    # Step 2-5完了時
-├── transformation-plan.md    # Step 6完了時（移行計画）
+├── target-architecture.md    # Step 3-6完了時
+├── transformation-plan.md    # Step 7完了時（移行計画）
 └── operations-feedback.md    # 最終Step完了時
 ```
 
@@ -97,7 +97,7 @@ reports/03_design/
 | **Design for Failure** | 障害を前提とした設計 |
 | **Evolutionary Design** | 進化的な設計 |
 
-### Step 1.5: 技術スタック・非機能要件の確認
+### Step 2: 技術スタック・非機能要件の確認
 
 ターゲットアーキテクチャに影響する要件をAskUserQuestionで確認する。
 
@@ -142,12 +142,12 @@ reports/03_design/
 ```
 
 **設計への反映:**
-- デプロイ基盤 → Step 5 インフラ設計のコンテナ/オーケストレーション設計に反映
-- 通信パターン → Step 3 通信パターン設計の同期/非同期比率に反映
+- デプロイ基盤 → Step 6 インフラ設計のコンテナ/オーケストレーション設計に反映
+- 通信パターン → Step 4 通信パターン設計の同期/非同期比率に反映
   - **推奨組み合わせ:** 「REST API」+「非同期メッセージング (Kafka)」— 同期CRUDと非同期イベント駆動の併用が標準的なマイクロサービス構成
-- 可観測性 → Step 7 運用計画の可観測性戦略に反映
+- 可観測性 → Step 8 運用計画の可観測性戦略に反映
 
-### Step 2: サービス設計
+### Step 3: サービス設計
 
 **入力**: `bounded-contexts-redesign.md`, `aggregate-redesign.md`, `domain-analysis.md` を読み込み
 
@@ -188,7 +188,7 @@ reports/03_design/
 | スループット | [X]TPS | [方式] |
 ```
 
-### Step 3: 通信パターンの設計
+### Step 4: 通信パターンの設計
 
 **入力**: `context-map.md` を読み込み（コンテキスト間関係を参照）
 
@@ -207,7 +207,7 @@ reports/03_design/
 | CQRS | 読み書き分離 | 専用Read Model |
 | Saga | 分散トランザクション | Orchestration/Choreography |
 
-### Step 4: データ設計
+### Step 5: データ設計
 
 #### データ所有権
 
@@ -224,7 +224,7 @@ reports/03_design/
 | API Composition | 複数サービスからデータ取得 | リアルタイム性が必要な場合 |
 | Materialized View | 読み取り専用ビュー | クエリ性能が重要な場合 |
 
-### Step 5: インフラ設計
+### Step 6: インフラ設計
 
 **このステップ完了時に出力**: `reports/03_design/target-architecture.md`
 - サービス設計、通信パターン、データ設計、インフラ設計をまとめて出力
@@ -256,7 +256,7 @@ graph TD
 | Circuit Breaker | Istio/Resilience4j |
 | Distributed Tracing | Jaeger/Zipkin |
 
-### Step 6: 移行計画策定
+### Step 7: 移行計画策定
 
 移行戦略とフェーズを策定：
 - Phase 1: 準備（インフラ整備、CI/CD構築）
@@ -266,13 +266,13 @@ graph TD
 
 **このステップ完了時に出力**: `reports/03_design/transformation-plan.md`
 
-### Step 7: 運用計画策定
+### Step 8: 運用計画策定
 
 可観測性、SLO/SLI、インシデント管理を設計。
 
 **このステップ完了時に出力**: `reports/03_design/operations-feedback.md`
 
-### Step 8: Mermaid図の検証
+### Step 9: Mermaid図の検証
 
 出力したファイルのMermaid図を検証し、エラーがあれば修正：
 

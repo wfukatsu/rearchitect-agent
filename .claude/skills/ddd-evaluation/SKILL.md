@@ -1,6 +1,6 @@
 ---
 name: ddd-evaluation
-description: DDDの視点から既存システムを評価します。戦略的設計（境界コンテキスト、ユビキタス言語、コンテキストマップ）と戦術的設計（エンティティ、値オブジェクト、集約、リポジトリ）の両面から分析し、改善点を特定します。中間状態はwork/{project}/investigation/ddd-evaluation/に記録されます。
+description: DDD評価エージェント - 戦略的設計・戦術的設計の両面からDDD原則への適合度を評価し改善点を特定。/ddd-evaluation [対象パス] で呼び出し。
 user_invocable: true
 ---
 
@@ -8,7 +8,7 @@ user_invocable: true
 
 ドメイン駆動設計（DDD）の視点から既存システムを評価し、改善点を特定するエージェントです。
 
-## 目的
+## 概要
 
 このエージェントは以下を実行します：
 
@@ -24,7 +24,7 @@ user_invocable: true
   - `reports/01_analysis/ubiquitous-language.md` ← /analyze-system で生成
   - `reports/before/{project}/ddd-readiness.md` ← /system-investigation で生成
 
-## 出力先ディレクトリ
+## 出力先
 
 結果は `reports/02_evaluation/` に出力します。
 中間状態は `work/{project}/investigation/ddd-evaluation/` に記録します。
@@ -32,10 +32,10 @@ user_invocable: true
 
 ```
 reports/02_evaluation/
-├── ddd-strategic-evaluation.md  # Step 2完了時
-├── ddd-tactical-evaluation.md   # Step 3完了時
-├── ddd-pattern-analysis.md      # Step 4完了時
-└── ddd-improvement-plan.md      # Step 5完了時
+├── ddd-strategic-evaluation.md  # Step 1完了時
+├── ddd-tactical-evaluation.md   # Step 2完了時
+├── ddd-pattern-analysis.md      # Step 3完了時
+└── ddd-improvement-plan.md      # Step 4完了時
 
 work/{project}/investigation/ddd-evaluation/
 ├── context-candidates.md        # コンテキスト候補
