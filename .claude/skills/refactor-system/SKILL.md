@@ -149,10 +149,12 @@ graph TD
     G2 --> H
     H --> I["Phase 3: /ddd-redesign"]
     I --> J["Phase 4: /design-microservices"]
-    J --> K["Phase 4.5: /design-api"]
-    J --> L["Phase 5: /design-scalardb"]
+    J --> K47["Phase 4.7: /select-scalardb-edition"]
+    K47 --> K48["Phase 4.8: /design-scalardb-app-patterns"]
+    K48 --> L["Phase 5: /design-scalardb"]
+    L --> K59["Phase 5.9: /review-scalardb"]
+    K59 --> K["Phase 5.95: /design-api"]
     K --> IMPL["Phase 6: /design-implementation"]
-    L --> IMPL
     IMPL --> TEST["Phase 7: /generate-test-specs"]
     TEST --> M["Phase 9: /estimate-cost"]
     M --> N["Phase 10: /create-domain-story"]
@@ -249,11 +251,40 @@ Taskツールで `microservice-architect` エージェントを起動し、以�
 - `reports/03_design/transformation-plan.md`
 - `reports/03_design/operations-feedback.md`
 
-### Phase 4.5: API設計
+### Phase 4.7: ScalarDBエディション選定
+
+**スキル**: `/select-scalardb-edition`
+
+対話形式でScalarDBエディション（OSS/Community, Enterprise Standard, Enterprise Premium）を選定。
+
+**Phase 4.7完了時に出力**:
+- `work/{project}/scalardb-edition-config.md`
+
+### Phase 4.8: ScalarDBアプリケーション設計パターン
+
+**スキル**: `/design-scalardb-app-patterns`
+
+**前提**: Phase 4.7（エディション選定）が完了していること。
+
+**Phase 4.8完了時に出力**:
+- `reports/03_design/scalardb-app-patterns.md`
+
+### Phase 5.9: ScalarDB設計レビュー
+
+**スキル**: `/review-scalardb --mode=design`
+
+**前提**: Phase 5（ScalarDB設計）が完了していること。
+
+**Phase 5.9完了時に出力**:
+- `reports/03_design/scalardb-design-review.md`
+
+### Phase 5.95: API設計
 
 **スキル**: `/design-api`
 
-**Phase 4.5完了時に出力**:
+**前提**: Phase 5.9（ScalarDB設計レビュー）が完了していること。ScalarDBスキーマ設計の結果を踏まえてAPI設計を行う。
+
+**Phase 5.95完了時に出力**:
 - `reports/03_design/api-design-overview.md`
 - `reports/03_design/api-gateway-design.md`
 - `reports/03_design/api-security-design.md`
@@ -389,8 +420,12 @@ Taskツールで `domain-storyteller` エージェントを起動し、各ドメ
 ### 設計スキル
 - `/ddd-redesign` - DDD再設計（境界コンテキスト、集約、コンテキストマップ）
 - `/design-microservices` - マイクロサービス設計
-- `/design-api` - API設計（REST/GraphQL/gRPC/AsyncAPI）
+- `/select-scalardb-edition` - ScalarDBエディション選定（OSS/Enterprise Standard/Premium）
+- `/design-scalardb-app-patterns` - ScalarDBアプリケーション設計パターン（ドメインタイプ判別・DB選定）
 - `/design-scalardb` - ScalarDB設計（分散トランザクション・データアーキテクチャ）
+- `/design-scalardb-analytics` - ScalarDB Analytics設計（Apache Spark分析基盤）
+- `/review-scalardb` - ScalarDB設計/コードレビュー（エディション整合性・Key設計・トランザクション検証）
+- `/design-api` - API設計（REST/GraphQL/gRPC/AsyncAPI）
 
 ### 実装仕様スキル
 - `/design-implementation` - 実装仕様（ドメインサービス、リポジトリ、値オブジェクト、例外マッピング）

@@ -28,10 +28,16 @@ AIエージェントがコーディング可能なレベルの詳細実装仕様
 - `reports/03_design/api-design-overview.md` ← /design-api
 
 **推奨:**
+- `work/{project}/scalardb-edition-config.md` ← /select-scalardb-edition（エディション別リポジトリパターン選択）
 - `reports/03_design/scalardb-schema.md` ← /design-scalardb
+- `reports/03_design/scalardb-app-patterns.md` ← /design-scalardb-app-patterns
 - `reports/03_design/bounded-contexts-redesign.md` ← /ddd-redesign
 - `reports/03_design/aggregate-redesign.md` ← /ddd-redesign
 - `reports/01_analysis/ubiquitous-language.md` ← /analyze-system
+
+**エディション別リポジトリ仕様**: エディション設定が存在する場合、リポジトリインターフェース仕様にエディション別実装パターンを含める。
+- **OSS**: Core API直接使用（Get/Put/Delete/Scan）
+- **Enterprise Standard/Premium**: SQL Interface or Spring Data JDBC
 
 ## 出力先ディレクトリ
 
@@ -62,8 +68,12 @@ reports/06_implementation/
 ├── reports/03_design/target-architecture.md  [必須] ← /design-microservices
 └── reports/03_design/api-design-overview.md  [必須] ← /design-api
 
+エディション設定の確認:
+└── work/{project}/scalardb-edition-config.md  [重要] ← /select-scalardb-edition
+
 推奨ファイルの確認:
 ├── reports/03_design/scalardb-schema.md           [推奨]
+├── reports/03_design/scalardb-app-patterns.md     [推奨]
 ├── reports/03_design/bounded-contexts-redesign.md [推奨]
 ├── reports/03_design/aggregate-redesign.md        [推奨]
 └── reports/01_analysis/ubiquitous-language.md     [推奨]
@@ -72,6 +82,32 @@ reports/06_implementation/
 **エラーハンドリング:**
 - 必須ファイルが存在しない場合 → 該当スキルを先に実行するよう案内
 - 推奨ファイルが存在しない場合 → 警告を表示して続行
+
+**エディション設定の確認:**
+- `work/{project}/scalardb-edition-config.md` が存在する場合 → `edition`, `api_type` を読み込み、リポジトリ実装パターンを自動決定
+- 存在しない場合 → 以下のAskUserQuestionでリポジトリパターンを確認:
+
+```json
+{
+  "questions": [{
+    "question": "エディション設定が見つかりません。リポジトリ実装パターンを選択してください（先に /select-scalardb-edition の実行を推奨）",
+    "header": "リポジトリ",
+    "options": [
+      {"label": "SQL Interface (推奨)", "description": "Enterprise Edition - SQL構文でデータ操作。JDBC互換"},
+      {"label": "Spring Data JDBC", "description": "Enterprise Edition - Spring Data統合。リポジトリ自動生成"},
+      {"label": "Core Java API", "description": "全エディション - 低レベルGet/Put/Delete/Scan操作"},
+      {"label": "エディション選定から実施", "description": "/select-scalardb-edition を先に実行"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
+**設計への反映:**
+- SQL Interface → Step 3 リポジトリ仕様にSQL文ベースのクエリ例を含める。`SqlSession` 使用パターン
+- Spring Data JDBC → Step 3 ScalarDbRepository継承インターフェースとアダプター。Spring Data自動生成メソッド活用
+- Core API → Step 3 Get/Put/Delete/Scan操作ベースのリポジトリ実装。`DistributedTransactionManager` 直接使用
+- エディション選定から実施 → スキルを中断し `/select-scalardb-edition` 実行を案内
 
 ### Step 1: 設計ドキュメントの読み込み
 

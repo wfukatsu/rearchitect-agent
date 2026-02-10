@@ -4,12 +4,13 @@ Spring BootとScalarDB統合の要点。詳細は `examples/` 参照。
 
 ## 1. 依存関係
 
-### build.gradle
+### build.gradle（エディション別）
+
 ```groovy
+// 共通依存関係
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.scalar-labs:scalardb:3.12.0'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     // Test
@@ -18,7 +19,30 @@ dependencies {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-dependencies.md`
+```groovy
+// OSS/Community Edition
+dependencies {
+    implementation 'com.scalar-labs:scalardb:3.14.0'
+}
+```
+
+```groovy
+// Enterprise Standard/Premium (Cluster Client SDK)
+dependencies {
+    implementation 'com.scalar-labs:scalardb-cluster-java-client-sdk:3.14.0'
+}
+```
+
+```groovy
+// Enterprise + SQL Interface / Spring Data JDBC
+dependencies {
+    implementation 'com.scalar-labs:scalardb-cluster-java-client-sdk:3.14.0'
+    implementation 'com.scalar-labs:scalardb-sql-spring-data:3.14.0'
+}
+```
+
+📖 **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md`
+📖 **依存関係詳細**: `.claude/rules/examples/spring-boot-dependencies.md`
 
 ## 2. レイヤー構成
 
@@ -131,7 +155,9 @@ management:
         include: health,metrics,prometheus
 ```
 
-### ScalarDB Config Bean
+### ScalarDB Config Bean（エディション別）
+
+#### OSS/Community Edition
 ```java
 @Configuration
 public class ScalarDbConfig {
@@ -143,7 +169,33 @@ public class ScalarDbConfig {
 }
 ```
 
-📖 **詳細**: `.claude/rules/examples/spring-boot-config.md`
+#### Enterprise Standard/Premium Edition — SQL Interface
+```java
+@Configuration
+public class ScalarDbSqlConfig {
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() {
+        return SqlSessionFactory.builder()
+            .withPropertiesFile("scalardb-sql.properties")
+            .build();
+    }
+}
+```
+
+#### Enterprise Standard/Premium Edition — Spring Data JDBC
+```java
+// build.gradle: implementation 'com.scalar-labs:scalardb-sql-spring-data:3.14.0'
+// @EnableScalarDbRepositories でリポジトリ自動生成を有効化
+@Configuration
+@EnableScalarDbRepositories(basePackages = "com.example.order.infrastructure.persistence")
+public class ScalarDbSpringDataConfig {
+    // Spring Data JDBC が自動的にリポジトリ実装を生成
+    // ScalarDbRepository<T, ID> を継承したインターフェースのみ定義すればよい
+}
+```
+
+📖 **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md`
+📖 **設定詳細**: `.claude/rules/examples/spring-boot-config.md`
 
 ## 8. Kubernetes
 

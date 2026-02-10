@@ -40,9 +40,9 @@
 - Phase 2.5: 評価統合
 - Phase 3: DDD再設計
 - Phase 4: マイクロサービス設計
-- Phase 4.5: API設計
 - Phase 5: ScalarDB設計
 - Phase 5.5: ScalarDB Analytics設計
+- Phase 5.95: API設計
 - Phase 6: 実装仕様
 - Phase 7: テスト仕様
 - Phase 8: コード生成
@@ -171,9 +171,9 @@ ScalarDB Cluster/Analytics/インフラのサイジングと費用見積もり�
 - Phase 2.5: 評価統合
 - Phase 3: DDD再設計
 - Phase 4: マイクロサービス設計
-- Phase 4.5: API設計
 - Phase 5: ScalarDB設計
 - Phase 5.5: Analytics設計
+- Phase 5.95: API設計
 - Phase 6: 実装仕様
 - Phase 7: テスト仕様
 - Phase 8: コード生成
@@ -291,10 +291,10 @@ $ /workflow ./src
 | Phase 2.5 | Phase 2a, 2b完了 | 必須 |
 | Phase 3 | Phase 2完了推奨 | - |
 | Phase 4 | Phase 3完了 | 必須 |
-| Phase 4.5 | Phase 4完了 | 必須 |
 | Phase 5 | Phase 4完了 | 必須 |
 | Phase 5.5 | Phase 5完了 | オプション |
-| Phase 6 | Phase 3-5完了 | 必須 |
+| Phase 5.95 | Phase 5.9完了 | 必須 |
+| Phase 6 | Phase 3-5.95完了 | 必須 |
 | Phase 7 | Phase 6完了 | 必須 |
 | Phase 8 | Phase 6-7完了 | 必須 |
 | Phase 9 | Phase 3-5推奨 | いつでも実行可 |
@@ -323,8 +323,8 @@ $ /workflow ./src
   ],
   "pending_phases": [
     "phase-4",
-    "phase-4.5",
     "phase-5",
+    "phase-5.95",
     "..."
   ],
   "user_selections": {

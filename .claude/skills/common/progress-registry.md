@@ -28,6 +28,18 @@
         "reports/before/sample-project/investigation-summary.md"
       ]
     },
+    "security-analysis": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "access-control-analysis": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
     "analyze-system": {
       "status": "completed",
       "started_at": "2025-01-20T10:30:00Z",
@@ -39,6 +51,24 @@
         "reports/01_analysis/domain-code-mapping.md"
       ]
     },
+    "data-model-analysis": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "db-design-analysis": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "er-diagram-analysis": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
     "evaluate-mmi": {
       "status": "completed",
       "started_at": "2025-01-20T11:00:00Z",
@@ -48,6 +78,12 @@
         "reports/02_evaluation/mmi-by-module.md",
         "reports/02_evaluation/mmi-improvement-plan.md"
       ]
+    },
+    "mmi-analyzer": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
     },
     "ddd-evaluation": {
       "status": "in_progress",
@@ -67,13 +103,25 @@
       "completed_at": null,
       "outputs": []
     },
+    "map-domains": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
     "design-microservices": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
       "outputs": []
     },
-    "design-api": {
+    "select-scalardb-edition": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "design-scalardb-app-patterns": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
@@ -85,7 +133,43 @@
       "completed_at": null,
       "outputs": []
     },
-    "create-domain-story": {
+    "design-scalardb-analytics": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "review-scalardb --mode=design": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "design-api": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "design-implementation": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "generate-test-specs": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "generate-scalardb-code": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "review-scalardb --mode=code": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
@@ -97,7 +181,43 @@
       "completed_at": null,
       "outputs": []
     },
+    "create-domain-story": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
     "build-graph": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "query-graph": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "visualize-graph": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "scalardb-sizing-estimator": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "fix-mermaid": {
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "outputs": []
+    },
+    "compile-report": {
       "status": "pending",
       "started_at": null,
       "completed_at": null,
@@ -124,31 +244,58 @@
 ```
 system-investigation (optional)
        ↓
-analyze-system
-       ↓
-    ┌──┴──┐
-    ↓     ↓
-evaluate-mmi  ddd-evaluation
-    ↓     ↓
-    └──┬──┘
-       ↓
-integrate-evaluations
-       ↓
-ddd-redesign
-       ↓
-design-microservices
-       ↓
-    ┌──┴──┐
-    ↓     ↓
-design-api  design-scalardb
-    ↓     ↓
-    └──┬──┘
-       ↓
-estimate-cost
-       ↓
-create-domain-story (optional)
+    ┌──┴──────────────────┐
+    ↓                     ↓
+security-analysis (opt)  analyze-system
+access-control-analysis    ↓
+                     ┌─────┴──────────────────┐
+                     ↓                        ↓
+              data-model-analysis (opt)   ┌───┴───┐
+                     ↓                    ↓       ↓
+              db-design-analysis (opt) evaluate-mmi  ddd-evaluation
+                     ↓                    ↓       ↓
+              er-diagram-analysis (opt)   └───┬───┘
+                                              ↓
+                                     integrate-evaluations
+                                              ↓
+                                         ddd-redesign
+                                              ↓
+                                     design-microservices
+                                              ↓
+                                     select-scalardb-edition
+                                              ↓
+                                    ┌─────────┴──────────┐
+                                    ↓                    ↓
+                             design-scalardb  design-scalardb-app-patterns
+                                    ↓                    ↓
+                                    └─────────┬──────────┘
+                                              ↓
+                             design-scalardb-analytics (optional)
+                                              ↓
+                                    review-scalardb --mode=design (optional)
+                                              ↓
+                                         design-api
+                                              ↓
+                                    design-implementation
+                                              ↓
+                                     generate-test-specs
+                                              ↓
+                                    generate-scalardb-code
+                                              ↓
+                                    review-scalardb --mode=code (optional)
+                                              ↓
+                                        estimate-cost
+                                              ↓
+                                    create-domain-story (optional)
+                                              ↓
+                                        fix-mermaid
+                                              ↓
+                                       compile-report
 
-Parallel: build-graph (can run after analyze-system)
+Parallel: build-graph → query-graph, visualize-graph (can run after analyze-system)
+Parallel: mmi-analyzer (can run alongside evaluate-mmi)
+Parallel: map-domains (can run after ddd-redesign)
+Parallel: scalardb-sizing-estimator (standalone, can run after select-scalardb-edition)
 ```
 
 ## 使用方法

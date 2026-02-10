@@ -105,7 +105,14 @@ try {
 
 ## 7. ScalarDB設定
 
-### scalardb.properties
+> **エディション別の設定が異なります。** 以下の構成で記載しています:
+> - §7 基本例（OSS/Community向けデフォルト）
+> - §7A: OSS/Community Edition 詳細
+> - §7B: Enterprise Standard/Premium Edition 詳細
+>
+> Enterprise Standard/Premium Edition を使用する場合は **§7B** を参照してください。
+
+### scalardb.properties（OSS/Community デフォルト）
 ```properties
 scalar.db.transaction_manager=consensus-commit
 scalar.db.storage=jdbc
@@ -113,7 +120,7 @@ scalar.db.contact_points=jdbc:postgresql://...
 scalar.db.consensus_commit.isolation_level=SERIALIZABLE
 ```
 
-### Spring Boot Config
+### Spring Boot Config（OSS/Community デフォルト）
 ```java
 @Bean
 public DistributedTransactionManager transactionManager() {
@@ -123,6 +130,65 @@ public DistributedTransactionManager transactionManager() {
 ```
 
 📖 **詳細例**: `.claude/rules/examples/config-examples.md`
+
+### 7A. OSS/Community Edition（組み込みモード）
+
+OSS版はアプリケーションに直接組み込むJavaライブラリとして使用。Clusterなし。
+
+```properties
+# scalar.db.transaction_manager=consensus-commit（デフォルト）
+scalar.db.storage=jdbc
+scalar.db.contact_points=jdbc:postgresql://localhost:5432/mydb
+scalar.db.username=postgres
+scalar.db.password=postgres
+scalar.db.consensus_commit.isolation_level=SERIALIZABLE
+```
+
+```java
+// OSS/Community: TransactionFactory で直接生成
+Properties props = new Properties();
+props.load(new FileInputStream("scalardb.properties"));
+TransactionFactory factory = TransactionFactory.create(props);
+DistributedTransactionManager txManager = factory.getTransactionManager();
+// アプリケーション内でライフサイクル管理（close()必須）
+```
+
+**制約**: SQL Interface / Spring Data JDBC は使用不可。Core Java API のみ。
+
+### 7B. Enterprise Standard/Premium Edition（Cluster Client モード）
+
+Enterprise版はScalarDB Clusterに接続するクライアントSDKとして使用。
+
+```properties
+# Cluster Client 設定
+scalar.db.transaction_manager=cluster
+scalar.db.contact_points=indirect:scalardb-cluster-envoy.default.svc.cluster.local
+scalar.db.contact_port=60053
+scalar.db.cluster.auth.enabled=true
+scalar.db.cluster.auth.username=admin
+scalar.db.cluster.auth.password=admin_password
+```
+
+```java
+// Enterprise: SQL Interface 統合（Enterprise Standard/Premium のみ）
+@Configuration
+public class ScalarDbSqlConfig {
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() {
+        return SqlSessionFactory.builder()
+            .withPropertiesFile("scalardb-sql.properties")
+            .build();
+    }
+}
+```
+
+```java
+// Enterprise: Spring Data JDBC 統合（Enterprise Standard/Premium のみ）
+// build.gradle: implementation 'com.scalar-labs:scalardb-sql-spring-data:3.14.0'
+// Spring Data リポジトリが自動生成される
+```
+
+📖 **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md`
 
 ## 8. 例外ハンドリング
 

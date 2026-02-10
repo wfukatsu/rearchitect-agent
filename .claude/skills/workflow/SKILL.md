@@ -130,6 +130,15 @@ AskUserQuestionツールを使用して以下を質問：
 }
 ```
 
+**実行への反映:**
+- 完全パイプライン実行 → `/full-pipeline` に委譲（Phase 0〜13 全フェーズ）
+- 分析のみ実行 → Phase 0〜2.5 のスキルを順次実行
+- 設計のみ実行 → Phase 3〜5.95 のスキルを順次実行（前提: Phase 1-2 完了済み）
+- 実装仕様生成 → Phase 6〜7 のスキルを順次実行（前提: Phase 3-5 完了済み）
+- コード生成のみ → Phase 8 の `/generate-scalardb-code` を実行（前提: Phase 6 完了済み）
+- サイジング見積もり → `/scalardb-sizing-estimator` を実行（独立実行可能）
+- 個別フェーズ選択 → Step 4.2 で個別フェーズを追加質問
+
 ### Step 4: 選択に基づく実行
 
 #### 4.1 完全パイプライン実行の場合
@@ -143,9 +152,12 @@ AskUserQuestionツールを使用して以下を質問：
 - Phase 2.5: 評価統合
 - Phase 3: DDD再設計
 - Phase 4: マイクロサービス設計
-- Phase 4.5: API設計
+- Phase 4.7: ScalarDBエディション選定
+- Phase 4.8: ScalarDBアプリパターン設計
 - Phase 5: ScalarDB設計
 - Phase 5.5: ScalarDB Analytics設計
+- Phase 5.9: ScalarDB設計レビュー
+- Phase 5.95: API設計
 - Phase 6: 実装仕様
 - Phase 7: テスト仕様
 - Phase 8: コード生成
@@ -184,8 +196,10 @@ AskUserQuestionツールを使用して以下を質問：
 **スキル呼び出し**:
 1. `/ddd-redesign {対象パス}`
 2. `/design-microservices {対象パス}`
-3. `/design-api {対象パス}`
-4. `/design-scalardb {対象パス}`
+3. `/select-scalardb-edition` （ScalarDBエディション選定）
+4. `/design-api {対象パス}`
+5. `/design-scalardb {対象パス}` と `/design-scalardb-app-patterns {対象パス}` を並行実行
+6. `/review-scalardb --mode=design` （ScalarDB設計レビュー）
 
 オプションで質問：
 
@@ -278,12 +292,16 @@ AskUserQuestionツールを使用して以下を質問：
       {"label": "Phase 2.5: 評価統合", "description": "MMI+DDD統合改善計画"},
       {"label": "Phase 3: DDD再設計", "description": "境界コンテキスト、集約設計"},
       {"label": "Phase 4: マイクロサービス設計", "description": "ターゲットアーキテクチャ"},
-      {"label": "Phase 4.5: API設計", "description": "REST/GraphQL/gRPC設計"},
+      {"label": "Phase 4.7: ScalarDBエディション選定", "description": "OSS/Enterprise Standard/Premium選定"},
+      {"label": "Phase 4.8: ScalarDBアプリパターン設計", "description": "ドメインタイプ別設計パターン・DB選定"},
       {"label": "Phase 5: ScalarDB設計", "description": "スキーマ、トランザクション設計"},
       {"label": "Phase 5.5: Analytics設計", "description": "ScalarDB Analytics設計"},
+      {"label": "Phase 5.9: ScalarDB設計レビュー", "description": "設計品質検証・ベストプラクティス準拠"},
+      {"label": "Phase 5.95: API設計", "description": "REST/GraphQL/gRPC/AsyncAPI設計"},
       {"label": "Phase 6: 実装仕様", "description": "ドメインサービス、リポジトリ仕様"},
       {"label": "Phase 7: テスト仕様", "description": "BDD、単体/統合テスト仕様"},
       {"label": "Phase 8: コード生成", "description": "Spring Boot/ScalarDBコード"},
+      {"label": "Phase 8.5: ScalarDBコードレビュー", "description": "生成コードの品質検証"},
       {"label": "Phase 9: コスト見積もり", "description": "インフラ/ライセンス費用"},
       {"label": "Phase 10: ドメインストーリー", "description": "ドメインストーリーテリング"},
       {"label": "Phase 11: グラフ構築", "description": "ナレッジグラフ構築"},
@@ -400,12 +418,16 @@ AskUserQuestionツールを使用して以下を質問：
 | Phase 2.5 | Phase 2a, 2b完了 |
 | Phase 3 | Phase 2完了推奨 |
 | Phase 4 | Phase 3完了 |
-| Phase 4.5 | Phase 4完了 |
-| Phase 5 | Phase 4完了 |
+| Phase 4.7 | なし（ただしPhase 4完了推奨） |
+| Phase 4.8 | Phase 4.7完了 |
+| Phase 5 | Phase 4完了（Phase 4.7推奨） |
 | Phase 5.5 | Phase 5完了 |
-| Phase 6 | Phase 3-5完了 |
+| Phase 5.9 | Phase 5完了 |
+| Phase 5.95 | Phase 5.9完了 |
+| Phase 6 | Phase 3-5.95完了 |
 | Phase 7 | Phase 6完了 |
 | Phase 8 | Phase 6-7完了 |
+| Phase 8.5 | Phase 8完了 |
 | Phase 9 | Phase 3-5完了推奨 |
 | Phase 10 | Phase 3完了 |
 | Phase 11 | Phase 1完了 |

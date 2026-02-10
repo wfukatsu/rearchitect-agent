@@ -1,23 +1,23 @@
 ---
 name: design-scalardb
-description: ScalarDB設計エージェント - ScalarDB Clusterを使用したマイクロサービスのデータアーキテクチャ設計。分散トランザクション、スキーマ設計、ポリグロット永続化を策定。/design-scalardb [対象パス] で呼び出し。
+description: ScalarDB設計エージェント - エディション設定に基づくマイクロサービスのデータアーキテクチャ設計。分散トランザクション、スキーマ設計、ポリグロット永続化を策定。/design-scalardb [対象パス] で呼び出し。
 user_invocable: true
 ---
 
 # ScalarDB Design Agent
 
-**ScalarDB Cluster**を使用したマイクロサービスのデータアーキテクチャを設計するエージェントです。
+エディション設定に基づいてマイクロサービスのデータアーキテクチャを設計するエージェントです。
 
 ## 概要
 
-このエージェントは、既存システムの分析結果をもとに、**ScalarDB Cluster**を活用した以下の設計を策定します：
+このエージェントは、既存システムの分析結果とエディション設定をもとに、以下の設計を策定します：
 
-1. **ScalarDB Clusterアーキテクチャ設計** - クラスター構成、ストレージバックエンド選定
+1. **ScalarDBアーキテクチャ設計** - エディション別構成（組み込み/Cluster）、ストレージバックエンド選定
 2. **スキーマ設計** - テーブル設計、パーティションキー、クラスタリングキー
 3. **トランザクション設計** - 分散トランザクション戦略、Sagaパターン
 4. **マイグレーション計画** - 既存DBからの移行戦略
 
-> **注意**: 本設計はScalarDB Cluster（サーバーモード）を前提としています。ScalarDB Core（ライブラリモード）は対象外です。
+> **エディション対応**: 本スキルはOSS/Community、Enterprise Standard、Enterprise Premiumの3エディションに対応しています。エディション設定ファイル（`work/{project}/scalardb-edition-config.md`）に基づいて設計を最適化します。未選定の場合は `/select-scalardb-edition` を先に実行してください。
 
 > **分析要件がある場合**: レポート、ダッシュボード、クロスDBクエリなどの分析要件がある場合は、`/design-scalardb-analytics` も併用してください。ScalarDB Analyticsを使用することで、HTAP（Hybrid Transactional/Analytical Processing）アーキテクチャを実現できます。
 
@@ -25,8 +25,11 @@ user_invocable: true
 
 以下のファイルが存在すること：
 
-**必須（/design-microservices の出力）:**
-- `reports/03_design/target-architecture.md` - ターゲットアーキテクチャ
+**必須:**
+- `reports/03_design/target-architecture.md` ← /design-microservices
+
+**推奨（エディション設定）:**
+- `work/{project}/scalardb-edition-config.md` ← /select-scalardb-edition（未選定時はEnterprise Standardをデフォルト）
 
 **推奨（/ddd-redesign の出力）:**
 - `reports/03_design/aggregate-redesign.md` - 集約の再設計
@@ -35,9 +38,19 @@ user_invocable: true
 **推奨（/analyze-system の出力）:**
 - `reports/01_analysis/system-overview.md` - システム概要
 
-## ScalarDB Cluster概要
+## ScalarDB概要
 
-ScalarDB Clusterは、異種データベース間で分散トランザクションを実現するエンタープライズ向けHTAPプラットフォームです。gRPCベースの集中型トランザクションコーディネーターとして動作し、マイクロサービスアーキテクチャに最適化されています。
+ScalarDBは、異種データベース間で分散トランザクションを実現するデータ管理プラットフォームです。エディションによりデプロイモードが異なります。
+
+### エディション別デプロイモード
+
+| エディション | デプロイモード | 説明 |
+|------------|-------------|------|
+| OSS/Community | 組み込み（Embedded） | Javaライブラリとしてアプリケーションに直接組み込み |
+| Enterprise Standard | Cluster | gRPCベースの分散トランザクションコーディネーター |
+| Enterprise Premium | Cluster | Standard + GraphQL + AWS Marketplace対応 |
+
+> **エディション詳細**: `.claude/rules/scalardb-edition-profiles.md` を参照
 
 ### ScalarDB Cluster アーキテクチャ
 
@@ -122,6 +135,32 @@ ScalarDB Clusterは、異種データベース間で分散トランザクショ�
 - 必須ファイルが存在しない場合 → `/design-microservices` を先に実行するよう案内
 - 推奨ファイルが存在しない場合 → 警告を表示して続行
 
+### Step 0.5: エディション別ワークフロー分岐
+
+`work/{project}/scalardb-edition-config.md` を読み込み、エディションに応じてワークフローを分岐する。
+
+- **設定ファイルが存在する場合**: `edition` フィールドを読み込み、以下のルールに従う
+- **設定ファイルが存在しない場合**: Enterprise Standardをデフォルトとし、全ステップ実行
+
+#### OSS/Community Edition（組み込みモード）の調整
+
+| ステップ | Enterprise (Cluster) | OSS (Embedded) |
+|---------|---------------------|----------------|
+| Step 1: 現状分析 | 実行 | 実行（変更なし） |
+| Step 2: Cluster構成設計 | 実行 | **スキップ** — Cluster不要 |
+| Step 3: ストレージバックエンド設計 | 実行 | 実行（OSS対応ストレージに限定） |
+| Step 4: スキーマ設計 | 実行 | 実行（変更なし） |
+| Step 5: トランザクション設計 | 実行 | 実行（Core API例に置換） |
+| Step 6: 例外処理設計 | 実行 | 実行（変更なし） |
+| Step 7: パフォーマンス最適化 | 実行 | 実行（Helm設定を除外） |
+| Step 8: マイグレーション計画 | 実行 | 実行（ライブラリ組み込み設定に置換） |
+
+**OSS版の制約:**
+- SQL Interface / Spring Data JDBC / GraphQL は使用不可 → Core API のみ
+- 認証・認可は組み込み未提供 → アプリケーション側で実装
+- 対応ストレージ: PostgreSQL, MySQL (JDBC), DynamoDB, Cosmos DB, Cassandra
+- 設定テンプレート: `.claude/rules/scalardb-edition-profiles.md` §2A を使用
+
 ### Step 1: 現状分析
 
 現在のデータアーキテクチャを分析：
@@ -141,6 +180,54 @@ ScalarDB Clusterは、異種データベース間で分散トランザクショ�
 - [課題1]
 - [課題2]
 ```
+
+### Step 1.5: 非機能要件の確認
+
+データアーキテクチャに影響する非機能要件をAskUserQuestionで確認する。
+
+```json
+{
+  "questions": [
+    {
+      "question": "トランザクションの整合性レベル要件を選択してください",
+      "header": "整合性",
+      "options": [
+        {"label": "SERIALIZABLE (推奨)", "description": "最高の整合性。金融・在庫等のミッションクリティカルなデータ向き"},
+        {"label": "SNAPSHOT", "description": "読み取り一貫性。書き込み競合時のみ直列化。NoSQL系のデフォルト"},
+        {"label": "混在", "description": "サービスごとに異なる整合性レベルを適用"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "主要なワークロード特性を選択してください",
+      "header": "ワークロード",
+      "options": [
+        {"label": "バランス型 (推奨)", "description": "読み書き比率がほぼ同等。標準的な業務アプリ"},
+        {"label": "読み取りヘビー", "description": "読み取りが80%以上。キャッシュ戦略を重視"},
+        {"label": "書き込みヘビー", "description": "書き込みが50%以上。バッチ・ログ系"},
+        {"label": "混在", "description": "サービスごとに異なるワークロード特性"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "データ保持・アーカイブの要件を選択してください",
+      "header": "データ保持",
+      "options": [
+        {"label": "オンライン保持のみ (推奨)", "description": "全データをアクティブストレージに保持"},
+        {"label": "期間ベースアーカイブ", "description": "一定期間後にコールドストレージへ移動"},
+        {"label": "論理削除+物理削除ポリシー", "description": "GDPR等コンプライアンス対応"},
+        {"label": "イベントソーシング", "description": "全変更履歴を永続保持"}
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+**設計への反映:**
+- 整合性 → ScalarDB設定の `isolation_level` / `serializable_strategy` に反映
+- ワークロード → ストレージ選定（Step 3）、パフォーマンス最適化（Step 7）に反映
+- データ保持 → スキーマ設計（Step 4）に `deleted_at`, `archived_at` カラム追加検討
 
 ### Step 2: ScalarDB Cluster構成設計
 

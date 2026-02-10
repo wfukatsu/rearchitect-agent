@@ -26,12 +26,16 @@ user_invocable: true
 | 2.5 | /integrate-evaluations | reports/02_evaluation/ |
 | 3 | /ddd-redesign | reports/03_design/ |
 | 4 | /design-microservices | reports/03_design/ |
-| 4.5 | /design-api | reports/03_design/api-specifications/ |
+| 4.7 | /select-scalardb-edition | work/{project}/ |
+| 4.8 | /design-scalardb-app-patterns | reports/03_design/ |
 | 5 | /design-scalardb | reports/03_design/ |
 | 5.5 | /design-scalardb-analytics | reports/03_design/ (optional) |
+| 5.9 | /review-scalardb --mode=design | reports/03_design/ |
+| 5.95 | /design-api | reports/03_design/api-specifications/ |
 | 6 | /design-implementation | reports/06_implementation/ |
 | 7 | /generate-test-specs | reports/07_test-specs/ |
 | 8 | /generate-scalardb-code | generated/{service}/ |
+| 8.5 | /review-scalardb --mode=code | reports/03_design/ |
 | 9 | /estimate-cost | reports/05_estimate/ |
 | 10 | /create-domain-story | reports/04_stories/ |
 | 11 | /build-graph | reports/graph/ |
@@ -145,6 +149,10 @@ AskUserQuestionツールを使用：
   }]
 }
 ```
+
+**実行への反映:**
+- 対象フォルダ → Step 1 初期化の `対象パス` として全フェーズのソース解析対象に使用
+- 出力先 → Step 1 初期化の `出力先` として `reports/`, `generated/`, `work/` のベースディレクトリに使用
 
 ### Step 1: 初期化
 
@@ -325,19 +333,34 @@ AskUserQuestionツールを使用：
 - `reports/03_design/transformation-plan.md`
 - `reports/03_design/operation-plan.md`
 
-### Step 7: Phase 4.5 - API設計
+### Step 7: Phase 4.7 - ScalarDBエディション選定
 
-**スキル**: `/design-api`
+**スキル**: `/select-scalardb-edition`
 
 ```
-実行: /design-api {対象パス}
+実行: /select-scalardb-edition
 ```
 
 **出力ファイル**:
-- `reports/03_design/api-design-overview.md`
-- `reports/03_design/api-gateway-design.md`
-- `reports/03_design/api-security-design.md`
-- `reports/03_design/api-specifications/*.yaml`
+- `work/{project}/scalardb-edition-config.md`
+
+**注意**: 対話形式のスキルです。ユーザーに要件を確認し、最適なエディション（OSS/Enterprise Standard/Premium）を選定します。
+
+### Step 7.5: Phase 4.8 - ScalarDBアプリケーション設計パターン
+
+**スキル**: `/design-scalardb-app-patterns`
+
+**前提**: Phase 4.7（エディション選定）が完了していること
+
+```
+実行: /design-scalardb-app-patterns {対象パス}
+```
+
+**出力ファイル**:
+- `reports/03_design/scalardb-app-patterns.md`
+- `reports/03_design/scalardb-database-selection.md`
+
+**注意**: Phase 5（ScalarDB設計）と並行実行も可能ですが、パイプラインでは順次実行します。
 
 ### Step 8: Phase 5 - ScalarDB設計
 
@@ -353,7 +376,7 @@ AskUserQuestionツールを使用：
 - `reports/03_design/scalardb-transaction.md`
 - `reports/03_design/scalardb-migration.md`
 
-### Step 9: Phase 5.5 - ScalarDB Analytics設計（オプション）
+### Step 8.5: Phase 5.5 - ScalarDB Analytics設計（オプション）
 
 **条件**: `--skip-analytics` が指定されていない場合
 
@@ -366,6 +389,37 @@ AskUserQuestionツールを使用：
 **出力ファイル**:
 - `reports/03_design/scalardb-analytics-architecture.md`
 - `reports/03_design/scalardb-analytics-queries.md`
+
+### Step 9: Phase 5.9 - ScalarDB設計レビュー
+
+**スキル**: `/review-scalardb --mode=design`
+
+**前提**: Phase 5（ScalarDB設計）が完了していること
+
+```
+実行: /review-scalardb --mode=design
+```
+
+**出力ファイル**:
+- `reports/03_design/scalardb-design-review.md`
+
+**注意**: 設計品質を検証し、エディション整合性・Key設計・トランザクション境界をチェックします。Context7で最新仕様も参照します。
+
+### Step 9.5: Phase 5.95 - API設計
+
+**スキル**: `/design-api`
+
+**前提**: Phase 5.9（ScalarDB設計レビュー）が完了していること。ScalarDBスキーマ設計の結果を踏まえてAPI設計を行う。
+
+```
+実行: /design-api {対象パス}
+```
+
+**出力ファイル**:
+- `reports/03_design/api-design-overview.md`
+- `reports/03_design/api-gateway-design.md`
+- `reports/03_design/api-security-design.md`
+- `reports/03_design/api-specifications/*.yaml`
 
 ### Step 10: Phase 6 - 実装仕様
 
@@ -422,6 +476,21 @@ AskUserQuestionツールを使用：
 - `generated/{service}/Dockerfile`
 - `generated/{service}/k8s/...`
 - `generated/{service}/GENERATED.md`
+
+### Step 12.5: Phase 8.5 - ScalarDBコードレビュー
+
+**条件**: Phase 8（コード生成）が完了している場合
+
+**スキル**: `/review-scalardb --mode=code`
+
+```
+実行: /review-scalardb --mode=code
+```
+
+**出力ファイル**:
+- `reports/03_design/scalardb-code-review.md`
+
+**注意**: 生成コードの品質を検証し、coding-patterns準拠・エディション別API使用・トランザクション管理をチェックします。
 
 ### Step 13: Phase 9 - コスト見積もり
 
@@ -577,7 +646,7 @@ AskUserQuestionツールを使用：
 │   ├── 00_summary/              ← Phase 13
 │   ├── 01_analysis/             ← Phase 1
 │   ├── 02_evaluation/           ← Phase 2a, 2b, 2.5
-│   ├── 03_design/               ← Phase 3, 4, 4.5, 5, 5.5
+│   ├── 03_design/               ← Phase 3, 4, 4.7, 4.8, 5, 5.5, 5.9, 5.95, 8.5
 │   │   └── api-specifications/
 │   ├── 04_stories/              ← Phase 10
 │   ├── 05_estimate/             ← Phase 9

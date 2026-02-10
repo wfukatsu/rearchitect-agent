@@ -97,6 +97,56 @@ reports/03_design/
 | **Design for Failure** | 障害を前提とした設計 |
 | **Evolutionary Design** | 進化的な設計 |
 
+### Step 1.5: 技術スタック・非機能要件の確認
+
+ターゲットアーキテクチャに影響する要件をAskUserQuestionで確認する。
+
+```json
+{
+  "questions": [
+    {
+      "question": "マイクロサービスのデプロイ基盤を選択してください",
+      "header": "デプロイ",
+      "options": [
+        {"label": "Kubernetes (推奨)", "description": "EKS/AKS/GKE。スケーラビリティ・運用自動化に最適"},
+        {"label": "Amazon ECS", "description": "AWS Fargate/EC2ベース。AWSネイティブ環境向け"},
+        {"label": "コンテナ (Docker Compose)", "description": "小規模・開発環境向け"},
+        {"label": "未定", "description": "設計結果に基づいて後から決定"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "サービス間の主要な通信パターンを選択してください（複数可）",
+      "header": "通信パターン",
+      "options": [
+        {"label": "REST API (推奨)", "description": "同期通信。OpenAPI仕様で標準化。CRUD操作向き"},
+        {"label": "gRPC", "description": "高性能同期通信。Protocol Buffers。内部通信向き"},
+        {"label": "非同期メッセージング (Kafka)", "description": "イベント駆動。疎結合。結果整合性で十分な場合"},
+        {"label": "非同期メッセージング (SQS/SNS)", "description": "AWSネイティブ。運用負荷が低い"}
+      ],
+      "multiSelect": true
+    },
+    {
+      "question": "可観測性（監視・ログ・トレーシング）スタックを選択してください",
+      "header": "可観測性",
+      "options": [
+        {"label": "Prometheus + Grafana (推奨)", "description": "OSSスタック。コスト効率良好。ScalarDB公式対応"},
+        {"label": "Datadog", "description": "SaaS統合監視。導入容易。従量課金"},
+        {"label": "AWS CloudWatch + X-Ray", "description": "AWSネイティブ。追加インフラ不要"},
+        {"label": "既存システムに統合", "description": "OpenTelemetry Collectorで既存監視へ統合"}
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+**設計への反映:**
+- デプロイ基盤 → Step 5 インフラ設計のコンテナ/オーケストレーション設計に反映
+- 通信パターン → Step 3 通信パターン設計の同期/非同期比率に反映
+  - **推奨組み合わせ:** 「REST API」+「非同期メッセージング (Kafka)」— 同期CRUDと非同期イベント駆動の併用が標準的なマイクロサービス構成
+- 可観測性 → Step 7 運用計画の可観測性戦略に反映
+
 ### Step 2: サービス設計
 
 **入力**: `bounded-contexts-redesign.md`, `aggregate-redesign.md`, `domain-analysis.md` を読み込み

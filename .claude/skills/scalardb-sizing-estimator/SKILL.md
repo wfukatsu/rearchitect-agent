@@ -1,14 +1,16 @@
 ---
 name: scalardb-sizing-estimator
 description: |
-  ScalarDB Cluster および ScalarDB Analytics のアーキテクチャ、サイジング、構成を見積もるスキル。
-  性能要件、可用性要件、クラウド環境からScalarDB Cluster Pod数、Kubernetes構成、
-  バックエンドDB、API Gateway、監視システム等の全体構成を見積もる。
+  ScalarDB のアーキテクチャ、サイジング、構成を見積もるスキル。エディション設定に基づき、
+  Enterprise（Cluster構成）ではPod数・Kubernetes構成・バックエンドDB・API Gateway・
+  監視システム等の全体構成を見積もる。OSS（組み込み構成）ではClusterサイジングをスキップし、
+  アプリケーションリソース・バックエンドDB・インフラ構成のみ見積もる。
   ScalarDB Analyticsを使用する場合はEMR/Databricksのサイジングも含む。
 
   使用タイミング:
   - 「ScalarDBのサイジングを見積もりたい」「ScalarDB環境を構築したい」
   - 「ScalarDB Clusterの構成を決めたい」「ScalarDBの費用を算出したい」
+  - 「OSS版ScalarDBのインフラ構成を見積もりたい」
   - 「開発/テスト/ステージング/本番環境のScalarDB構成」
   - CI/CD、Blue/Green、Canary Deploymentを含む本番環境設計
   - 「ScalarDB Analyticsを使いたい」「分析クエリ環境を構築したい」
@@ -19,13 +21,15 @@ description: |
 user_invocable: true
 ---
 
-# ScalarDB Cluster サイジング見積もりスキル
+# ScalarDB サイジング見積もりスキル
 
-このスキルは、ScalarDB Clusterを中心としたシステム全体のサイジングと費用見積もりを行う。
+このスキルは、エディション設定に基づきScalarDBシステム全体のサイジングと費用見積もりを行う。
 
 ## 見積もりフロー
 
 ```
+0. エディション確認（設定ファイル or ヒアリング）
+   ↓
 1. 要件ヒアリング（質問で情報収集）
    ↓
 2. 環境タイプ選択（Dev/Test/Staging/Production）
@@ -33,11 +37,38 @@ user_invocable: true
 3. アーキテクチャパターン選択
    ↓
 4. 各コンポーネントサイジング
-   ↓
+   ↓  ※ OSS: Clusterサイジングをスキップ
 5. 費用算出
    ↓
 6. Markdown + HTML出力
 ```
+
+## 0. エディション確認
+
+まず `work/{project}/scalardb-edition-config.md` を確認する。
+
+- **設定ファイルが存在する場合**: エディション情報を読み込み、以降の質問を最適化
+- **設定ファイルが存在しない場合**: 以下の質問でエディションを確認
+
+```
+Q: ScalarDB のエディションを選択してください
+A) OSS/Community - Apache 2.0ライセンス、Javaライブラリとして組み込み
+B) Enterprise Standard - 商用ライセンス、ScalarDB Cluster（SQL + Core API）
+C) Enterprise Premium - 商用ライセンス、ScalarDB Cluster（SQL + Core API + GraphQL）
+D) 未定 - エディション選定から実施（/select-scalardb-edition を推奨）
+```
+
+### エディション別サイジング範囲
+
+| サイジング対象 | OSS/Community | Enterprise Standard/Premium |
+|-------------|---------------|---------------------------|
+| **ScalarDB Cluster Pod数** | スキップ（組み込み） | 算出 |
+| **Kubernetes Node数** | アプリPodのみ考慮 | Cluster Pod + アプリPod |
+| **バックエンドDB** | 算出 | 算出 |
+| **API Gateway** | 算出 | 算出 |
+| **監視システム** | 算出 | 算出 |
+| **ライセンス費用** | なし（OSS） | Pod数ベース課金 |
+| **ScalarDB Analytics** | 対象外 | オプション |
 
 ## 1. 要件ヒアリング
 
@@ -64,7 +95,10 @@ C) GCP - Google Cloud Platform
 D) マルチクラウド - 複数クラウドを併用
 ```
 
-#### ScalarDB Cluster ライセンス
+#### ScalarDB ライセンス（Enterprise選択時のみ）
+
+> **注意**: OSS/Communityエディション選択時はこの質問をスキップ（ライセンス費用なし）
+
 ```
 Q: ScalarDB Cluster のライセンス形態を選択してください
 A) 直接契約 Standard - ¥100,000/Pod/月（基本機能）
@@ -251,7 +285,10 @@ D) CloudWatch / Azure Monitor / Cloud Monitoring - クラウドネイティブ
 E) 既存の監視システムを使用
 ```
 
-#### ScalarDB Analytics（オプション）
+#### ScalarDB Analytics（オプション、Enterprise のみ）
+
+> **注意**: OSS/Communityエディション選択時はこの質問をスキップ（Analytics非対応）
+
 ```
 Q: ScalarDB Analytics（分析クエリ機能）を使用しますか？
 A) 使用しない - OLTPのみ
@@ -403,7 +440,11 @@ estimated_cost_multiplier: 1.0x
 
 ## 3. コンポーネント別サイジング
 
-### 3.1 ScalarDB Cluster Pod数計算
+### 3.1 ScalarDB Cluster Pod数計算（Enterprise のみ）
+
+> **OSS/Communityエディション選択時**: ScalarDB ClusterはJavaライブラリとしてアプリケーションに組み込まれるため、
+> Cluster Pod数の計算はスキップする。代わりにアプリケーションPodのリソース要件を
+> ScalarDB組み込み分（+500m CPU, +512Mi Memory 目安）加算して算出する。
 
 詳細は `references/scalardb-cluster-sizing.md` を参照。
 
@@ -482,6 +523,20 @@ USD/JPY = 150円（見積もり時点の想定レート）
 
 ※ AWS Marketplace Pay-as-you-go: $1.40/Pod/時間 × 730時間 = $1,022/Pod/月 ≈ ¥153,300/Pod/月
 ※ 参照: https://aws.amazon.com/marketplace/pp/prodview-jx6qxatkxuwm4
+
+**OSS/Communityエディション（ライセンス費用なし）の場合:**
+| コンポーネント | 開発 | テスト | ステージング | 本番 |
+|--------------|------|--------|-------------|------|
+| ScalarDB License | ¥0 | ¥0 | ¥0 | ¥0 |
+| EKS クラスター | ¥11,000 | ¥11,000 | ¥11,000 | ¥11,000 |
+| EC2 (Node) | ¥22,500 | ¥67,500 | ¥112,500 | ¥225,000 |
+| データベース | ¥9,000 | ¥27,000 | ¥60,000 | ¥120,000 |
+| ALB | ¥3,000 | ¥4,500 | ¥7,500 | ¥15,000 |
+| **合計目安** | **¥45,500** | **¥110,000** | **¥191,000** | **¥371,000** |
+
+※ OSS版はScalarDB Cluster不要のため、ライセンス費用ゼロ
+※ アプリケーションPodのリソースをScalarDB組み込み分だけ増加する必要あり
+※ ScalarDB Analyticsは利用不可
 
 ### 4.3 ScalarDB Analytics ライセンス費用（Analyticsを使用する場合）
 

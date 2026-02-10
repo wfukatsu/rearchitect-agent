@@ -27,8 +27,9 @@ user_invocable: true
 ### 必須ルール（自動読み込み）
 以下のルールファイルを必ず参照してください：
 
-- `.claude/rules/scalardb-coding-patterns.md` - ScalarDBコーディングパターン
-- `.claude/rules/spring-boot-integration.md` - Spring Boot統合パターン
+- `.claude/rules/scalardb-coding-patterns.md` - ScalarDBコーディングパターン（§7A/7Bエディション別設定含む）
+- `.claude/rules/spring-boot-integration.md` - Spring Boot統合パターン（エディション別依存関係含む）
+- `.claude/rules/scalardb-edition-profiles.md` - エディション別プロファイル
 
 ### 必須入力ファイル
 以下のファイルが存在すること：
@@ -39,8 +40,23 @@ user_invocable: true
 - `reports/03_design/scalardb-schema.md` ← /design-scalardb
 
 ### 推奨入力ファイル
+- `work/{project}/scalardb-edition-config.md` ← /select-scalardb-edition（エディション別コード生成に必須）
 - `reports/01_analysis/ubiquitous-language.md` ← /analyze-system
 - `reports/03_design/bounded-contexts-redesign.md` ← /ddd-redesign
+- `reports/03_design/scalardb-app-patterns.md` ← /design-scalardb-app-patterns
+
+### エディション別コード生成
+
+エディション設定ファイル（`work/{project}/scalardb-edition-config.md`）が存在する場合、以下を自動切り替え：
+
+| 生成対象 | OSS/Community | Enterprise Standard/Premium |
+|---------|-------------|---------------------------|
+| **build.gradle** | `scalardb:3.14.0` | `scalardb-cluster-java-client-sdk:3.14.0` + `scalardb-sql-spring-data:3.14.0` |
+| **リポジトリ実装** | Core API直接使用 | SQL Interface / Spring Data JDBC |
+| **設定ファイル** | `consensus-commit` + ストレージ直接指定 | `cluster` + contact_points指定 |
+| **トランザクション** | TransactionFactory直接初期化 | Cluster Client経由 |
+
+エディション設定が未選定の場合はEnterprise Standardをデフォルトとする。
 
 ## 出力先ディレクトリ
 
@@ -114,6 +130,54 @@ Read .claude/rules/spring-boot-integration.md
 - テストパターン
 
 が含まれています。ルールに従ってコードを生成してください。
+
+### Step 0.5: コード生成オプションの確認
+
+コード生成に影響する技術選択をAskUserQuestionで確認する。
+
+```json
+{
+  "questions": [
+    {
+      "question": "ターゲットのJavaバージョンを選択してください",
+      "header": "Java",
+      "options": [
+        {"label": "Java 17 LTS (推奨)", "description": "Spring Boot 3.x対応。record, sealed classes。安定性重視"},
+        {"label": "Java 21 LTS", "description": "最新LTS。Virtual Threads, Pattern Matching活用"},
+        {"label": "Java 11 LTS", "description": "レガシー互換。Spring Boot 2.xまで。新規は非推奨"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "Spring Bootのバージョンを選択してください",
+      "header": "Spring Boot",
+      "options": [
+        {"label": "Spring Boot 3.2.x (推奨)", "description": "Java 17+。最新安定版。ScalarDB SDK対応確認済み"},
+        {"label": "Spring Boot 3.3.x", "description": "Java 17+。最新機能。互換性確認が必要な場合あり"},
+        {"label": "Spring Boot 2.7.x", "description": "Java 11対応。EOL注意。既存プロジェクト互換性確保"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "テストフレームワーク構成を選択してください（複数可）",
+      "header": "テスト",
+      "options": [
+        {"label": "JUnit 5 + Mockito (推奨)", "description": "標準構成。ユニットテスト・モック"},
+        {"label": "Testcontainers", "description": "統合テスト用。実DBコンテナでScalarDBテスト"},
+        {"label": "ArchUnit", "description": "アーキテクチャテスト。レイヤー依存関係の検証"},
+        {"label": "REST Assured", "description": "APIテスト。E2Eエンドポイント検証"}
+      ],
+      "multiSelect": true
+    }
+  ]
+}
+```
+
+**生成への反映:**
+- Java → `build.gradle` の `sourceCompatibility`、record/sealed使用有無
+- Spring Boot → plugin version、依存関係バージョン
+- テスト → test依存関係、Step 13テストコード生成のフレームワーク選択
+  - **推奨組み合わせ:** 「JUnit 5 + Mockito」+「Testcontainers」— ユニットテスト＋ScalarDB実DBでの統合テストが標準構成
 
 ### Step 1: 設計仕様の読み込み
 

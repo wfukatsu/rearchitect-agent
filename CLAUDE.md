@@ -10,7 +10,7 @@ Legacy system analysis and microservices refactoring agent system for Claude Cod
 
 ## Core Architecture
 
-This is a **skill-based agent system** (33 skills) with three execution layers:
+This is a **skill-based agent system** (36 skills) with three execution layers:
 
 1. **Orchestration Skills** - Full workflow automation (`workflow`, `full-pipeline`, `refactor-system`)
 2. **Phase-specific Skills** - Individual analysis/design phases (investigation → analysis → evaluation → design → implementation → code generation)
@@ -83,8 +83,12 @@ Claude Code provides aliases for common skills as `/skill-name` commands.
 /map-domains ./src            # Domain classification, context mapping
 /design-microservices ./src   # Target architecture, transformation plan
 /design-api ./src             # REST/GraphQL/gRPC/AsyncAPI specs
-/design-scalardb ./src        # ScalarDB Cluster schema & transaction design
+/select-scalardb-edition          # ScalarDBエディション選定（対話形式）
+/design-scalardb ./src            # ScalarDB schema & transaction design
+/design-scalardb-app-patterns ./src  # ドメインタイプ別設計パターン
 /design-scalardb-analytics ./src  # ScalarDB Analytics (Apache Spark) design
+/review-scalardb --mode=design    # ScalarDB設計レビュー
+/review-scalardb --mode=code      # ScalarDBコードレビュー
 
 # Phase 6-8: Implementation & Code Generation
 /design-implementation ./src   # Detailed implementation specs for AI coding agents
@@ -176,15 +180,16 @@ knowledge.ryugraph          # RyuGraph database file
 
 ### ScalarDB Integration
 
-Skills generate code following ScalarDB Cluster patterns:
+Skills support 3 ScalarDB editions (OSS / Enterprise Standard / Enterprise Premium):
 - **Consensus Commit**: Single-storage ACID transactions
 - **Two-Phase Commit**: Cross-service distributed transactions
 - **Multi-Storage**: PostgreSQL + DynamoDB + other heterogeneous backends
 - **Repository Pattern**: Domain-driven repository interfaces with ScalarDB implementations
+- **Edition-Aware Design**: `/select-scalardb-edition` for edition selection, edition-specific code generation
 
-See `.claude/rules/scalardb-coding-patterns.md` for detailed patterns.
+See `.claude/rules/scalardb-coding-patterns.md` and `.claude/rules/scalardb-edition-profiles.md` for detailed patterns.
 
-## Skill Reference (33 skills)
+## Skill Reference (36 skills)
 
 All skills are user-invocable via `/skill-name` slash commands. Each skill is defined in `.claude/skills/{skill-name}/SKILL.md`.
 
@@ -214,15 +219,18 @@ All skills are user-invocable via `/skill-name` slash commands. Each skill is de
 | `/ddd-evaluation` | DDD戦略的・戦術的設計評価 |
 | `/integrate-evaluations` | MMI+DDD統合改善計画 |
 
-### Design (8)
+### Design (11)
 | Skill | Description |
 |-------|-------------|
 | `/ddd-redesign` | DDD原則に基づくシステム再設計 |
 | `/map-domains` | ドメイン分類・コンテキストマップ作成 |
 | `/design-microservices` | ターゲットアーキテクチャ策定 |
 | `/design-api` | REST/GraphQL/gRPC/AsyncAPI仕様書 |
-| `/design-scalardb` | ScalarDB Clusterデータアーキテクチャ |
+| `/select-scalardb-edition` | ScalarDBエディション選定（対話形式） |
+| `/design-scalardb` | エディション設定に基づくScalarDBデータアーキテクチャ |
+| `/design-scalardb-app-patterns` | ドメインタイプ別アプリケーション設計パターン |
 | `/design-scalardb-analytics` | ScalarDB Analytics分析基盤設計 |
+| `/review-scalardb` | ScalarDB設計・コードレビュー |
 | `/design-implementation` | AI向け詳細実装仕様生成 |
 | `/create-domain-story` | ドメインストーリー作成（対話形式） |
 
@@ -284,8 +292,9 @@ Levels: 8-10 Good | 4-8 Warning | 0-4 Critical
 
 | Path | Purpose |
 |------|---------|
-| `.claude/skills/*/SKILL.md` | Skill definitions (33 skills) |
-| `.claude/skills/common/` | Shared resources (progress registry, sub-agent patterns) |
+| `.claude/skills/*/SKILL.md` | Skill definitions (36 skills) |
+| `.claude/skills/common/progress-registry.md` | Pipeline phase tracking (27 phases, dependencies, resume support) |
+| `.claude/skills/common/sub-agent-patterns.md` | Task tool usage patterns (8 categories, subagent type guidance) |
 | `.claude/rules/*.md` | Coding patterns (ScalarDB, Spring Boot) |
 | `.claude/templates/*.md` | Output templates, error handling patterns |
 | `scripts/*.py` | Python utilities for graph/report operations |
