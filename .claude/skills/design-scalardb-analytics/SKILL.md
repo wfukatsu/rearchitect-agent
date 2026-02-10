@@ -26,6 +26,13 @@ user_invocable: true
 - `03_design/target-architecture.md`
 - `03_design/scalardb-schema.md`（オプション）
 
+## 出力先
+
+結果は `reports/03_design/` に出力します：
+- `scalardb-analytics-design.md` - ScalarDB Analytics設計ドキュメント
+
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ## ScalarDB Analytics概要
 
 ScalarDB Analyticsは、ScalarDBのHTAP（Hybrid Transactional/Analytical Processing）アーキテクチャの分析コンポーネントです。Apache Sparkをクエリエンジンとして使用し、複数のデータベースにまたがる統合的な分析クエリを実現します。

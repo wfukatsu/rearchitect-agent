@@ -38,6 +38,15 @@ user_invocable: true
 **推奨（/analyze-system の出力）:**
 - `reports/01_analysis/system-overview.md` - システム概要
 
+## 出力先
+
+結果は `reports/03_design/` に出力します：
+- `scalardb-schema.md` - ScalarDBスキーマ設計
+- `scalardb-transaction-design.md` - トランザクション設計
+- `scalardb-migration-plan.md` - マイグレーション計画
+
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ## ScalarDB概要
 
 ScalarDBは、異種データベース間で分散トランザクションを実現するデータ管理プラットフォームです。エディションによりデプロイモードが異なります。

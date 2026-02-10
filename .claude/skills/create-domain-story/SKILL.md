@@ -28,6 +28,20 @@ user_invocable: true
 
 既存の分析結果からストーリーを自動生成します。精度は低下しますが、大量のドメインを効率的に処理できます。
 
+## 前提条件
+
+**推奨（/ddd-redesign の出力）:**
+- `reports/03_design/bounded-contexts-redesign.md` - 境界コンテキスト再設計
+
+**推奨（/analyze-system の出力）:**
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語集
+- `reports/01_analysis/actors-roles-permissions.md` - アクター・ロール・権限
+
+## 出力先
+
+結果は `reports/04_stories/` に出力します。
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ## 7段階のファシリテーションプロセス
 
 ### Stage 1: 舞台設定（Context Setting）

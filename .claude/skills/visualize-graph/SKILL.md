@@ -25,6 +25,13 @@ RyuGraphデータベースの内容を可視化し、Mermaid図やインタラ�
 - （オプション）graphvizパッケージ（DOT → PNG変換用）
 - （オプション）mermaid-cli（Mermaid → PNG変換用）
 
+## 出力先
+
+結果は `reports/graph/visualizations/` に出力します：
+- Mermaid形式のグラフ図
+- DOT形式のグラフデータ
+- インタラクティブHTML
+
 ## 実行プロンプト
 
 あなたはGraphDBを可視化する専門家エージェントです。以下の手順で可視化を実行してください。

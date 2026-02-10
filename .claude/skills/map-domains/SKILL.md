@@ -49,17 +49,21 @@ reports/03_design/
 └── system-mapping.md      # 全Step完了時
 ```
 
+## 前提条件
+
+**必須（/analyze-system の出力）:**
+- `reports/01_analysis/ubiquitous-language.md` - ユビキタス言語集
+- `reports/01_analysis/actors-roles-permissions.md` - アクター・ロール・権限
+- `reports/01_analysis/domain-code-mapping.md` - ドメイン-コード対応表
+- `reports/01_analysis/system-overview.md` - システム概要
+
 ## 実行プロンプト
 
 あなたはドメイン駆動設計の専門家です。以下の手順でドメインマッピングを実行してください。
 
-### 前提条件
+### 入力ファイル確認
 
-以下の中間ファイルが存在することを確認：
-- `01_analysis/ubiquitous-language.md`
-- `01_analysis/actors-roles-permissions.md`
-- `01_analysis/domain-code-mapping.md`
-- `01_analysis/system-overview.md`
+上記の前提条件ファイルが存在することを確認してください。
 
 ### Step 1: ドメイン境界の特定
 

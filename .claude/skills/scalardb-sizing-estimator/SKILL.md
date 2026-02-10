@@ -25,6 +25,26 @@ user_invocable: true
 
 このスキルは、エディション設定に基づきScalarDBシステム全体のサイジングと費用見積もりを行う。
 
+## 概要
+
+対話形式でヒアリングを行い、ScalarDB Cluster/Analytics のインフラ構成・Pod数・バックエンドDB・コスト見積もりを算出します。Enterprise版ではKubernetes構成を含む全体設計、OSS版ではアプリケーション組み込み構成を見積もります。
+
+## 前提条件
+
+**推奨（エディション設定）:**
+- `work/{project}/scalardb-edition-config.md` ← /select-scalardb-edition（未選定時はヒアリングで確認）
+
+**推奨（マイクロサービス設計）:**
+- `reports/03_design/target-architecture.md` ← /design-microservices
+
+## 出力先
+
+結果は `reports/sizing-estimates/` に出力します：
+- Markdown形式の見積もり結果
+- HTML形式のレポート
+
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ## 見積もりフロー
 
 ```

@@ -32,6 +32,11 @@ user_invocable: true
 **必須:**
 - 対象コードベースへのアクセス
 
+## 出力先
+
+- `knowledge.ryugraph` - RyuGraphデータベースファイル
+- `reports/graph/data/` - CSV形式のグラフデータ
+
 ## グラフスキーマ
 
 ### ノードテーブル

@@ -17,6 +17,15 @@ user_invocable: true
 3. **ドメイン-コード対応表** - 設計書の概念とコードの紐付け
 4. **現行システム概要** - 技術スタック、アーキテクチャの概要
 
+## 前提条件
+
+**推奨（/system-investigation の出力）:**
+- `reports/before/{project}/technology-stack.md` - 技術スタック
+- `reports/before/{project}/codebase-structure.md` - コードベース構造
+
+**必須:**
+- 対象システムのソースコードにアクセス可能であること
+
 ## ユーザー入力確認（必須）
 
 **重要**: このスキルを実行する前に、必ず以下の項目をユーザーに確認してください。

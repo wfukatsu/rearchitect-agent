@@ -34,6 +34,24 @@ MMIは3つのカテゴリの加重合計で算出される:
 - **4〜8**: 要リファクタリング。段階的改善を推奨。
 - **0〜4**: 保守困難。リファクタリング or システム置換の判断が必要。
 
+## 前提条件
+
+**環境:**
+- Python 3.9+
+- radon, networkx パッケージ (`pip install radon networkx`)
+
+**必須:**
+- 対象Pythonプロジェクトのソースコードにアクセス可能であること
+
+**推奨:**
+- Serena MCPが設定済みであること（シンボルレベル解析の精度向上）
+
+## 出力先
+
+結果は `reports/02_evaluation/` に出力します。
+中間データ: `metrics_result.json`, `architecture_result.json`, `mmi_result.json`
+**重要**: 各ステップ完了時に即座にファイルを出力してください。
+
 ## 3つのツール
 
 本スキルは3つのPythonスクリプトで構成される。各ツールは独立して実行可能だが、Tool 3（MMI Calculator）が全体を統合する。
