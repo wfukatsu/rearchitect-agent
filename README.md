@@ -1,6 +1,6 @@
-# Refactoring Agent for Claude Code
+# Re-Architect Agent for Claude Code
 
-既存システムをマイクロサービスアーキテクチャにリファクタリングするための Claude Code エージェント群です。
+既存システムをマイクロサービスアーキテクチャにリアーキテクトするための Claude Code エージェント群です。
 
 ## 概要
 
