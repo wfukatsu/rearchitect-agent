@@ -342,6 +342,34 @@ def check_prerequisites(progress, required_phases):
     return True, None
 ```
 
+### デュアルモードスキルの追跡
+
+`/review-scalardb` のように複数モードを持つスキルは、モードごとに別フェーズとして追跡します：
+
+| レジストリキー | スキル | モード |
+|--------------|--------|--------|
+| `review-scalardb-design` | `/review-scalardb --mode=design` | 設計レビュー |
+| `review-scalardb-code` | `/review-scalardb --mode=code` | コードレビュー |
+
+各エントリには `args` フィールドでモード引数を記録します：
+
+```json
+{
+  "review-scalardb-design": {
+    "status": "completed",
+    "args": "--mode=design",
+    "outputs": ["reports/03_design/scalardb-design-review.md"]
+  },
+  "review-scalardb-code": {
+    "status": "pending",
+    "args": "--mode=code",
+    "outputs": []
+  }
+}
+```
+
+オーケストレーターがフェーズを実行する際は、レジストリキーからスキル名と `args` を使って呼び出します。
+
 ### オーケストレーターでの使用
 
 `/refactor-system` オーケストレーターは進捗レジストリを参照して：

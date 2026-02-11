@@ -1,6 +1,6 @@
 # クイックスタートガイド
 
-このガイドでは、rearchitect-agent のセットアップから初回実行、結果の確認方法までを説明します。
+このガイドでは、architecture-redesign-agent のセットアップから初回実行、結果の確認方法までを説明します。
 
 ## 前提条件
 
@@ -9,7 +9,7 @@
 | ツール | 用途 | インストール確認 |
 |--------|------|-----------------|
 | **Claude Code** | エージェント実行環境 | `claude --version` |
-| **Python 3.8+** | グラフ構築・レポート生成 | `python3 --version` |
+| **Python 3.9+** | グラフ構築・レポート生成 | `python3 --version` |
 | **Node.js 18+** | Mermaid図レンダリング | `node --version` |
 
 ### 推奨
@@ -25,7 +25,7 @@
 
 ```bash
 git clone <repository-url>
-cd rearchitect-agent
+cd architecture-redesign-agent
 ```
 
 ### 2. Python依存パッケージのインストール

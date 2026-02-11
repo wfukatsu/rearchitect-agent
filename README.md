@@ -1,4 +1,4 @@
-# Re-Architect Agent for Claude Code
+# Architecture Redesign Agent for Claude Code
 
 既存システムをマイクロサービスアーキテクチャにリアーキテクトするための Claude Code エージェント群です。
 
@@ -27,8 +27,8 @@
 
 ```bash
 # このリポジトリをクローン
-git clone https://github.com/wfukatsu/refactoring-agent-for-claude-code.git
-cd refactoring-agent-for-claude-code
+git clone https://github.com/wfukatsu/architecture-redesign-agent.git
+cd architecture-redesign-agent
 
 # Claude Code でプロジェクトを開く
 claude

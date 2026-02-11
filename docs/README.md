@@ -1,6 +1,6 @@
-# Rearchitect Agent ドキュメント
+# Architecture Redesign Agent ドキュメント
 
-**rearchitect-agent** は、Claude Code 上で動作するレガシーシステム分析・マイクロサービスリファクタリングエージェントシステムです。37のスキル（Skills）を備え、既存のコードベースを調査・分析・評価し、DDD（Domain-Driven Design）とマイクロサービスアーキテクチャに基づくリファクタリング計画・コード生成までを一貫して実行できます。
+**architecture-redesign-agent** は、Claude Code 上で動作するレガシーシステム分析・マイクロサービスリファクタリングエージェントシステムです。37のスキル（Skills）を備え、既存のコードベースを調査・分析・評価し、DDD（Domain-Driven Design）とマイクロサービスアーキテクチャに基づくリファクタリング計画・コード生成までを一貫して実行できます。
 
 ## ドキュメント一覧
 

@@ -1,6 +1,6 @@
 # システムアーキテクチャ
 
-rearchitect-agent の内部構造と設計思想を解説します。
+architecture-redesign-agent の内部構造と設計思想を解説します。
 
 ## 全体アーキテクチャ
 

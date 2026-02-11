@@ -1,6 +1,6 @@
 # スキルリファレンス
 
-rearchitect-agent が備える全37スキルの一覧と詳細です。各スキルは Claude Code のスラッシュコマンド `/skill-name` で呼び出せます。
+architecture-redesign-agent が備える全37スキルの一覧と詳細です。各スキルは Claude Code のスラッシュコマンド `/skill-name` で呼び出せます。
 
 ## カテゴリ一覧
 

@@ -1,4 +1,4 @@
-# rearchitect-agent Python dependencies
+# architecture-redesign-agent Python dependencies
 # Install: pip install -r requirements.txt
 
 # Core: Graph database
